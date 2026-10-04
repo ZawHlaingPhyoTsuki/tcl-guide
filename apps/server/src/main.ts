@@ -1,15 +1,15 @@
 import "varlock/auto-load";
-import { StandardSchemaValidationPipe } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { AppModule } from "./app.module.js";
+import { setupApp } from "./app.setup.js";
 import { ENV } from "./env.server.js";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     bodyParser: false, // Required for Better Auth
   });
-  app.useGlobalPipes(new StandardSchemaValidationPipe());
+  setupApp(app);
   app.enableCors({
     origin: ENV.CORS_ORIGIN,
     methods: ["GET", "POST", "OPTIONS"],

@@ -1,28 +1,31 @@
-"use client";
+import { Suspense } from "react";
 
-const TITLE_TEXT = `
- ██████╗ ███████╗████████╗████████╗███████╗██████╗
- ██╔══██╗██╔════╝╚══██╔══╝╚══██╔══╝██╔════╝██╔══██╗
- ██████╔╝█████╗     ██║      ██║   █████╗  ██████╔╝
- ██╔══██╗██╔══╝     ██║      ██║   ██╔══╝  ██╔══██╗
- ██████╔╝███████╗   ██║      ██║   ███████╗██║  ██║
- ╚═════╝ ╚══════╝   ╚═╝      ╚═╝   ╚══════╝╚═╝  ╚═╝
+import {
+  PlacesFilterSection,
+  PlacesFilterSectionSkeleton,
+} from "@/features/places/components/places-filter-section";
+import { PlacesList, PlacesListSkeleton } from "@/features/places/components/places-list";
 
- ████████╗    ███████╗████████╗ █████╗  ██████╗██╗  ██╗
- ╚══██╔══╝    ██╔════╝╚══██╔══╝██╔══██╗██╔════╝██║ ██╔╝
-    ██║       ███████╗   ██║   ███████║██║     █████╔╝
-    ██║       ╚════██║   ██║   ██╔══██║██║     ██╔═██╗
-    ██║       ███████║   ██║   ██║  ██║╚██████╗██║  ██╗
-    ╚═╝       ╚══════╝   ╚═╝   ╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝
- `;
-
-export default function Home() {
+export default function Home({ searchParams }: PageProps<"/">) {
   return (
     <div className="container mx-auto max-w-3xl px-4 py-2">
-      <pre className="overflow-x-auto font-mono text-sm">{TITLE_TEXT}</pre>
       <div className="grid gap-6">
-        <section className="rounded-lg border p-4">
-          <h2 className="mb-2 font-medium">API Status</h2>
+        <section className="grid gap-2">
+          <h1 className="text-xl font-medium">Places to eat in Tachileik</h1>
+          {searchParams.then((sp) => {
+            const category = typeof sp.category === "string" ? sp.category : undefined;
+            const area = typeof sp.area === "string" ? sp.area : undefined;
+            return (
+              <>
+                <Suspense fallback={<PlacesFilterSectionSkeleton />}>
+                  <PlacesFilterSection category={category} area={area} />
+                </Suspense>
+                <Suspense fallback={<PlacesListSkeleton />}>
+                  <PlacesList category={category} area={area} />
+                </Suspense>
+              </>
+            );
+          })}
         </section>
       </div>
     </div>

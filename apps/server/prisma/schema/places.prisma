@@ -1,0 +1,40 @@
+model Category {
+  id        String  @id @default(cuid())
+  slug      String  @unique
+  nameMy    String
+  nameEn    String?
+  places    Place[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("category")
+}
+
+model Place {
+  id               String   @id @default(cuid())
+  nameMy           String
+  nameEn           String?
+  descriptionMy    String?
+  categoryId       String
+  category         Category @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  area             String?
+  addressText      String?
+  phone            String?
+  // Temporary V1 representation. Structured opening hours follow
+  // when an "open now" feature is requested.
+  hoursText        String?
+  priceRange       String?
+  latitude         Float?
+  longitude        Float?
+  photos           String[]
+  isActive         Boolean  @default(true)
+  // Plain string, not a relation: User lives in the CLI-managed
+  // auth.prisma file, which auth:generate overwrites.
+  createdByAdminId String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([categoryId])
+  @@index([isActive])
+  @@map("place")
+}
