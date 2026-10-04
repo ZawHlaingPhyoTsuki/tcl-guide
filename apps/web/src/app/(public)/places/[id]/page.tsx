@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { PlaceDetail } from "@/features/places/components/place-detail";
-import { getPlace } from "@/features/places/places-queries";
+import { getPlace } from "@/features/places/queries";
 
 export async function generateMetadata({ params }: PageProps<"/places/[id]">): Promise<Metadata> {
   const place = await getPlace((await params).id);

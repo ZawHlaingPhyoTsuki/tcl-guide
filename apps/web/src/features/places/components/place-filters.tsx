@@ -1,19 +1,13 @@
-import { PlacesFilter } from "./places-filter";
-import { getCategories } from "../places-queries";
+import { PlaceFilter } from "./place-filter";
+import { getCategories } from "../queries";
 import { Skeleton } from "@/components/ui/skeleton";
 
-export async function PlacesFilterSection({
-  category,
-  area,
-}: {
-  category?: string;
-  area?: string;
-}) {
+export async function PlaceFilters({ category, area }: { category?: string; area?: string }) {
   const categories = await getCategories();
-  return <PlacesFilter categories={categories} current={{ category, area }} />;
+  return <PlaceFilter categories={categories} current={{ category, area }} />;
 }
 
-export function PlacesFilterSectionSkeleton() {
+export function PlaceFiltersSkeleton() {
   return (
     <div className="flex flex-wrap items-end gap-3" aria-busy="true" aria-label="Loading filters">
       <div className="grid gap-1">

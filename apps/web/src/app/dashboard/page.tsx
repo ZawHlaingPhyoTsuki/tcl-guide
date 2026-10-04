@@ -1,27 +1,16 @@
-import { headers } from "next/headers";
-import { redirect } from "next/navigation";
+import { Suspense } from "react";
 
-import { authClient } from "@/lib/auth-client";
+import {
+  AdminDashboard,
+  AdminDashboardSkeleton,
+} from "@/features/places/admin/components/admin-dashboard";
 
-import Dashboard from "./dashboard";
-
-export default async function DashboardPage() {
-  const session = await authClient.getSession({
-    fetchOptions: {
-      headers: await headers(),
-      throw: true,
-    },
-  });
-
-  if (!session?.user) {
-    redirect("/login");
-  }
-
+export default function Page() {
   return (
-    <div>
-      <h1>Dashboard</h1>
-      <p>Welcome {session.user.name}</p>
-      <Dashboard _session={session} />
-    </div>
+    <main className="container mx-auto max-w-5xl px-4 py-8">
+      <Suspense fallback={<AdminDashboardSkeleton />}>
+        <AdminDashboard />
+      </Suspense>
+    </main>
   );
 }

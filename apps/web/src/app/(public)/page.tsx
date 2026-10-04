@@ -1,10 +1,7 @@
 import { Suspense } from "react";
 
-import {
-  PlacesFilterSection,
-  PlacesFilterSectionSkeleton,
-} from "@/features/places/components/places-filter-section";
-import { PlacesList, PlacesListSkeleton } from "@/features/places/components/places-list";
+import { PlaceFilters, PlaceFiltersSkeleton } from "@/features/places/components/place-filters";
+import { PlaceList, PlaceListSkeleton } from "@/features/places/components/place-list";
 
 export default function Home({ searchParams }: PageProps<"/">) {
   return (
@@ -17,11 +14,11 @@ export default function Home({ searchParams }: PageProps<"/">) {
             const area = typeof sp.area === "string" ? sp.area : undefined;
             return (
               <>
-                <Suspense fallback={<PlacesFilterSectionSkeleton />}>
-                  <PlacesFilterSection category={category} area={area} />
+                <Suspense fallback={<PlaceFiltersSkeleton />}>
+                  <PlaceFilters category={category} area={area} />
                 </Suspense>
-                <Suspense fallback={<PlacesListSkeleton />}>
-                  <PlacesList category={category} area={area} />
+                <Suspense fallback={<PlaceListSkeleton />}>
+                  <PlaceList category={category} area={area} />
                 </Suspense>
               </>
             );

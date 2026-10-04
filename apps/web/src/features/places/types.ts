@@ -5,6 +5,29 @@ export type Category = {
   nameEn: string | null;
 };
 
+export type PlaceSummary = {
+  allPlaces: number;
+  publishedPlaces: number;
+  hiddenPlaces: number;
+  areasCovered: number;
+};
+
+export type PlaceMutation = {
+  nameMy: string;
+  nameEn?: string;
+  descriptionMy?: string;
+  categoryId: string;
+  area?: string;
+  addressText?: string;
+  phone?: string;
+  hoursText?: string;
+  priceRange?: string;
+  latitude?: number;
+  longitude?: number;
+  photos?: string[];
+  isActive?: boolean;
+};
+
 export type Place = {
   id: string;
   nameMy: string;

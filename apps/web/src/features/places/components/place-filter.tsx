@@ -4,11 +4,11 @@ import type { Route } from "next";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 
-import type { Category } from "../types/place";
+import type { Category } from "../types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-export function PlacesFilter({
+export function PlaceFilter({
   categories,
   current,
 }: {

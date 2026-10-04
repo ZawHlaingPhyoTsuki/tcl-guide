@@ -1,10 +1,13 @@
 import { Module } from "@nestjs/common";
 
-import { CategoriesController, PlacesController } from "./places.controller.js";
-import { PlacesService } from "./places.service.js";
+import { PlacesAdminController } from "./places-admin.controller.js";
+import { PlacesAdminService } from "./places-admin.service.js";
+import { PlacesPublicController } from "./places-public.controller.js";
+import { PlacesPublicService } from "./places-public.service.js";
+import { PlacesRepository } from "./places.repository.js";
 
 @Module({
-  controllers: [PlacesController, CategoriesController],
-  providers: [PlacesService],
+  controllers: [PlacesPublicController, PlacesAdminController],
+  providers: [PlacesRepository, PlacesPublicService, PlacesAdminService],
 })
 export class PlacesModule {}
