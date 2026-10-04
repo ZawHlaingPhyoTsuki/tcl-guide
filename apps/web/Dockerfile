@@ -1,5 +1,5 @@
 FROM node:24-slim AS builder
-RUN npm install -g pnpm@11
+RUN npm install -g pnpm@12.8.1
 WORKDIR /app
 
 COPY . .

@@ -27,6 +27,10 @@
     "env:generate": "varlock codegen --path ./apps/web/ && varlock codegen --path ./apps/server/",
     "postinstall": "varlock codegen --path ./apps/web/ && varlock codegen --path ./apps/server/",
     "auth:generate": "cd apps/server && pnpm run auth:generate",
+    "lint": "oxlint",
+    "lint:fix": "oxlint --fix",
+    "format": "oxfmt --check",
+    "format:fix": "oxfmt --write",
     "check": "oxlint && oxfmt --write",
     "prepare": "husky"
   },
