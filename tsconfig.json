@@ -1,0 +1,3 @@
+{
+  "extends": "@tcl-guide/config/tsconfig.base.json"
+}
