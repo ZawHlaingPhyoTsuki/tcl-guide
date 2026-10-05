@@ -10,6 +10,8 @@ export function serverUrl() {
 
 export async function getRequestHeaders() {
   const requestHeaders = new Headers(await headers());
+  requestHeaders.delete("content-length");
+  requestHeaders.delete("content-encoding");
   requestHeaders.set("Content-Type", "application/json");
   return requestHeaders;
 }

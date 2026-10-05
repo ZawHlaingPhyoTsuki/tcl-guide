@@ -5,10 +5,11 @@ import type { Response } from "supertest";
 import { App } from "supertest/types.js";
 import { AppModule } from "./../src/app.module.js";
 import { setupApp } from "./../src/app.setup.js";
-import { db } from "./../src/services.js";
+import { PrismaService } from "./../src/prisma/prisma.service.js";
 
 describe("Places (e2e)", () => {
   let app: INestApplication<App>;
+  let db: PrismaService;
   const tag = Date.now().toString(36);
   const adminEmail = `places-admin-${tag}@example.com`;
   const userEmail = `places-user-${tag}@example.com`;
@@ -63,6 +64,7 @@ describe("Places (e2e)", () => {
     app = moduleFixture.createNestApplication();
     setupApp(app);
     await app.init();
+    db = moduleFixture.get(PrismaService);
 
     await signUp("Places Admin", adminEmail);
     await db.user.update({ where: { email: adminEmail }, data: { role: "admin" } });
@@ -77,14 +79,14 @@ describe("Places (e2e)", () => {
     categoryId = category.id;
 
     const active = await admin
-      .post("/places")
+      .post("/admin/places")
       .send({ nameMy: `Active Place ${tag}`, categoryId, area: "San Sai" })
       .expect(201);
     activePlaceId = (active.body as { id: string }).id;
     createdPlaceIds.push(activePlaceId);
 
     const inactive = await admin
-      .post("/places")
+      .post("/admin/places")
       .send({ nameMy: `Inactive Place ${tag}`, categoryId, isActive: false })
       .expect(201);
     createdPlaceIds.push((inactive.body as { id: string }).id);
@@ -148,23 +150,23 @@ describe("Places (e2e)", () => {
   describe("admin writes", () => {
     it("POST /places requires authentication (401) and admin role (403)", async () => {
       await request(app.getHttpServer())
-        .post("/places")
+        .post("/admin/places")
         .send({ nameMy: "Nope", categoryId })
         .expect(401);
-      await user.post("/places").send({ nameMy: "Nope", categoryId }).expect(403);
+      await user.post("/admin/places").send({ nameMy: "Nope", categoryId }).expect(403);
     });
 
     it("POST /places validates input (400) and rejects unknown categories", async () => {
-      await admin.post("/places").send({ categoryId }).expect(400);
+      await admin.post("/admin/places").send({ categoryId }).expect(400);
       await admin
-        .post("/places")
+        .post("/admin/places")
         .send({ nameMy: "Nope", categoryId: "does-not-exist" })
         .expect(400);
     });
 
     it("POST /places creates with defaults as admin (201)", async () => {
       const res = await admin
-        .post("/places")
+        .post("/admin/places")
         .send({ nameMy: `Created ${tag}`, categoryId, photos: [] })
         .expect(201);
       const body = res.body as { id: string; isActive: boolean; photos: string[] };
@@ -174,7 +176,7 @@ describe("Places (e2e)", () => {
 
     it("PATCH /places/:id updates as admin, 404 for unknown, 403 for users", async () => {
       await admin
-        .patch(`/places/${activePlaceId}`)
+        .patch(`/admin/places/${activePlaceId}`)
         .send({ phone: "099123456" })
         .expect(200)
         .expect((res: Response) => {
@@ -182,18 +184,18 @@ describe("Places (e2e)", () => {
             throw new Error("phone not updated");
           }
         });
-      await admin.patch("/places/does-not-exist").send({ phone: "1" }).expect(404);
-      await user.patch(`/places/${activePlaceId}`).send({ phone: "1" }).expect(403);
+      await admin.patch("/admin/places/does-not-exist").send({ phone: "1" }).expect(404);
+      await user.patch(`/admin/places/${activePlaceId}`).send({ phone: "1" }).expect(403);
     });
 
     it("DELETE /places/:id removes as admin, 403 for users", async () => {
       const res = await admin
-        .post("/places")
+        .post("/admin/places")
         .send({ nameMy: `Doomed ${tag}`, categoryId })
         .expect(201);
       const id = (res.body as { id: string }).id;
-      await user.delete(`/places/${id}`).expect(403);
-      await admin.delete(`/places/${id}`).expect(200);
+      await user.delete(`/admin/places/${id}`).expect(403);
+      await admin.delete(`/admin/places/${id}`).expect(200);
       await request(app.getHttpServer()).get(`/places/${id}`).expect(404);
     });
   });

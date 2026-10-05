@@ -9,6 +9,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     bodyParser: false, // Required for Better Auth
   });
+  app.enableShutdownHooks();
   setupApp(app);
   app.enableCors({
     origin: ENV.CORS_ORIGIN,

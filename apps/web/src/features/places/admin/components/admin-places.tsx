@@ -4,7 +4,15 @@ import { useMemo, useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import {
+  Item,
+  ItemActions,
+  ItemContent,
+  ItemDescription,
+  ItemGroup,
+  ItemMedia,
+  ItemTitle,
+} from "@/components/ui/item";
 import {
   Dialog,
   DialogContent,
@@ -13,12 +21,20 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from "@/components/ui/empty";
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
+import { MapPinIcon, SearchIcon } from "lucide-react";
 
 import { deletePlace, updatePlace } from "../actions";
 import { AdminPlaceForm } from "./admin-place-form";
+import { PhotoPreviewDialog } from "./photo-preview-dialog";
 import type { Category, Place } from "../../types";
 
 export function AdminPlaces({
@@ -35,6 +51,11 @@ export function AdminPlaces({
   const [error, setError] = useState<string | null>(null);
   const [isUpdating, setIsUpdating] = useState<string | null>(null);
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [preview, setPreview] = useState<{
+    photos: string[];
+    name: string;
+    index: number;
+  } | null>(null);
 
   const filteredPlaces = useMemo(() => {
     const query = search.trim().toLocaleLowerCase();
@@ -134,6 +155,11 @@ export function AdminPlaces({
             Find a place
           </label>
           <p className="text-xs text-muted-foreground">Search by name, area, or address.</p>
+          <p className="text-xs text-muted-foreground tabular-nums">
+            {search.trim()
+              ? `${filteredPlaces.length} of ${places.length} places`
+              : `${places.length} places`}
+          </p>
         </div>
         <Input
           id="place-search"
@@ -150,6 +176,9 @@ export function AdminPlaces({
       {places.length === 0 ? (
         <Empty className="border border-dashed">
           <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <MapPinIcon />
+            </EmptyMedia>
             <EmptyTitle>No places yet</EmptyTitle>
             <EmptyDescription>Add the first place to start the public directory.</EmptyDescription>
           </EmptyHeader>
@@ -157,57 +186,77 @@ export function AdminPlaces({
       ) : filteredPlaces.length === 0 ? (
         <Empty className="border border-dashed">
           <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <SearchIcon />
+            </EmptyMedia>
             <EmptyTitle>No matching places</EmptyTitle>
             <EmptyDescription>Try a different name, area, or address.</EmptyDescription>
           </EmptyHeader>
         </Empty>
       ) : (
-        <div className="grid gap-2">
+        <ItemGroup>
           {filteredPlaces.map((place) => (
-            <Card key={place.id} size="sm" className="transition-colors hover:bg-muted/30">
-              <CardContent className="grid gap-4 sm:grid-cols-[1fr_auto] sm:items-center">
-                <div className="grid gap-1">
-                  <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
-                    <h3 className="font-medium">{place.nameMy}</h3>
-                    {place.nameEn ? (
-                      <span className="text-muted-foreground">{place.nameEn}</span>
-                    ) : null}
-                  </div>
-                  <p className="text-muted-foreground">
-                    {place.category.nameMy}
-                    {place.area ? ` · ${place.area}` : ""}
-                  </p>
-                </div>
-                <div className="flex flex-wrap items-center gap-2 sm:justify-end">
-                  <Badge variant={place.isActive ? "default" : "outline"}>
-                    {place.isActive ? "Published" : "Hidden"}
-                  </Badge>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => {
-                      setIsCreating(false);
-                      setEditing(place);
-                    }}
+            <Item key={place.id} size="sm" variant="outline" className="bg-card hover:bg-muted/30">
+              {place.photos[0] ? (
+                <ItemMedia variant="image">
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setPreview({ photos: place.photos, name: place.nameMy, index: 0 })
+                    }
+                    aria-label={`View photos of ${place.nameMy}`}
+                    className="block size-full cursor-zoom-in"
                   >
-                    Edit
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    disabled={isUpdating === place.id}
-                    onClick={() => toggleActive(place)}
-                  >
-                    {isUpdating === place.id ? "Updating..." : place.isActive ? "Hide" : "Publish"}
-                  </Button>
-                  <Button size="sm" variant="ghost" onClick={() => setDeleting(place.id)}>
-                    Delete
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+                    <img src={place.photos[0]} alt="" />
+                  </button>
+                </ItemMedia>
+              ) : null}
+              {place.photos.length > 1 ? (
+                <span className="text-xs text-muted-foreground tabular-nums">
+                  +{place.photos.length - 1}
+                </span>
+              ) : null}
+              <ItemContent>
+                <ItemTitle>
+                  {place.nameMy}
+                  {place.nameEn ? (
+                    <span className="text-muted-foreground">{place.nameEn}</span>
+                  ) : null}
+                </ItemTitle>
+                <ItemDescription>
+                  {place.category.nameMy}
+                  {place.area ? ` · ${place.area}` : ""}
+                </ItemDescription>
+              </ItemContent>
+              <ItemActions>
+                <Badge variant={place.isActive ? "default" : "outline"}>
+                  {place.isActive ? "Published" : "Hidden"}
+                </Badge>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => {
+                    setIsCreating(false);
+                    setEditing(place);
+                  }}
+                >
+                  Edit
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  disabled={isUpdating === place.id}
+                  onClick={() => toggleActive(place)}
+                >
+                  {isUpdating === place.id ? "Updating..." : place.isActive ? "Hide" : "Publish"}
+                </Button>
+                <Button size="sm" variant="ghost" onClick={() => setDeleting(place.id)}>
+                  Delete
+                </Button>
+              </ItemActions>
+            </Item>
           ))}
-        </div>
+        </ItemGroup>
       )}
       <Dialog
         open={Boolean(deleting)}
@@ -240,6 +289,18 @@ export function AdminPlaces({
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      <PhotoPreviewDialog
+        photos={preview?.photos ?? []}
+        index={preview?.index ?? 0}
+        placeName={preview?.name ?? ""}
+        open={preview !== null}
+        onOpenChange={(open) => {
+          if (!open) setPreview(null);
+        }}
+        onIndexChange={(index) =>
+          setPreview((current) => (current ? { ...current, index } : current))
+        }
+      />
     </div>
   );
 }

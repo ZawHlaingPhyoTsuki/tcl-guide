@@ -1,16 +1,21 @@
-import { db } from "../services.js";
+import { Injectable } from "@nestjs/common";
+
+import { PrismaService } from "../prisma/prisma.service.js";
 import type { CreatePlaceDto, ListPlacesQuery, UpdatePlaceDto } from "./places.schemas.js";
 
+@Injectable()
 export class PlacesRepository {
+  constructor(private readonly db: PrismaService) {}
+
   async listCategories() {
-    return db.category.findMany({
+    return this.db.category.findMany({
       orderBy: { nameEn: "asc" },
       select: { id: true, slug: true, nameMy: true, nameEn: true },
     });
   }
 
   async listPublic(query: ListPlacesQuery) {
-    return db.place.findMany({
+    return this.db.place.findMany({
       where: {
         isActive: true,
         category: query.category ? { slug: query.category } : undefined,
@@ -22,14 +27,14 @@ export class PlacesRepository {
   }
 
   async findPublic(id: string) {
-    return db.place.findUnique({
+    return this.db.place.findUnique({
       where: { id, isActive: true },
       include: { category: true },
     });
   }
 
   async listAdmin(query: ListPlacesQuery) {
-    return db.place.findMany({
+    return this.db.place.findMany({
       where: {
         category: query.category ? { slug: query.category } : undefined,
         area: query.area ? { contains: query.area, mode: "insensitive" } : undefined,
@@ -41,9 +46,9 @@ export class PlacesRepository {
 
   async getSummary() {
     const [allPlaces, publishedPlaces, areas] = await Promise.all([
-      db.place.count(),
-      db.place.count({ where: { isActive: true } }),
-      db.place.findMany({
+      this.db.place.count(),
+      this.db.place.count({ where: { isActive: true } }),
+      this.db.place.findMany({
         where: { area: { not: null } },
         select: { area: true },
         distinct: ["area"],
@@ -54,22 +59,22 @@ export class PlacesRepository {
   }
 
   findById(id: string) {
-    return db.place.findUnique({ where: { id }, include: { category: true } });
+    return this.db.place.findUnique({ where: { id }, include: { category: true } });
   }
 
   categoryExists(categoryId: string) {
-    return db.category.findUnique({ where: { id: categoryId } });
+    return this.db.category.findUnique({ where: { id: categoryId } });
   }
 
   create(dto: CreatePlaceDto) {
-    return db.place.create({ data: dto, include: { category: true } });
+    return this.db.place.create({ data: dto, include: { category: true } });
   }
 
   update(id: string, dto: UpdatePlaceDto) {
-    return db.place.update({ where: { id }, data: dto, include: { category: true } });
+    return this.db.place.update({ where: { id }, data: dto, include: { category: true } });
   }
 
   delete(id: string) {
-    return db.place.delete({ where: { id } });
+    return this.db.place.delete({ where: { id } });
   }
 }

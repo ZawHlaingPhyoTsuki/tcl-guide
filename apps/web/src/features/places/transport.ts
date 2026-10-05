@@ -2,7 +2,7 @@ import "server-only";
 
 import { getRequestHeaders, serverUrl } from "@/lib/server-url";
 
-import type { Category, Place, PlaceMutation, PlaceSummary } from "./types";
+import type { Category, Place, PlaceMutation, PlaceSummary, UploadTicket } from "./types";
 
 export class PlacesTransportError extends Error {
   constructor(
@@ -76,6 +76,28 @@ export const placesTransport = {
       `/admin/places/${id}`,
       {
         method: "DELETE",
+      },
+      true,
+    );
+  },
+
+  createUpload(contentType: string) {
+    return request<UploadTicket>(
+      "/admin/uploads",
+      {
+        method: "POST",
+        body: JSON.stringify({ contentType }),
+      },
+      true,
+    );
+  },
+
+  deleteUpload(url: string) {
+    return request<{ deleted: true }>(
+      "/admin/uploads",
+      {
+        method: "DELETE",
+        body: JSON.stringify({ url }),
       },
       true,
     );

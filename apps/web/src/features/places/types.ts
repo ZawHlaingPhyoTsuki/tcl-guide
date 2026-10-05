@@ -28,6 +28,12 @@ export type PlaceMutation = {
   isActive?: boolean;
 };
 
+export type UploadTicket = {
+  key: string;
+  uploadUrl: string;
+  url: string;
+};
+
 export type Place = {
   id: string;
   nameMy: string;

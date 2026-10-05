@@ -1,0 +1,44 @@
+import { z } from "zod";
+
+export const placeInputSchema = z.object({
+  nameMy: z.string().trim().min(1),
+  nameEn: z.string().trim().optional(),
+  descriptionMy: z.string().trim().optional(),
+  categoryId: z.string().min(1),
+  area: z.string().trim().optional(),
+  addressText: z.string().trim().optional(),
+  phone: z.string().trim().optional(),
+  hoursText: z.string().trim().optional(),
+  priceRange: z.string().trim().optional(),
+  latitude: z.number().min(-90).max(90).nullable().optional(),
+  longitude: z.number().min(-180).max(180).nullable().optional(),
+  photos: z.array(z.string().url()).optional(),
+  isActive: z.boolean().optional(),
+});
+
+export type PlaceInput = z.infer<typeof placeInputSchema>;
+
+export const placeFormSchema = z.object({
+  nameMy: z.string().trim().min(1, "Enter a name in Myanmar"),
+  nameEn: z.string(),
+  descriptionMy: z.string(),
+  categoryId: z.string().min(1, "Select a category"),
+  area: z.string(),
+  addressText: z.string(),
+  phone: z.string(),
+  hoursText: z.string(),
+  priceRange: z.string(),
+  isActive: z.boolean(),
+});
+
+export type PlaceFormValues = z.infer<typeof placeFormSchema>;
+
+export function errorMessages(errors: unknown): string[] {
+  if (!Array.isArray(errors)) return [];
+  const messages = errors.map((error) =>
+    typeof error === "string" ? error : (error as { message?: unknown } | null)?.message,
+  );
+  return messages.filter(
+    (message): message is string => typeof message === "string" && message.length > 0,
+  );
+}

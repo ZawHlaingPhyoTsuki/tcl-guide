@@ -5,18 +5,18 @@ import { PlacesRepository } from "./places.repository.js";
 
 @Injectable()
 export class PlacesPublicService {
-  constructor(private readonly places: PlacesRepository) {}
+  constructor(private readonly placesRepository: PlacesRepository) {}
 
   listCategories() {
-    return this.places.listCategories();
+    return this.placesRepository.listCategories();
   }
 
   listPlaces(query: ListPlacesQuery) {
-    return this.places.listPublic(query);
+    return this.placesRepository.listPublic(query);
   }
 
   async getPlace(id: string) {
-    const place = await this.places.findPublic(id);
+    const place = await this.placesRepository.findPublic(id);
     if (!place) throw new NotFoundException(`Place ${id} not found`);
     return place;
   }

@@ -1,5 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import type { PrismaService } from "../prisma/prisma.service.js";
+import type { UploadsService } from "../uploads/uploads.service.js";
 import { PlacesAdminService } from "./places-admin.service.js";
 import { PlacesPublicService } from "./places-public.service.js";
 import { PlacesRepository } from "./places.repository.js";
@@ -21,15 +23,13 @@ const { db } = vi.hoisted(() => ({
   },
 }));
 
-vi.mock("../services.js", () => ({ db }));
-
 describe("PlacesRepository", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
   it("filters public places to active records", () => {
-    const repository = new PlacesRepository();
+    const repository = new PlacesRepository(db as unknown as PrismaService);
     repository.listPublic({});
 
     expect(db.place.findMany).toHaveBeenCalledWith(
@@ -40,7 +40,7 @@ describe("PlacesRepository", () => {
   });
 
   it("lists admin places without the active filter", () => {
-    const repository = new PlacesRepository();
+    const repository = new PlacesRepository(db as unknown as PrismaService);
     repository.listAdmin({ category: "bakery", area: "San Sai" });
 
     expect(db.place.findMany).toHaveBeenCalledWith(
@@ -63,7 +63,8 @@ describe("PlacesAdminService", () => {
         areasCovered: 2,
       }),
     } as Pick<PlacesRepository, "getSummary">;
-    const service = new PlacesAdminService(places as PlacesRepository);
+    const uploads = { deleteMany: vi.fn() } as Pick<UploadsService, "deleteMany">;
+    const service = new PlacesAdminService(places as PlacesRepository, uploads as UploadsService);
 
     await expect(service.getSummary()).resolves.toEqual({
       allPlaces: 5,
@@ -71,6 +72,34 @@ describe("PlacesAdminService", () => {
       hiddenPlaces: 2,
       areasCovered: 2,
     });
+  });
+
+  it("deletes the database row before its photos from storage", async () => {
+    const place = { id: "p1", photos: ["https://storage.example.test/photo.png"] };
+    const order: string[] = [];
+    const repository = {
+      findById: vi.fn().mockResolvedValue(place),
+      delete: vi.fn().mockImplementation(async () => {
+        order.push("row");
+        return place;
+      }),
+    } as Pick<PlacesRepository, "findById" | "delete">;
+    const uploads = {
+      deleteMany: vi.fn().mockImplementation(async () => {
+        order.push("objects");
+        return { deleted: true };
+      }),
+    } as Pick<UploadsService, "deleteMany">;
+    const service = new PlacesAdminService(
+      repository as PlacesRepository,
+      uploads as UploadsService,
+    );
+
+    await service.removePlace("p1");
+
+    expect(repository.delete).toHaveBeenCalledWith("p1");
+    expect(uploads.deleteMany).toHaveBeenCalledWith(place.photos);
+    expect(order).toEqual(["row", "objects"]);
   });
 });
 
