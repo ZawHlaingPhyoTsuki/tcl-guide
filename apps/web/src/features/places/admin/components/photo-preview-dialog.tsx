@@ -22,7 +22,7 @@ export function PhotoPreviewDialog({
   onIndexChange: (index: number) => void;
 }) {
   const total = photos.length;
-  const current = Math.min(Math.max(index, 0), Math.max(total - 1, 0));
+  const current = index;
 
   useEffect(() => {
     if (!open || total < 2) return;
@@ -33,8 +33,6 @@ export function PhotoPreviewDialog({
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [open, total, current, onIndexChange]);
-
-  if (total === 0) return null;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

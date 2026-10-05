@@ -29,7 +29,6 @@ export type PlaceMutation = {
 };
 
 export type UploadTicket = {
-  key: string;
   uploadUrl: string;
   url: string;
 };

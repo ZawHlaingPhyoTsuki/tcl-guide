@@ -43,7 +43,6 @@ export class UploadsService {
       { expiresIn: EXPIRES_IN_SECONDS },
     );
     return {
-      key,
       uploadUrl,
       url: `${ENV.AWS_ENDPOINT_URL_S3}/${ENV.NEON_BUCKET_NAME}/${key}`,
     };
@@ -65,7 +64,6 @@ export class UploadsService {
         this.s3.send(new DeleteObjectCommand({ Bucket: ENV.NEON_BUCKET_NAME, Key: key })),
       ),
     );
-    return { deleted: true };
   }
 
   private keyFromUrl(url: string): string | null {

@@ -180,9 +180,7 @@ export function AdminPlaceForm({
                   onChange={(event) => field.handleChange(event.target.value)}
                   aria-invalid={messages.length > 0}
                 />
-                {messages.length > 0 ? (
-                  <FieldError errors={messages.map((message) => ({ message }))} />
-                ) : null}
+                <FieldError errors={messages.map((message) => ({ message }))} />
               </Field>
             );
           }}
@@ -201,9 +199,7 @@ export function AdminPlaceForm({
                   onChange={(event) => field.handleChange(event.target.value)}
                   aria-invalid={messages.length > 0}
                 />
-                {messages.length > 0 ? (
-                  <FieldError errors={messages.map((message) => ({ message }))} />
-                ) : null}
+                <FieldError errors={messages.map((message) => ({ message }))} />
               </Field>
             );
           }}
@@ -233,9 +229,7 @@ export function AdminPlaceForm({
                     </option>
                   ))}
                 </select>
-                {messages.length > 0 ? (
-                  <FieldError errors={messages.map((message) => ({ message }))} />
-                ) : null}
+                <FieldError errors={messages.map((message) => ({ message }))} />
               </Field>
             );
           }}
@@ -254,9 +248,7 @@ export function AdminPlaceForm({
                   onChange={(event) => field.handleChange(event.target.value)}
                   aria-invalid={messages.length > 0}
                 />
-                {messages.length > 0 ? (
-                  <FieldError errors={messages.map((message) => ({ message }))} />
-                ) : null}
+                <FieldError errors={messages.map((message) => ({ message }))} />
               </Field>
             );
           }}
@@ -331,9 +323,7 @@ export function AdminPlaceForm({
                       onChange={(event) => field.handleChange(event.target.value)}
                       aria-invalid={messages.length > 0}
                     />
-                    {messages.length > 0 ? (
-                      <FieldError errors={messages.map((message) => ({ message }))} />
-                    ) : null}
+                    <FieldError errors={messages.map((message) => ({ message }))} />
                   </Field>
                 );
               }}

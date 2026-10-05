@@ -58,7 +58,7 @@ describe("UploadsService", () => {
     const service = new UploadsService();
     const result = await service.createUpload({ contentType: "image/jpeg" });
 
-    expect(result.key).toMatch(/^places\/[0-9a-f-]{36}\.jpg$/);
+    expect(result.url).toMatch(/\.jpg$/);
   });
 
   it("returns the public path-style url for the uploaded object", async () => {
@@ -66,7 +66,9 @@ describe("UploadsService", () => {
     const result = await service.createUpload({ contentType: "image/webp" });
 
     expect(result.uploadUrl).toBe("https://signed.example.test/upload");
-    expect(result.url).toBe(`https://storage.example.test/tcl-guide-images/${result.key}`);
+    expect(result.url).toMatch(
+      /^https:\/\/storage\.example\.test\/tcl-guide-images\/places\/[0-9a-f-]{36}\.webp$/,
+    );
   });
 
   it("deletes the object for a managed url", async () => {
