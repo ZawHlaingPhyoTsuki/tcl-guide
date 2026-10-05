@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 
 import { createPlace, updatePlace, type PlaceInput } from "../actions";
 import type { Category, Place } from "../../types";
+import { PlaceLocationPicker } from "./place-location-picker";
 
 type FormValues = {
   nameMy: string;
@@ -80,8 +81,8 @@ export function AdminPlaceForm({
       phone: toOptional(values.phone),
       hoursText: toOptional(values.hoursText),
       priceRange: toOptional(values.priceRange),
-      latitude: values.latitude ? Number(values.latitude) : undefined,
-      longitude: values.longitude ? Number(values.longitude) : undefined,
+      latitude: values.latitude ? Number(values.latitude) : place ? null : undefined,
+      longitude: values.longitude ? Number(values.longitude) : place ? null : undefined,
       isActive: values.isActive,
     };
 
@@ -150,21 +151,33 @@ export function AdminPlaceForm({
             ["phone", "Phone"],
             ["hoursText", "Hours"],
             ["priceRange", "Price range"],
-            ["latitude", "Latitude"],
-            ["longitude", "Longitude"],
           ] as const
         ).map(([key, label]) => (
           <div key={key} className="grid gap-1">
             <Label htmlFor={key}>{label}</Label>
             <Input
               id={key}
-              type={key === "latitude" || key === "longitude" ? "number" : "text"}
-              step={key === "latitude" || key === "longitude" ? "any" : undefined}
               value={values[key]}
               onChange={(event) => setValue(key, event.target.value)}
             />
           </div>
         ))}
+      </div>
+      <div className="grid gap-2">
+        <div>
+          <p className="text-sm font-medium">Location</p>
+          <p className="text-xs text-muted-foreground">
+            Tap the map or drag the marker to set the Place location.
+          </p>
+        </div>
+        <PlaceLocationPicker
+          latitude={values.latitude ? Number(values.latitude) : undefined}
+          longitude={values.longitude ? Number(values.longitude) : undefined}
+          onChange={(latitude, longitude) => {
+            setValue("latitude", latitude?.toFixed(6) ?? "");
+            setValue("longitude", longitude?.toFixed(6) ?? "");
+          }}
+        />
       </div>
       <label className="flex items-center gap-2 text-xs">
         <input

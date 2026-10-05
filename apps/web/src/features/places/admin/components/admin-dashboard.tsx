@@ -1,8 +1,10 @@
 import Link from "next/link";
+import { Suspense } from "react";
 import type { Route } from "next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 import { getAdminPlaceSummary } from "../../queries";
+import { AdminPlacesMapSection, AdminPlacesMapSkeleton } from "./admin-places-map-section";
 
 export async function AdminDashboard() {
   const summary = await getAdminPlaceSummary();
@@ -38,6 +40,9 @@ export async function AdminDashboard() {
           }
         />
       </section>
+      <Suspense fallback={<AdminPlacesMapSkeleton />}>
+        <AdminPlacesMapSection />
+      </Suspense>
       <section className="flex flex-wrap items-center gap-x-4 gap-y-2 border-t pt-5 text-sm">
         <Link
           href={"/dashboard/places" as Route}

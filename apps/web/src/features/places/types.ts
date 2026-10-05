@@ -22,8 +22,8 @@ export type PlaceMutation = {
   phone?: string;
   hoursText?: string;
   priceRange?: string;
-  latitude?: number;
-  longitude?: number;
+  latitude?: number | null;
+  longitude?: number | null;
   photos?: string[];
   isActive?: boolean;
 };

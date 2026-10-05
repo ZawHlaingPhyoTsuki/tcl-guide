@@ -1,6 +1,7 @@
 import type { Place } from "../types";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { PlaceLocationMap } from "./place-location-map";
 
 function DetailRow({ label, value }: { label: string; value?: string | null }) {
   if (!value) return null;
@@ -35,6 +36,11 @@ export function PlaceDetail({ place }: { place: Place }) {
           ) : null}
         </dl>
       </CardContent>
+      {place.latitude !== null && place.longitude !== null ? (
+        <CardContent className="border-t">
+          <PlaceLocationMap place={place} />
+        </CardContent>
+      ) : null}
     </Card>
   );
 }

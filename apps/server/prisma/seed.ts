@@ -35,6 +35,8 @@ type SeedPlace = {
   phone?: string;
   hoursText?: string;
   priceRange?: string;
+  latitude?: number;
+  longitude?: number;
 };
 
 const places: SeedPlace[] = [
@@ -46,6 +48,8 @@ const places: SeedPlace[] = [
     area: "Night Market",
     hoursText: "Evenings",
     priceRange: "$",
+    latitude: 20.4482,
+    longitude: 99.8831,
   },
   {
     nameMy: "ရှမ်းခေါက်ဆွဲဆိုင်",
@@ -55,6 +59,8 @@ const places: SeedPlace[] = [
     area: "San Sai",
     hoursText: "7:00 - 20:00",
     priceRange: "$",
+    latitude: 20.4448,
+    longitude: 99.8796,
   },
   {
     nameMy: "နယ်စပ်ဂိတ် ကော်ဖီဆိုင်",
@@ -63,6 +69,8 @@ const places: SeedPlace[] = [
     area: "Border Gate",
     hoursText: "8:00 - 21:00",
     priceRange: "$$",
+    latitude: 20.4459,
+    longitude: 99.8862,
   },
   {
     nameMy: "တာလုတ်ဈေး မုန့်ဆိုင်",
@@ -71,6 +79,8 @@ const places: SeedPlace[] = [
     area: "Taloke Market",
     hoursText: "6:30 - 18:00",
     priceRange: "$",
+    latitude: 20.4504,
+    longitude: 99.8787,
   },
   {
     nameMy: "မဲခေါင် မြစ်ကမ်း စားသောက်ဆိုင်",
@@ -79,6 +89,8 @@ const places: SeedPlace[] = [
     area: "Riverside",
     hoursText: "10:00 - 22:00",
     priceRange: "$$",
+    latitude: 20.4417,
+    longitude: 99.8759,
   },
   {
     nameMy: "ဆန်ဆိုင်း လက်ဖက်ရည်ဆိုင်",
@@ -88,6 +100,8 @@ const places: SeedPlace[] = [
     area: "San Sai",
     hoursText: "6:00 - 18:00",
     priceRange: "$",
+    latitude: 20.4436,
+    longitude: 99.8814,
   },
   {
     nameMy: "ဟိုတယ် စားသောက်ဆိုင်",
@@ -96,6 +110,8 @@ const places: SeedPlace[] = [
     area: "Town Center",
     hoursText: "6:30 - 22:00",
     priceRange: "$$$",
+    latitude: 20.4472,
+    longitude: 99.8848,
   },
   {
     nameMy: "ည ဘား",
@@ -104,6 +120,8 @@ const places: SeedPlace[] = [
     area: "Town Center",
     hoursText: "18:00 - 23:00",
     priceRange: "$$",
+    latitude: 20.4491,
+    longitude: 99.8875,
   },
   {
     nameMy: "ဒေသထွက် ပစ္စည်းဆိုင်",
@@ -112,6 +130,8 @@ const places: SeedPlace[] = [
     area: "Taloke Market",
     hoursText: "8:00 - 19:00",
     priceRange: "$",
+    latitude: 20.4512,
+    longitude: 99.8819,
   },
   {
     nameMy: "ခေါက်ဆွဲကြော် ဆိုင်",
@@ -120,6 +140,8 @@ const places: SeedPlace[] = [
     area: "Night Market",
     hoursText: "Evenings",
     priceRange: "$",
+    latitude: 20.4465,
+    longitude: 99.8891,
   },
 ];
 
@@ -149,6 +171,12 @@ async function main() {
       where: { nameMy: data.nameMy, categoryId },
     });
     if (existing) {
+      if (existing.latitude === null || existing.longitude === null) {
+        await db.place.update({
+          where: { id: existing.id },
+          data: { latitude: data.latitude, longitude: data.longitude },
+        });
+      }
       skipped += 1;
       continue;
     }

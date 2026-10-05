@@ -2,6 +2,10 @@ import { Suspense } from "react";
 
 import { PlaceFilters, PlaceFiltersSkeleton } from "@/features/places/components/place-filters";
 import { PlaceList, PlaceListSkeleton } from "@/features/places/components/place-list";
+import {
+  PlacesMapSection,
+  PlacesMapSkeleton,
+} from "@/features/places/components/places-map-section";
 
 export default function Home({ searchParams }: PageProps<"/">) {
   return (
@@ -19,6 +23,9 @@ export default function Home({ searchParams }: PageProps<"/">) {
                 </Suspense>
                 <Suspense fallback={<PlaceListSkeleton />}>
                   <PlaceList category={category} area={area} />
+                </Suspense>
+                <Suspense fallback={<PlacesMapSkeleton />}>
+                  <PlacesMapSection category={category} area={area} />
                 </Suspense>
               </>
             );

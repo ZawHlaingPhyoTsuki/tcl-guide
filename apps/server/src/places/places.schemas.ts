@@ -17,8 +17,8 @@ const placeFields = {
   phone: z.string().optional(),
   hoursText: z.string().optional(),
   priceRange: z.string().optional(),
-  latitude: z.number().min(-90).max(90).optional(),
-  longitude: z.number().min(-180).max(180).optional(),
+  latitude: z.number().min(-90).max(90).nullable().optional(),
+  longitude: z.number().min(-180).max(180).nullable().optional(),
   photos: z.array(z.string().url()).optional(),
   isActive: z.boolean().optional(),
 };
