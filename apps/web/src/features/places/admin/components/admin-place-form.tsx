@@ -18,8 +18,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { X } from "lucide-react";
 
 import { createPlace, removeUpload, requestUpload, updatePlace } from "../actions";
-import { errorMessages, placeFormSchema, type PlaceFormValues, type PlaceInput } from "../schema";
-import type { Category, Place } from "../../types";
+import { errorMessages } from "@/lib/form";
+
+import { placeFormSchema, type PlaceFormValues, type PlaceInput } from "../schema";
+import type { Category } from "@/features/categories/types";
+import type { Place } from "../../types";
 import { PhotoPreviewDialog } from "./photo-preview-dialog";
 import { PlaceLocationPicker } from "./place-location-picker";
 

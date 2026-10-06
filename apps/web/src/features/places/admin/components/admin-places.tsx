@@ -29,13 +29,23 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty";
 import { Input } from "@/components/ui/input";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
 import { MapPinIcon, SearchIcon } from "lucide-react";
 
 import { deletePlace, updatePlace } from "../actions";
 import { AdminPlaceForm } from "./admin-place-form";
 import { PhotoPreviewDialog } from "./photo-preview-dialog";
-import type { Category, Place } from "../../types";
+import type { Category } from "@/features/categories/types";
+
+import type { Place } from "../../types";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 export function AdminPlaces({
   initialPlaces,
@@ -121,7 +131,7 @@ export function AdminPlaces({
           Add a place
         </Button>
       </div>
-      <Dialog
+      <Sheet
         open={isCreating || Boolean(editing)}
         onOpenChange={(open) => {
           if (!open) {
@@ -130,25 +140,31 @@ export function AdminPlaces({
           }
         }}
       >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{editing ? `Edit ${editing.nameMy}` : "Add a place"}</DialogTitle>
-            <DialogDescription>
+        <SheetContent side="right" className="sm:max-w-2xl">
+          <SheetHeader>
+            <SheetTitle>{editing ? `Edit ${editing.nameMy}` : "Add a place"}</SheetTitle>
+            <SheetDescription>
               Keep the public directory accurate with practical, verified details.
-            </DialogDescription>
-          </DialogHeader>
-          <AdminPlaceForm
-            key={editing?.id ?? "new"}
-            categories={categories}
-            place={editing}
-            onSaved={savedPlace}
-            onCancel={() => {
-              setEditing(null);
-              setIsCreating(false);
-            }}
-          />
-        </DialogContent>
-      </Dialog>
+            </SheetDescription>
+          </SheetHeader>
+          {/* <div className="min-h-0 flex-1 overflow-y-auto px-4 pb-6"> */}
+          <ScrollArea className="min-h-0 flex-1 px-4 pb-6">
+            <AdminPlaceForm
+              key={editing?.id ?? "new"}
+              categories={categories}
+              place={editing}
+              onSaved={savedPlace}
+              onCancel={() => {
+                setEditing(null);
+                setIsCreating(false);
+              }}
+            />
+            <ScrollBar />
+          </ScrollArea>
+
+          {/* </div> */}
+        </SheetContent>
+      </Sheet>
       <div className="grid gap-3 sm:grid-cols-[1fr_auto] sm:items-end">
         <div className="grid gap-1">
           <label htmlFor="place-search" className="text-sm font-medium">

@@ -1,5 +1,5 @@
 import { PlaceFilter } from "./place-filter";
-import { getCategories } from "../queries";
+import { getCategories } from "@/features/categories/queries";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export async function PlaceFilters({ category, area }: { category?: string; area?: string }) {

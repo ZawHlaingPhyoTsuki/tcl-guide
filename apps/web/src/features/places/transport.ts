@@ -1,56 +1,28 @@
 import "server-only";
 
-import { getRequestHeaders, serverUrl } from "@/lib/server-url";
+import { apiRequest } from "@/lib/api";
 
-import type { Category, Place, PlaceMutation, PlaceSummary, UploadTicket } from "./types";
-
-export class PlacesTransportError extends Error {
-  constructor(
-    message: string,
-    readonly status: number,
-  ) {
-    super(message);
-  }
-}
-
-async function request<T>(path: string, init?: RequestInit, authenticated = false): Promise<T> {
-  const response = await fetch(`${serverUrl()}${path}`, {
-    ...init,
-    cache: "no-store",
-    headers: authenticated ? await getRequestHeaders() : init?.headers,
-  });
-  if (!response.ok) {
-    throw new PlacesTransportError(
-      (await response.text()) || `Request failed with status ${response.status}`,
-      response.status,
-    );
-  }
-  return (await response.json()) as T;
-}
+import type { Place, PlaceMutation, PlaceSummary, UploadTicket } from "./types";
 
 export const placesTransport = {
-  getCategories() {
-    return request<Category[]>("/categories");
-  },
-
   getPlaces(query: string) {
-    return request<Place[]>(`/places${query}`);
+    return apiRequest<Place[]>(`/places${query}`);
   },
 
   getPlace(id: string) {
-    return request<Place>(`/places/${id}`);
+    return apiRequest<Place>(`/places/${id}`);
   },
 
   getAdminPlaces(query: string) {
-    return request<Place[]>(`/admin/places${query}`, undefined, true);
+    return apiRequest<Place[]>(`/admin/places${query}`, undefined, true);
   },
 
   getAdminSummary() {
-    return request<PlaceSummary>("/admin/places/summary", undefined, true);
+    return apiRequest<PlaceSummary>("/admin/places/summary", undefined, true);
   },
 
   createPlace(input: PlaceMutation) {
-    return request<Place>(
+    return apiRequest<Place>(
       "/admin/places",
       {
         method: "POST",
@@ -61,7 +33,7 @@ export const placesTransport = {
   },
 
   updatePlace(id: string, input: Partial<PlaceMutation>) {
-    return request<Place>(
+    return apiRequest<Place>(
       `/admin/places/${id}`,
       {
         method: "PATCH",
@@ -72,7 +44,7 @@ export const placesTransport = {
   },
 
   deletePlace(id: string) {
-    return request<{ deleted: true }>(
+    return apiRequest<{ deleted: true }>(
       `/admin/places/${id}`,
       {
         method: "DELETE",
@@ -82,7 +54,7 @@ export const placesTransport = {
   },
 
   createUpload(contentType: string) {
-    return request<UploadTicket>(
+    return apiRequest<UploadTicket>(
       "/admin/uploads",
       {
         method: "POST",
@@ -93,7 +65,7 @@ export const placesTransport = {
   },
 
   deleteUpload(url: string) {
-    return request<{ deleted: true }>(
+    return apiRequest<{ deleted: true }>(
       "/admin/uploads",
       {
         method: "DELETE",

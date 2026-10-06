@@ -1,4 +1,6 @@
-import { getAdminPlaces, getCategories } from "../../queries";
+import { getCategories } from "@/features/categories/queries";
+
+import { getAdminPlaces } from "../../queries";
 import { AdminPlaces, AdminPlacesSkeleton } from "./admin-places";
 
 export async function AdminPlacesSection() {

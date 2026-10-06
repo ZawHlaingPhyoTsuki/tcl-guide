@@ -1,9 +1,4 @@
-export type Category = {
-  id: string;
-  slug: string;
-  nameMy: string;
-  nameEn: string | null;
-};
+import type { Category } from "../categories/types";
 
 export type PlaceSummary = {
   allPlaces: number;

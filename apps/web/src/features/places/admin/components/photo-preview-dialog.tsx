@@ -36,7 +36,7 @@ export function PhotoPreviewDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent className="sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle className="sr-only">
             {placeName ? `Photos of ${placeName}` : "Photo preview"}

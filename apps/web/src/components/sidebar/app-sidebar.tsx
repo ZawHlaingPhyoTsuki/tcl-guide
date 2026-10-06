@@ -8,6 +8,7 @@ import {
   MapPinIcon,
   Search as IconSearch,
   Settings as IconSettings,
+  TagIcon,
 } from "lucide-react";
 
 import {
@@ -33,6 +34,7 @@ const data = {
   navMain: [
     { title: "Overview", url: "/dashboard", icon: <LayoutDashboardIcon /> },
     { title: "Places", url: "/dashboard/places", icon: <MapPinIcon /> },
+    { title: "Categories", url: "/dashboard/categories", icon: <TagIcon /> },
   ],
   navSecondary: [
     {

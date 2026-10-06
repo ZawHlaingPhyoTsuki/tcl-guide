@@ -2,12 +2,10 @@ import "server-only";
 
 import { notFound } from "next/navigation";
 
-import { PlacesTransportError, placesTransport } from "./transport";
-import type { Category, Place, PlaceSummary } from "./types";
+import { ApiTransportError } from "@/lib/api";
 
-export async function getCategories(): Promise<Category[]> {
-  return placesTransport.getCategories();
-}
+import { placesTransport } from "./transport";
+import type { Place, PlaceSummary } from "./types";
 
 export async function getPlaces(filters?: { category?: string; area?: string }): Promise<Place[]> {
   const params = new URLSearchParams();
@@ -21,7 +19,7 @@ export async function getPlace(id: string): Promise<Place> {
   try {
     return await placesTransport.getPlace(id);
   } catch (error) {
-    if (error instanceof PlacesTransportError && error.status === 404) {
+    if (error instanceof ApiTransportError && error.status === 404) {
       notFound();
     }
     throw error;
