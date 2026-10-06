@@ -1,3 +1,4 @@
 # probe
 
-- badly spaced
+-   badly    spaced
+	mixed indent
