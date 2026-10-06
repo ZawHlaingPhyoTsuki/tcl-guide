@@ -7,7 +7,7 @@ import { Search } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
 
-export function PlaceSearch({ autoFocus = false }: { autoFocus?: boolean }) {
+export function PlaceSearch() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -44,7 +44,6 @@ export function PlaceSearch({ autoFocus = false }: { autoFocus?: boolean }) {
       />
       <Input
         value={value}
-        autoFocus={autoFocus}
         onChange={(e) => setValue(e.target.value)}
         placeholder="Search name, category, area…"
         className="pl-9"

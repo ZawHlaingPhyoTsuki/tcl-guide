@@ -67,11 +67,11 @@ export function PlacesMap({
   const selected =
     selectedPlaceId != null ? (mappedPlaces.find((p) => p.id === selectedPlaceId) ?? null) : null;
 
-  const hasDraft = editable?.latitude !== undefined && editable?.longitude !== undefined;
-  const center: [number, number] =
-    hasDraft && editable?.longitude !== undefined && editable?.latitude !== undefined
-      ? [editable.longitude, editable.latitude]
-      : TACHILEIK;
+  const draft =
+    editable?.latitude !== undefined && editable?.longitude !== undefined
+      ? { latitude: editable.latitude, longitude: editable.longitude }
+      : null;
+  const center: [number, number] = draft ? [draft.longitude, draft.latitude] : TACHILEIK;
 
   // List/map sync: pan to selection. Runs on selection change only.
   useEffect(() => {
@@ -88,11 +88,25 @@ export function PlacesMap({
       ref={mapRef}
       className="absolute inset-0"
       center={center}
-      zoom={hasDraft ? 15 : 13}
+      zoom={draft ? 15 : 13}
       styles={{ light: "https://tiles.openfreemap.org/styles/bright" }}
     >
       <MapControls position="top-right" showLocate={false} />
-      {editable ? <MapClickHandler onPick={(lat, lng) => editable.onPick(lat, lng)} /> : null}
+      {editable ? (
+        <>
+          <MapClickHandler onPick={(lat, lng) => editable.onPick(lat, lng)} />
+          {draft ? (
+            <MapMarker
+              longitude={draft.longitude}
+              latitude={draft.latitude}
+              draggable
+              onDragEnd={({ lng, lat }) => editable.onPick(lat, lng)}
+            >
+              <MarkerContent />
+            </MapMarker>
+          ) : null}
+        </>
+      ) : null}
       {mappedPlaces.map((place) => (
         <PlaceMapMarker
           key={place.id}
@@ -104,16 +118,6 @@ export function PlacesMap({
         />
       ))}
       {selected ? <PlaceMapPopup place={selected} onClose={() => onSelect?.(null)} /> : null}
-      {editable && hasDraft ? (
-        <MapMarker
-          longitude={editable.longitude as number}
-          latitude={editable.latitude as number}
-          draggable
-          onDragEnd={({ lng, lat }) => editable.onPick(lat, lng)}
-        >
-          <MarkerContent />
-        </MapMarker>
-      ) : null}
     </Map>
   );
 }

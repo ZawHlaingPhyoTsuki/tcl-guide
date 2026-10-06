@@ -26,11 +26,15 @@ export function PlacesExplorer({
   const [sheetState, setSheetState] = useState<SheetState>("peek");
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
-  const visiblePlaces = useMemo(
-    () => places.filter((p) => p.isActive && p.latitude != null && p.longitude != null),
+  const selectableIds = useMemo(
+    () =>
+      new Set(
+        places
+          .filter((p) => p.isActive && p.latitude != null && p.longitude != null)
+          .map((p) => p.id),
+      ),
     [places],
   );
-  const selectableIds = useMemo(() => new Set(visiblePlaces.map((p) => p.id)), [visiblePlaces]);
   const effectiveSelected =
     selectedPlaceId != null && selectableIds.has(selectedPlaceId) ? selectedPlaceId : null;
 
@@ -57,13 +61,13 @@ export function PlacesExplorer({
         )}
         aria-hidden={sidebarCollapsed}
       >
-        <div className="sticky top-0 z-10 grid w-92 gap-2 border-b bg-background p-4">
+        <div className="sticky top-0 z-10 grid gap-2 border-b bg-background p-4">
           <Suspense>
             <PlaceSearch />
             <PlaceFilterChips categories={categories} />
           </Suspense>
         </div>
-        <div className="min-h-0 w-92 flex-1 overflow-y-auto p-4">
+        <div className="min-h-0 flex-1 overflow-y-auto p-4">
           <PlaceList
             places={places}
             selectedPlaceId={effectiveSelected}
@@ -94,13 +98,11 @@ export function PlacesExplorer({
             <PanelLeftClose className="size-4" aria-hidden />
           )}
         </Button>
-        <div className="absolute top-2 right-16 left-2 md:hidden">
-          <Suspense>
-            <PlaceSearch />
-          </Suspense>
-        </div>
         <div className="md:hidden">
           <Suspense>
+            <div className="absolute top-2 right-16 left-2">
+              <PlaceSearch />
+            </div>
             <PlacesBottomSheet
               places={places}
               categories={categories}
