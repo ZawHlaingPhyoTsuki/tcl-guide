@@ -147,7 +147,6 @@ export function AdminPlaces({
               Keep the public directory accurate with practical, verified details.
             </SheetDescription>
           </SheetHeader>
-          {/* <div className="min-h-0 flex-1 overflow-y-auto px-4 pb-6"> */}
           <ScrollArea className="min-h-0 flex-1 px-4 pb-6">
             <AdminPlaceForm
               key={editing?.id ?? "new"}
@@ -161,8 +160,6 @@ export function AdminPlaces({
             />
             <ScrollBar />
           </ScrollArea>
-
-          {/* </div> */}
         </SheetContent>
       </Sheet>
       <div className="grid gap-3 sm:grid-cols-[1fr_auto] sm:items-end">
