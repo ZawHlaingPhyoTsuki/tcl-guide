@@ -67,6 +67,9 @@ jobs:
       - run: cp apps/web/.env.example apps/web/.env && cp apps/server/.env.example apps/server/.env
       - run: pnpm install --frozen-lockfile
       - run: pnpm db:generate
+      # PageProps and other route types are generated into .next (gitignored),
+      # so a fresh checkout needs typegen before tsc can see them.
+      - run: pnpm --filter=web exec next typegen
       - run: pnpm check-types
 
   test:
