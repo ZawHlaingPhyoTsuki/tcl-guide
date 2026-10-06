@@ -14,6 +14,14 @@ concurrency:
   group: ci-${{ github.head_ref }}
   cancel-in-progress: true
 
+# Stubs for required env vars that .env.example ships empty (never connected:
+# tests are mocked, generate/build touch no network). Obvious dummies, not secrets.
+env:
+  AWS_ENDPOINT_URL_S3: https://storage.ci.invalid
+  AWS_REGION: ap-southeast-1
+  AWS_ACCESS_KEY_ID: ci-stub
+  AWS_SECRET_ACCESS_KEY: ci-stub
+
 jobs:
   lint:
     name: lint
