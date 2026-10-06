@@ -52,8 +52,11 @@
     "varlock": "catalog:"
   },
   "lint-staged": {
-    "*.{ts,tsx,js,jsx,json,md}": [
-      "oxlint",
+    "*.{ts,tsx,js,jsx}": [
+      "oxlint --fix",
+      "oxfmt --write"
+    ],
+    "*.{json,md}": [
       "oxfmt --write"
     ]
   },
