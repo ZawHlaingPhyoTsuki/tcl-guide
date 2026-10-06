@@ -1,4 +1,4 @@
-import { getAdminPlaces } from "../../queries";
+import { getAdminPlaces } from "../../places-queries";
 import { PlacesMap, PlacesMapSkeleton } from "../../components/places-map";
 
 export async function AdminPlacesMapSection() {

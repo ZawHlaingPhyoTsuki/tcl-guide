@@ -39,12 +39,12 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { MapPinIcon, SearchIcon } from "lucide-react";
 
-import { deletePlace, updatePlace } from "../actions";
+import { deletePlace, updatePlace } from "../../places-actions";
 import { AdminPlaceForm } from "./admin-place-form";
 import { PhotoPreviewDialog } from "./photo-preview-dialog";
-import type { Category } from "@/features/categories/types";
+import type { Category } from "@/features/categories/types/category";
 
-import type { Place } from "../../types";
+import type { Place } from "../../types/place";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 export function AdminPlaces({

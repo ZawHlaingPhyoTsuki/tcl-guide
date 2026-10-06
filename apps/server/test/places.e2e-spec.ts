@@ -6,6 +6,7 @@ import { App } from "supertest/types.js";
 import { AppModule } from "./../src/app.module.js";
 import { setupApp } from "./../src/app.setup.js";
 import { PrismaService } from "./../src/prisma/prisma.service.js";
+import { authed, signIn, signUp } from "./helpers.js";
 
 describe("Places (e2e)", () => {
   let app: INestApplication<App>;
@@ -22,40 +23,6 @@ describe("Places (e2e)", () => {
   const createdPlaceIds: string[] = [];
   const createdUserIds: string[] = [];
 
-  function authed(cookie: string) {
-    // The session cookie is Secure, which supertest agents withhold over
-    // plain HTTP. Attaching it as an explicit header exercises the same
-    // real session lookup without weakening cookie attributes.
-    const r = request(app.getHttpServer());
-    return {
-      get: (url: string) => r.get(url).set("Cookie", cookie),
-      post: (url: string) => r.post(url).set("Cookie", cookie),
-      patch: (url: string) => r.patch(url).set("Cookie", cookie),
-      delete: (url: string) => r.delete(url).set("Cookie", cookie),
-    };
-  }
-
-  function sessionCookie(res: Response) {
-    const setCookie = res.headers["set-cookie"] as unknown as string[];
-    return setCookie.map((c) => c.split(";")[0]).join("; ");
-  }
-
-  async function signUp(name: string, email: string) {
-    const res = await request(app.getHttpServer())
-      .post("/api/auth/sign-up/email")
-      .send({ name, email, password: "TestPassword123!" })
-      .expect(200);
-    createdUserIds.push((res.body as { user: { id: string } }).user.id);
-  }
-
-  async function signIn(email: string) {
-    const res = await request(app.getHttpServer())
-      .post("/api/auth/sign-in/email")
-      .send({ email, password: "TestPassword123!" })
-      .expect(200);
-    return sessionCookie(res);
-  }
-
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
@@ -66,12 +33,13 @@ describe("Places (e2e)", () => {
     await app.init();
     db = moduleFixture.get(PrismaService);
 
-    await signUp("Places Admin", adminEmail);
+    const server = app.getHttpServer();
+    createdUserIds.push(await signUp(server, "Places Admin", adminEmail));
     await db.user.update({ where: { email: adminEmail }, data: { role: "admin" } });
-    admin = authed(await signIn(adminEmail));
+    admin = authed(server, await signIn(server, adminEmail));
 
-    await signUp("Places User", userEmail);
-    user = authed(await signIn(userEmail));
+    createdUserIds.push(await signUp(server, "Places User", userEmail));
+    user = authed(server, await signIn(server, userEmail));
 
     const category = await db.category.create({
       data: { slug: categorySlug, nameMy: `ကော်ဖီဆိုင် ${tag}`, nameEn: `Cafes ${tag}` },

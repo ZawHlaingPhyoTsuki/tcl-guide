@@ -4,18 +4,13 @@ import { useForm } from "@tanstack/react-form";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
-import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
-import { errorMessages } from "@/lib/form";
+import { FieldGroup } from "@/components/ui/field";
+import { FormTextField } from "@/components/ui/form-text-field";
+import { toOptional } from "@/lib/form";
 
-import { createCategory, updateCategory } from "../actions";
-import { categoryFormSchema, type CategoryFormValues } from "../schema";
-import type { AdminCategory } from "../../types";
-
-function toOptional(value: string) {
-  const trimmed = value.trim();
-  return trimmed || undefined;
-}
+import { createCategory, updateCategory } from "../../categories-actions";
+import { categoryFormSchema, type CategoryFormValues } from "../../categories-schema";
+import type { AdminCategory } from "../../types/category";
 
 export function AdminCategoryForm({
   category,
@@ -71,66 +66,26 @@ export function AdminCategoryForm({
           </div>
         ) : (
           <form.Field name="slug">
-            {(field) => {
-              const messages = errorMessages(field.state.meta.errors);
-              return (
-                <Field data-invalid={messages.length > 0}>
-                  <FieldLabel htmlFor="slug">Slug *</FieldLabel>
-                  <Input
-                    id="slug"
-                    name={field.name}
-                    value={field.state.value}
-                    onBlur={field.handleBlur}
-                    onChange={(event) => field.handleChange(event.target.value)}
-                    placeholder="e.g. street_food"
-                    aria-invalid={messages.length > 0}
-                  />
+            {(field) => (
+              <FormTextField
+                id="slug"
+                label="Slug *"
+                placeholder="e.g. street_food"
+                field={field}
+                hint={
                   <p className="text-xs text-muted-foreground">
                     Used in public filter URLs, e.g. ?category=street_food. Cannot be changed later.
                   </p>
-                  <FieldError errors={messages.map((message) => ({ message }))} />
-                </Field>
-              );
-            }}
+                }
+              />
+            )}
           </form.Field>
         )}
         <form.Field name="nameMy">
-          {(field) => {
-            const messages = errorMessages(field.state.meta.errors);
-            return (
-              <Field data-invalid={messages.length > 0}>
-                <FieldLabel htmlFor="nameMy">Name in Myanmar *</FieldLabel>
-                <Input
-                  id="nameMy"
-                  name={field.name}
-                  value={field.state.value}
-                  onBlur={field.handleBlur}
-                  onChange={(event) => field.handleChange(event.target.value)}
-                  aria-invalid={messages.length > 0}
-                />
-                <FieldError errors={messages.map((message) => ({ message }))} />
-              </Field>
-            );
-          }}
+          {(field) => <FormTextField id="nameMy" label="Name in Myanmar *" field={field} />}
         </form.Field>
         <form.Field name="nameEn">
-          {(field) => {
-            const messages = errorMessages(field.state.meta.errors);
-            return (
-              <Field data-invalid={messages.length > 0}>
-                <FieldLabel htmlFor="nameEn">English name</FieldLabel>
-                <Input
-                  id="nameEn"
-                  name={field.name}
-                  value={field.state.value}
-                  onBlur={field.handleBlur}
-                  onChange={(event) => field.handleChange(event.target.value)}
-                  aria-invalid={messages.length > 0}
-                />
-                <FieldError errors={messages.map((message) => ({ message }))} />
-              </Field>
-            );
-          }}
+          {(field) => <FormTextField id="nameEn" label="English name" field={field} />}
         </form.Field>
         {error ? (
           <p role="alert" className="text-destructive text-xs">

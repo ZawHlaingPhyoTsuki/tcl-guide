@@ -12,17 +12,18 @@ import {
 } from "@/components/ui/attachment";
 import { Button } from "@/components/ui/button";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
+import { FormTextField } from "@/components/ui/form-text-field";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { X } from "lucide-react";
 
-import { createPlace, removeUpload, requestUpload, updatePlace } from "../actions";
-import { errorMessages } from "@/lib/form";
+import { createPlace, removeUpload, requestUpload, updatePlace } from "../../places-actions";
+import { errorMessages, toOptional } from "@/lib/form";
 
-import { placeFormSchema, type PlaceFormValues, type PlaceInput } from "../schema";
-import type { Category } from "@/features/categories/types";
-import type { Place } from "../../types";
+import { placeFormSchema, type PlaceFormValues, type PlaceInput } from "../../places-schema";
+import type { Category } from "@/features/categories/types/category";
+import type { Place } from "../../types/place";
 import { PhotoPreviewDialog } from "./photo-preview-dialog";
 import { PlaceLocationPicker } from "./place-location-picker";
 
@@ -35,11 +36,6 @@ const ACCEPTED_IMAGE_TYPES = [
 ] as const;
 
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024; // 5 MB
-
-function toOptional(value: string) {
-  const trimmed = value.trim();
-  return trimmed || undefined;
-}
 
 export function AdminPlaceForm({
   categories,
@@ -170,42 +166,10 @@ export function AdminPlaceForm({
       <FieldGroup className="gap-4 border-t pt-4">
         <p className="text-sm font-medium">Details</p>
         <form.Field name="nameMy">
-          {(field) => {
-            const messages = errorMessages(field.state.meta.errors);
-            return (
-              <Field data-invalid={messages.length > 0}>
-                <FieldLabel htmlFor="nameMy">Name in Myanmar *</FieldLabel>
-                <Input
-                  id="nameMy"
-                  name={field.name}
-                  value={field.state.value}
-                  onBlur={field.handleBlur}
-                  onChange={(event) => field.handleChange(event.target.value)}
-                  aria-invalid={messages.length > 0}
-                />
-                <FieldError errors={messages.map((message) => ({ message }))} />
-              </Field>
-            );
-          }}
+          {(field) => <FormTextField id="nameMy" label="Name in Myanmar *" field={field} />}
         </form.Field>
         <form.Field name="nameEn">
-          {(field) => {
-            const messages = errorMessages(field.state.meta.errors);
-            return (
-              <Field data-invalid={messages.length > 0}>
-                <FieldLabel htmlFor="nameEn">English name</FieldLabel>
-                <Input
-                  id="nameEn"
-                  name={field.name}
-                  value={field.state.value}
-                  onBlur={field.handleBlur}
-                  onChange={(event) => field.handleChange(event.target.value)}
-                  aria-invalid={messages.length > 0}
-                />
-                <FieldError errors={messages.map((message) => ({ message }))} />
-              </Field>
-            );
-          }}
+          {(field) => <FormTextField id="nameEn" label="English name" field={field} />}
         </form.Field>
         <form.Field name="categoryId">
           {(field) => {
@@ -313,23 +277,7 @@ export function AdminPlaceForm({
             ] as const
           ).map(([key, label]) => (
             <form.Field key={key} name={key}>
-              {(field) => {
-                const messages = errorMessages(field.state.meta.errors);
-                return (
-                  <Field data-invalid={messages.length > 0}>
-                    <FieldLabel htmlFor={key}>{label}</FieldLabel>
-                    <Input
-                      id={key}
-                      name={field.name}
-                      value={field.state.value}
-                      onBlur={field.handleBlur}
-                      onChange={(event) => field.handleChange(event.target.value)}
-                      aria-invalid={messages.length > 0}
-                    />
-                    <FieldError errors={messages.map((message) => ({ message }))} />
-                  </Field>
-                );
-              }}
+              {(field) => <FormTextField id={key} label={label} field={field} />}
             </form.Field>
           ))}
         </div>

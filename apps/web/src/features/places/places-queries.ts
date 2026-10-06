@@ -4,8 +4,8 @@ import { notFound } from "next/navigation";
 
 import { ApiTransportError } from "@/lib/api";
 
-import { placesTransport } from "./transport";
-import type { Place, PlaceSummary } from "./types";
+import { placesTransport } from "./places-transport";
+import type { Place, PlaceSummary } from "./types/place";
 
 export async function getPlaces(filters?: { category?: string; area?: string }): Promise<Place[]> {
   const params = new URLSearchParams();

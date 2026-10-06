@@ -2,7 +2,7 @@ import "server-only";
 
 import { apiRequest } from "@/lib/api";
 
-import type { Place, PlaceMutation, PlaceSummary, UploadTicket } from "./types";
+import type { Place, PlaceMutation, PlaceSummary, UploadTicket } from "./types/place";
 
 export const placesTransport = {
   getPlaces(query: string) {

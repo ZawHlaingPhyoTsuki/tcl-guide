@@ -1,11 +1,10 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { INestApplication } from "@nestjs/common";
-import request from "supertest";
-import type { Response } from "supertest";
 import { App } from "supertest/types.js";
 import { AppModule } from "./../src/app.module.js";
 import { setupApp } from "./../src/app.setup.js";
 import { PrismaService } from "./../src/prisma/prisma.service.js";
+import { authed, signIn, signUp } from "./helpers.js";
 
 describe("Categories (e2e)", () => {
   let app: INestApplication<App>;
@@ -18,21 +17,6 @@ describe("Categories (e2e)", () => {
   let categoryId: string;
   const createdPlaceIds: string[] = [];
 
-  function authed(cookie: string) {
-    const r = request(app.getHttpServer());
-    return {
-      get: (url: string) => r.get(url).set("Cookie", cookie),
-      post: (url: string) => r.post(url).set("Cookie", cookie),
-      patch: (url: string) => r.patch(url).set("Cookie", cookie),
-      delete: (url: string) => r.delete(url).set("Cookie", cookie),
-    };
-  }
-
-  function sessionCookie(res: Response) {
-    const setCookie = res.headers["set-cookie"] as unknown as string[];
-    return setCookie.map((c) => c.split(";")[0]).join("; ");
-  }
-
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
@@ -43,18 +27,10 @@ describe("Categories (e2e)", () => {
     await app.init();
     db = moduleFixture.get(PrismaService);
 
-    const signUp = await request(app.getHttpServer())
-      .post("/api/auth/sign-up/email")
-      .send({ name: "Categories Admin", email: adminEmail, password: "TestPassword123!" })
-      .expect(200);
-    const userId = (signUp.body as { user: { id: string } }).user.id;
+    const server = app.getHttpServer();
+    const userId = await signUp(server, "Categories Admin", adminEmail);
     await db.user.update({ where: { id: userId }, data: { role: "admin" } });
-
-    const signIn = await request(app.getHttpServer())
-      .post("/api/auth/sign-in/email")
-      .send({ email: adminEmail, password: "TestPassword123!" })
-      .expect(200);
-    admin = authed(sessionCookie(signIn));
+    admin = authed(server, await signIn(server, adminEmail));
   }, 60000);
 
   afterAll(async () => {

@@ -1,4 +1,4 @@
-import { getPlaces } from "../queries";
+import { getPlaces } from "../places-queries";
 import { PlacesMap, PlacesMapSkeleton } from "./places-map";
 
 export async function PlacesMapSection({ category, area }: { category?: string; area?: string }) {

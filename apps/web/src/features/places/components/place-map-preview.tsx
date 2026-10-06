@@ -5,7 +5,7 @@ import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
-import type { Place } from "../types";
+import type { Place } from "../types/place";
 
 export function PlaceMapPreview({ place }: { place: Place }) {
   return (

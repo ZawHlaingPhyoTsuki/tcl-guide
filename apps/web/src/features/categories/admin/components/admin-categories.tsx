@@ -30,9 +30,9 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { TagIcon } from "lucide-react";
 
-import { deleteCategory } from "../actions";
+import { deleteCategory } from "../../categories-actions";
 import { AdminCategoryForm } from "./admin-category-form";
-import type { AdminCategory } from "../../types";
+import type { AdminCategory } from "../../types/category";
 
 export function AdminCategories({ initialCategories }: { initialCategories: AdminCategory[] }) {
   const [categories, setCategories] = useState(initialCategories);

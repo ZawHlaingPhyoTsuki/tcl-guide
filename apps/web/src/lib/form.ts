@@ -7,3 +7,8 @@ export function errorMessages(errors: unknown): string[] {
     (message): message is string => typeof message === "string" && message.length > 0,
   );
 }
+
+export function toOptional(value: string) {
+  const trimmed = value.trim();
+  return trimmed || undefined;
+}

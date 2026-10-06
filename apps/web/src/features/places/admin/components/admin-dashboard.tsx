@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import type { Route } from "next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-import { getAdminPlaceSummary } from "../../queries";
+import { getAdminPlaceSummary } from "../../places-queries";
 import { AdminPlacesMapSection, AdminPlacesMapSkeleton } from "./admin-places-map-section";
 
 export async function AdminDashboard() {

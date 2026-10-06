@@ -1,5 +1,5 @@
 import { PlaceCard } from "./place-card";
-import { getPlaces } from "../queries";
+import { getPlaces } from "../places-queries";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export async function PlaceList({ category, area }: { category?: string; area?: string }) {

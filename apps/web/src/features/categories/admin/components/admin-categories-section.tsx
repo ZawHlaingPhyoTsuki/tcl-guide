@@ -1,4 +1,4 @@
-import { getAdminCategories } from "../../queries";
+import { getAdminCategories } from "../../categories-queries";
 import { AdminCategories, AdminCategoriesSkeleton } from "./admin-categories";
 
 export async function AdminCategoriesSection() {

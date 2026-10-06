@@ -5,8 +5,8 @@ import {
   categoryUpdateSchema,
   type CategoryInput,
   type CategoryUpdate,
-} from "./schema";
-import { categoriesTransport } from "../transport";
+} from "./categories-schema";
+import { categoriesTransport } from "./categories-transport";
 
 export async function createCategory(input: CategoryInput) {
   return categoriesTransport.createCategory(categoryInputSchema.parse(input));

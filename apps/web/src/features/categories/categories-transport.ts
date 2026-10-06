@@ -2,7 +2,7 @@ import "server-only";
 
 import { apiRequest } from "@/lib/api";
 
-import type { AdminCategory, Category } from "./types";
+import type { AdminCategory, Category } from "./types/category";
 
 export const categoriesTransport = {
   getCategories() {

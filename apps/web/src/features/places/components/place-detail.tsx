@@ -1,4 +1,4 @@
-import type { Place } from "../types";
+import type { Place } from "../types/place";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { PlaceLocationMap } from "./place-location-map";

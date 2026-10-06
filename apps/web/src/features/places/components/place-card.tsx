@@ -3,7 +3,7 @@ import Link from "next/link";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
-import type { Place } from "../types";
+import type { Place } from "../types/place";
 
 export function PlaceCard({ place }: { place: Place }) {
   return (

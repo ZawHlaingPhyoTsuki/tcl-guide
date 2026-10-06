@@ -11,7 +11,7 @@ import {
   MarkerTooltip,
 } from "@/components/ui/map";
 
-import type { Place } from "../types";
+import type { Place } from "../types/place";
 
 const TACHILEIK: [number, number] = [99.882, 20.447];
 

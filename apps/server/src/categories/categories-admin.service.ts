@@ -10,7 +10,7 @@ import { CategoriesRepository } from "./categories.repository.js";
 
 type CategoryWithCount = Awaited<ReturnType<CategoriesRepository["list"]>>[number];
 
-export type AdminCategory = Omit<CategoryWithCount, "_count"> & { placeCount: number };
+type AdminCategory = Omit<CategoryWithCount, "_count"> & { placeCount: number };
 
 function toAdminCategory(category: CategoryWithCount): AdminCategory {
   const { _count, ...rest } = category;
@@ -19,23 +19,23 @@ function toAdminCategory(category: CategoryWithCount): AdminCategory {
 
 @Injectable()
 export class CategoriesAdminService {
-  constructor(private readonly categories: CategoriesRepository) {}
+  constructor(private readonly categoriesRepository: CategoriesRepository) {}
 
   async list() {
-    const categories = await this.categories.list();
+    const categories = await this.categoriesRepository.list();
     return categories.map(toAdminCategory);
   }
 
   async create(dto: CreateCategoryDto) {
-    if (await this.categories.findBySlug(dto.slug)) {
+    if (await this.categoriesRepository.findBySlug(dto.slug)) {
       throw new ConflictException(`Category "${dto.slug}" already exists`);
     }
-    return toAdminCategory(await this.categories.create(dto));
+    return toAdminCategory(await this.categoriesRepository.create(dto));
   }
 
   async update(id: string, dto: UpdateCategoryDto) {
     await this.getCategory(id);
-    return toAdminCategory(await this.categories.update(id, dto));
+    return toAdminCategory(await this.categoriesRepository.update(id, dto));
   }
 
   async remove(id: string) {
@@ -46,11 +46,11 @@ export class CategoriesAdminService {
         `Category "${category.slug}" still has ${places} places; move them to another category first`,
       );
     }
-    await this.categories.delete(id);
+    await this.categoriesRepository.delete(id);
   }
 
   private async getCategory(id: string) {
-    const category = await this.categories.findById(id);
+    const category = await this.categoriesRepository.findById(id);
     if (!category) throw new NotFoundException(`Category ${id} not found`);
     return category;
   }

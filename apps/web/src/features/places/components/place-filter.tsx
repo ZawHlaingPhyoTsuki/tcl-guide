@@ -4,7 +4,7 @@ import type { Route } from "next";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 
-import type { Category } from "@/features/categories/types";
+import type { Category } from "@/features/categories/types/category";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 

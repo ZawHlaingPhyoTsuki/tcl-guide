@@ -1,7 +1,7 @@
 "use server";
 
-import { placeInputSchema, type PlaceInput } from "./schema";
-import { placesTransport } from "../transport";
+import { placeInputSchema, type PlaceInput } from "./places-schema";
+import { placesTransport } from "./places-transport";
 
 export async function createPlace(input: PlaceInput) {
   return placesTransport.createPlace(placeInputSchema.parse(input));

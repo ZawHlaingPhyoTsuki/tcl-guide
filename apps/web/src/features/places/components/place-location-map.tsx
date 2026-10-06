@@ -5,7 +5,7 @@ import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 import { Map, MapMarker, MarkerContent } from "@/components/ui/map";
 
-import type { Place } from "../types";
+import type { Place } from "../types/place";
 
 export function PlaceLocationMap({ place }: { place: Place }) {
   if (place.latitude === null || place.longitude === null) return null;

@@ -1,7 +1,7 @@
 import "server-only";
 
-import { categoriesTransport } from "./transport";
-import type { AdminCategory, Category } from "./types";
+import { categoriesTransport } from "./categories-transport";
+import type { AdminCategory, Category } from "./types/category";
 
 export async function getCategories(): Promise<Category[]> {
   return categoriesTransport.getCategories();
