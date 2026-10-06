@@ -3,6 +3,17 @@ import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service.js";
 import type { CreatePlaceDto, ListPlacesQuery, UpdatePlaceDto } from "./places.schemas.js";
 
+function searchConditions(search: string) {
+  return [
+    { nameMy: { contains: search, mode: "insensitive" as const } },
+    { nameEn: { contains: search, mode: "insensitive" as const } },
+    { area: { contains: search, mode: "insensitive" as const } },
+    { category: { nameMy: { contains: search, mode: "insensitive" as const } } },
+    { category: { nameEn: { contains: search, mode: "insensitive" as const } } },
+    { category: { slug: { contains: search, mode: "insensitive" as const } } },
+  ];
+}
+
 @Injectable()
 export class PlacesRepository {
   constructor(private readonly db: PrismaService) {}
@@ -20,6 +31,7 @@ export class PlacesRepository {
         isActive: true,
         category: query.category ? { slug: query.category } : undefined,
         area: query.area ? { contains: query.area, mode: "insensitive" } : undefined,
+        ...(query.search ? { OR: searchConditions(query.search) } : {}),
       },
       include: { category: true },
       orderBy: { updatedAt: "desc" },
@@ -38,6 +50,7 @@ export class PlacesRepository {
       where: {
         category: query.category ? { slug: query.category } : undefined,
         area: query.area ? { contains: query.area, mode: "insensitive" } : undefined,
+        ...(query.search ? { OR: searchConditions(query.search) } : {}),
       },
       include: { category: true },
       orderBy: { updatedAt: "desc" },

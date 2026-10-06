@@ -1,4 +1,5 @@
 import type { Place } from "../types/place";
+import Image from "next/image";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { PlaceLocationMap } from "./place-location-map";
@@ -20,6 +21,18 @@ export function PlaceDetail({ place }: { place: Place }) {
         <CardTitle className="text-xl">{place.nameMy}</CardTitle>
         {place.nameEn ? <CardDescription>{place.nameEn}</CardDescription> : null}
       </CardHeader>
+      {place.photos[0] ? (
+        <div className="relative aspect-video w-full overflow-hidden">
+          <Image
+            src={place.photos[0]}
+            alt={place.nameMy}
+            fill
+            className="object-cover"
+            priority
+            sizes="(max-width: 768px) 100vw, 768px"
+          />
+        </div>
+      ) : null}
       <CardContent>
         <dl className="grid gap-2">
           <DetailRow label="Category" value={place.category.nameMy} />
@@ -32,6 +45,21 @@ export function PlaceDetail({ place }: { place: Place }) {
             <div className="pt-2">
               <dt className="text-muted-foreground">About</dt>
               <dd className="mt-1">{place.descriptionMy}</dd>
+            </div>
+          ) : null}
+          {place.photos.length > 1 ? (
+            <div className="grid grid-cols-4 gap-2 pt-2">
+              {place.photos.slice(1).map((photo, index) => (
+                <div key={photo} className="relative aspect-square w-full overflow-hidden">
+                  <Image
+                    src={photo}
+                    alt={`${place.nameMy} photo ${index + 2}`}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 768px) 25vw, 180px"
+                  />
+                </div>
+              ))}
             </div>
           ) : null}
         </dl>

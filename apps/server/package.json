@@ -16,7 +16,7 @@
     "start:prod": "node dist/main",
     "check-types": "tsc --noEmit",
     "env:generate": "varlock codegen",
-    "auth:generate": "varlock run -- pnpm dlx auth@latest generate --config src/services.ts --output ./prisma/schema/auth.prisma --yes",
+    "auth:generate": "varlock run -- pnpm dlx auth@latest generate --config src/auth.ts --output ./prisma/schema/auth.prisma --yes",
     "db:push": "prisma db push",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",

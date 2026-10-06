@@ -3,6 +3,7 @@ import { z } from "zod";
 export const listPlacesSchema = z.object({
   category: z.string().min(1).optional(),
   area: z.string().min(1).optional(),
+  search: z.string().min(1).optional(),
 });
 
 export type ListPlacesQuery = z.infer<typeof listPlacesSchema>;

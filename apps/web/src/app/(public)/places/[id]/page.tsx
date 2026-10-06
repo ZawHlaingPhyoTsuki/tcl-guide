@@ -6,7 +6,10 @@ import { getPlace } from "@/features/places/places-queries";
 
 export async function generateMetadata({ params }: PageProps<"/places/[id]">): Promise<Metadata> {
   const place = await getPlace((await params).id);
-  return { title: place.nameEn ? `${place.nameMy} · ${place.nameEn}` : place.nameMy };
+  return {
+    title: place.nameEn ? `${place.nameMy} · ${place.nameEn}` : place.nameMy,
+    openGraph: place.photos[0] ? { images: [place.photos[0]] } : undefined,
+  };
 }
 
 // Deliberately async (not params.then + Suspense): the existence check must

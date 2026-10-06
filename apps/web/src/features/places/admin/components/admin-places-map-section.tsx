@@ -1,5 +1,6 @@
 import { getAdminPlaces } from "../../places-queries";
-import { PlacesMap, PlacesMapSkeleton } from "../../components/places-map";
+import { PlacesMapSkeleton } from "../../components/places-map/places-map";
+import { AdminPlacesMap } from "./admin-places-map";
 
 export async function AdminPlacesMapSection() {
   const places = await getAdminPlaces();
@@ -12,7 +13,7 @@ export async function AdminPlacesMapSection() {
           Review every saved Place location, including Places hidden from the public directory.
         </p>
       </div>
-      <PlacesMap places={places} includeInactive />
+      <AdminPlacesMap places={places} />
     </section>
   );
 }

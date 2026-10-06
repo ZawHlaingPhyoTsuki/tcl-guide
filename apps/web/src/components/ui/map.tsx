@@ -1044,6 +1044,7 @@ function MapPopup({
 
   const handleClose = () => {
     popup.remove();
+    onCloseRef.current?.();
   };
 
   return createPortal(
