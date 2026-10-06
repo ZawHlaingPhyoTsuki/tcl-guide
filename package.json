@@ -32,7 +32,7 @@
     "lint:fix": "oxlint --fix",
     "format": "oxfmt --check",
     "format:fix": "oxfmt --write",
-    "check": "oxlint && oxfmt --write",
+    "check": "pnpm lint:fix && pnpm format:fix && pnpm run check-types",
     "prepare": "husky"
   },
   "dependencies": {
@@ -51,7 +51,7 @@
     "varlock": "catalog:"
   },
   "lint-staged": {
-    "*": [
+    "*.{ts,tsx,js,jsx,json,md}": [
       "oxlint",
       "oxfmt --write"
     ]

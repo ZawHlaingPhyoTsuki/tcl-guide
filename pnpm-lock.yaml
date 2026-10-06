@@ -397,7 +397,7 @@ importers:
         specifier: ^0.0.1
         version: 0.0.1
       shadcn:
-        specifier: ^4.21.0
+        specifier: ^4.21.1
         version: 4.21.1(supports-color@7.2.0)(typescript@6.0.3)
       sonner:
         specifier: 'catalog:'

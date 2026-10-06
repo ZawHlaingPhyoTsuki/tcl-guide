@@ -1,7 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { BookOpenIcon, LayoutDashboardIcon, MapPinIcon } from "lucide-react";
+import {
+  BookOpenIcon,
+  House as IconHouse,
+  LayoutDashboardIcon,
+  MapPinIcon,
+  Search as IconSearch,
+  Settings as IconSettings,
+} from "lucide-react";
 
 import {
   Sidebar,
@@ -14,11 +21,37 @@ import {
 } from "@/components/ui/sidebar";
 
 import { NavMain } from "./nav-main";
+import { NavUser } from "./nav-user";
+import { NavSecondary } from "./nav-secondary";
 
-const navigation = [
-  { title: "Overview", url: "/dashboard", icon: <LayoutDashboardIcon /> },
-  { title: "Places", url: "/dashboard/places", icon: <MapPinIcon /> },
-];
+const data = {
+  user: {
+    name: "shadcn",
+    email: "m@example.com",
+    avatar: "/avatars/shadcn.jpg",
+  },
+  navMain: [
+    { title: "Overview", url: "/dashboard", icon: <LayoutDashboardIcon /> },
+    { title: "Places", url: "/dashboard/places", icon: <MapPinIcon /> },
+  ],
+  navSecondary: [
+    {
+      title: "Settings",
+      url: "#",
+      icon: IconSettings,
+    },
+    {
+      title: "Go to Website",
+      url: "/",
+      icon: IconHouse,
+    },
+    {
+      title: "Search",
+      url: "#",
+      icon: IconSearch,
+    },
+  ],
+};
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
@@ -37,16 +70,18 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={navigation} />
+        <NavMain items={data.navMain} />
+        <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
-        <SidebarMenu>
+        {/* <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton render={<Link href="/" />}>
               <span>View public directory</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
-        </SidebarMenu>
+        </SidebarMenu> */}
+        <NavUser user={data.user} />
       </SidebarFooter>
     </Sidebar>
   );

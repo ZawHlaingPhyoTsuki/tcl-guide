@@ -12,6 +12,10 @@ The project is also intended to be a serious backend-learning project,
 so backend architecture, API design, validation, authentication,
 database design, testing, and documentation are important.
 
+## WHAT NOT TO DO
+
+Don't run the server and the web build at the same time; run them separately, one at a time.
+
 ## Tech Stack
 
 ### Web
