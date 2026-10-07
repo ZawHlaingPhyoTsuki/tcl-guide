@@ -25,7 +25,7 @@ export function PlaceListItem({
     if (active) ref.current?.scrollIntoView({ block: "nearest", behavior: "smooth" });
   }, [active]);
 
-  const status = [place.hoursText, place.priceRange].filter(Boolean).join(" · ");
+  const status = [place.hoursText, place.priceNote].filter(Boolean).join(" · ");
 
   return (
     <div
@@ -64,7 +64,7 @@ export function PlaceListItem({
           ) : null}
           <span className="text-muted-foreground truncate text-xs">
             {place.category.nameMy}
-            {place.area ? ` · ${place.area}` : ""}
+            {place.area ? ` · ${place.area.nameMy}` : ""}
           </span>
           {status ? <span className="truncate text-xs">{status}</span> : null}
         </span>

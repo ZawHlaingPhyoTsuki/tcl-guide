@@ -1,4 +1,6 @@
 import type { Category } from "../../categories/types/category";
+import type { Area } from "../../areas/types/area";
+import type { PlaceTag, PriceLevel } from "../places-constants";
 
 export type PlaceSummary = {
   allPlaces: number;
@@ -8,15 +10,21 @@ export type PlaceSummary = {
 };
 
 export type PlaceMutation = {
+  slug?: string;
   nameMy: string;
   nameEn?: string;
   descriptionMy?: string;
   categoryId: string;
-  area?: string;
+  areaId?: string;
   addressText?: string;
   phone?: string;
+  phoneSecondary?: string;
+  facebookUrl?: string;
+  telegramHandle?: string;
   hoursText?: string;
-  priceRange?: string;
+  priceNote?: string;
+  priceLevel?: PriceLevel;
+  tags?: PlaceTag[];
   latitude?: number | null;
   longitude?: number | null;
   photos?: string[];
@@ -30,16 +38,23 @@ export type UploadTicket = {
 
 export type Place = {
   id: string;
+  slug: string;
   nameMy: string;
   nameEn: string | null;
   descriptionMy: string | null;
   categoryId: string;
   category: Category & { createdAt: string; updatedAt: string };
-  area: string | null;
+  areaId: string | null;
+  area: (Area & { createdAt: string; updatedAt: string }) | null;
   addressText: string | null;
   phone: string | null;
+  phoneSecondary: string | null;
+  facebookUrl: string | null;
+  telegramHandle: string | null;
   hoursText: string | null;
-  priceRange: string | null;
+  priceNote: string | null;
+  priceLevel: PriceLevel | null;
+  tags: PlaceTag[];
   latitude: number | null;
   longitude: number | null;
   photos: string[];

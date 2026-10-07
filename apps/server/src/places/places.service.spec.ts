@@ -41,13 +41,13 @@ describe("PlacesRepository", () => {
 
   it("lists admin places without the active filter", () => {
     const repository = new PlacesRepository(db as unknown as PrismaService);
-    repository.listAdmin({ category: "bakery", area: "San Sai" });
+    repository.listAdmin({ category: "bakery", area: "san-sai" });
 
     expect(db.place.findMany).toHaveBeenCalledWith(
       expect.objectContaining({
         where: expect.objectContaining({
           category: { slug: "bakery" },
-          area: { contains: "San Sai", mode: "insensitive" },
+          area: { slug: "san-sai" },
         }),
       }),
     );

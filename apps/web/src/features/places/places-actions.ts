@@ -1,6 +1,6 @@
 "use server";
 
-import { placeInputSchema, type PlaceInput } from "./places-schema";
+import { placeInputSchema, placeUpdateSchema, type PlaceInput } from "./places-schema";
 import { placesTransport } from "./places-transport";
 
 export async function createPlace(input: PlaceInput) {
@@ -8,7 +8,7 @@ export async function createPlace(input: PlaceInput) {
 }
 
 export async function updatePlace(id: string, input: Partial<PlaceInput>) {
-  return placesTransport.updatePlace(id, placeInputSchema.partial().parse(input));
+  return placesTransport.updatePlace(id, placeUpdateSchema.parse(input));
 }
 
 export async function deletePlace(id: string) {

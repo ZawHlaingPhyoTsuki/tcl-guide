@@ -19,6 +19,8 @@ describe("Places (e2e)", () => {
   let admin: ReturnType<typeof authed>;
   let user: ReturnType<typeof authed>;
   let categoryId: string;
+  let areaId: string;
+  const areaSlug = `san-sai-${tag}`;
   let activePlaceId: string;
   const createdPlaceIds: string[] = [];
   const createdUserIds: string[] = [];
@@ -46,9 +48,14 @@ describe("Places (e2e)", () => {
     });
     categoryId = category.id;
 
+    const area = await db.area.create({
+      data: { slug: areaSlug, nameMy: `ဆန်ဆိုင်း ${tag}` },
+    });
+    areaId = area.id;
+
     const active = await admin
       .post("/admin/places")
-      .send({ nameMy: `Active Place ${tag}`, categoryId, area: "San Sai" })
+      .send({ nameMy: `Active Place ${tag}`, categoryId, areaId })
       .expect(201);
     activePlaceId = (active.body as { id: string }).id;
     createdPlaceIds.push(activePlaceId);
@@ -63,6 +70,7 @@ describe("Places (e2e)", () => {
   afterAll(async () => {
     await db.place.deleteMany({ where: { id: { in: createdPlaceIds } } });
     await db.category.deleteMany({ where: { id: categoryId } });
+    await db.area.deleteMany({ where: { id: areaId } });
     await db.user.deleteMany({ where: { id: { in: createdUserIds } } });
     await app.close();
   });
@@ -91,7 +99,7 @@ describe("Places (e2e)", () => {
         .expect(200)
         .expect([]);
       await request(app.getHttpServer())
-        .get("/places?area=san sai")
+        .get(`/places?area=${areaSlug}`)
         .expect(200)
         .expect((res: Response) => {
           if (!(res.body as unknown[]).length) throw new Error("expected results");

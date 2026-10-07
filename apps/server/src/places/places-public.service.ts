@@ -11,6 +11,10 @@ export class PlacesPublicService {
     return this.placesRepository.listCategories();
   }
 
+  listAreas() {
+    return this.placesRepository.listAreas();
+  }
+
   listPlaces(query: ListPlacesQuery) {
     return this.placesRepository.listPublic(query);
   }

@@ -43,6 +43,7 @@ import { deletePlace, updatePlace } from "../../places-actions";
 import { AdminPlaceForm } from "./admin-place-form";
 import { PhotoPreviewDialog } from "./photo-preview-dialog";
 import type { Category } from "@/features/categories/types/category";
+import type { Area } from "@/features/areas/types/area";
 
 import type { Place } from "../../types/place";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
@@ -50,9 +51,11 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 export function AdminPlaces({
   initialPlaces,
   categories,
+  areas,
 }: {
   initialPlaces: Place[];
   categories: Category[];
+  areas: Area[];
 }) {
   const [places, setPlaces] = useState(initialPlaces);
   const [editing, setEditing] = useState<Place | null>(null);
@@ -71,7 +74,7 @@ export function AdminPlaces({
     const query = search.trim().toLocaleLowerCase();
     if (!query) return places;
     return places.filter((place) =>
-      [place.nameMy, place.nameEn, place.area, place.addressText].some((value) =>
+      [place.nameMy, place.nameEn, place.area?.nameMy, place.addressText].some((value) =>
         value?.toLocaleLowerCase().includes(query),
       ),
     );
@@ -151,6 +154,7 @@ export function AdminPlaces({
             <AdminPlaceForm
               key={editing?.id ?? "new"}
               categories={categories}
+              areas={areas}
               place={editing}
               onSaved={savedPlace}
               onCancel={() => {
@@ -238,7 +242,7 @@ export function AdminPlaces({
                 </ItemTitle>
                 <ItemDescription>
                   {place.category.nameMy}
-                  {place.area ? ` · ${place.area}` : ""}
+                  {place.area ? ` · ${place.area.nameMy}` : ""}
                 </ItemDescription>
               </ItemContent>
               <ItemActions>

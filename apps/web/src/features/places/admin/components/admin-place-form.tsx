@@ -1,7 +1,7 @@
 "use client";
 
-import { useForm } from "@tanstack/react-form";
-import { useEffect, useRef, useState } from "react";
+import { useForm, type AnyFieldApi } from "@tanstack/react-form";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 
 import {
   Attachment,
@@ -20,9 +20,11 @@ import { X } from "lucide-react";
 
 import { createPlace, removeUpload, requestUpload, updatePlace } from "../../places-actions";
 import { errorMessages, toOptional } from "@/lib/form";
+import { PRICE_LEVEL_LABELS } from "../../places-constants";
 
 import { placeFormSchema, type PlaceFormValues, type PlaceInput } from "../../places-schema";
 import type { Category } from "@/features/categories/types/category";
+import type { Area } from "@/features/areas/types/area";
 import type { Place } from "../../types/place";
 import { PhotoPreviewDialog } from "./photo-preview-dialog";
 import { PlaceLocationPicker } from "./place-location-picker";
@@ -37,13 +39,46 @@ const ACCEPTED_IMAGE_TYPES = [
 
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024; // 5 MB
 
+function FormSelect({
+  id,
+  label,
+  field,
+  children,
+}: {
+  id: string;
+  label: string;
+  field: AnyFieldApi;
+  children: ReactNode;
+}) {
+  const messages = errorMessages(field.state.meta.errors);
+  return (
+    <Field data-invalid={messages.length > 0}>
+      <FieldLabel htmlFor={id}>{label}</FieldLabel>
+      <select
+        id={id}
+        name={field.name}
+        value={field.state.value as string}
+        onBlur={field.handleBlur}
+        onChange={(event) => field.handleChange(event.target.value)}
+        aria-invalid={messages.length > 0}
+        className="h-8 border border-input bg-background px-2 text-xs outline-none focus-visible:border-ring focus-visible:ring-1 focus-visible:ring-ring/50"
+      >
+        {children}
+      </select>
+      <FieldError errors={messages.map((message) => ({ message }))} />
+    </Field>
+  );
+}
+
 export function AdminPlaceForm({
   categories,
+  areas,
   place,
   onSaved,
   onCancel,
 }: {
   categories: Category[];
+  areas: Area[];
   place: Place | null;
   onSaved: (place: Place) => void;
   onCancel: () => void;
@@ -78,11 +113,15 @@ export function AdminPlaceForm({
       nameEn: place?.nameEn ?? "",
       descriptionMy: place?.descriptionMy ?? "",
       categoryId: place?.categoryId ?? categories[0]?.id ?? "",
-      area: place?.area ?? "",
+      areaId: place?.areaId ?? "",
       addressText: place?.addressText ?? "",
       phone: place?.phone ?? "",
+      phoneSecondary: place?.phoneSecondary ?? "",
+      facebookUrl: place?.facebookUrl ?? "",
+      telegramHandle: place?.telegramHandle ?? "",
       hoursText: place?.hoursText ?? "",
-      priceRange: place?.priceRange ?? "",
+      priceLevel: place?.priceLevel ?? "",
+      priceNote: place?.priceNote ?? "",
       isActive: place?.isActive ?? true,
     } satisfies PlaceFormValues,
     validators: { onSubmit: placeFormSchema },
@@ -97,11 +136,15 @@ export function AdminPlaceForm({
         nameEn: toOptional(value.nameEn),
         descriptionMy: toOptional(value.descriptionMy),
         categoryId: value.categoryId,
-        area: toOptional(value.area),
+        areaId: toOptional(value.areaId),
         addressText: toOptional(value.addressText),
         phone: toOptional(value.phone),
+        phoneSecondary: toOptional(value.phoneSecondary),
+        facebookUrl: toOptional(value.facebookUrl),
+        telegramHandle: toOptional(value.telegramHandle),
         hoursText: toOptional(value.hoursText),
-        priceRange: toOptional(value.priceRange),
+        priceLevel: toOptional(value.priceLevel) as PlaceInput["priceLevel"],
+        priceNote: toOptional(value.priceNote),
         latitude: latitude ? Number(latitude) : place ? null : undefined,
         longitude: longitude ? Number(longitude) : place ? null : undefined,
         photos,
@@ -190,34 +233,46 @@ export function AdminPlaceForm({
           {(field) => <FormTextField id="nameEn" label="English name" field={field} />}
         </form.Field>
         <form.Field name="categoryId">
-          {(field) => {
-            const messages = errorMessages(field.state.meta.errors);
-            return (
-              <Field data-invalid={messages.length > 0}>
-                <FieldLabel htmlFor="categoryId">Category *</FieldLabel>
-                <select
-                  id="categoryId"
-                  name={field.name}
-                  value={field.state.value}
-                  onBlur={field.handleBlur}
-                  onChange={(event) => field.handleChange(event.target.value)}
-                  aria-invalid={messages.length > 0}
-                  className="h-8 border border-input bg-background px-2 text-xs outline-none focus-visible:border-ring focus-visible:ring-1 focus-visible:ring-ring/50"
-                >
-                  <option value="" disabled>
-                    Select a category
+          {(field) => (
+            <FormSelect id="categoryId" label="Category *" field={field}>
+              <option value="" disabled>
+                Select a category
+              </option>
+              {categories.map((category) => (
+                <option key={category.id} value={category.id}>
+                  {category.nameMy}
+                  {category.nameEn ? ` · ${category.nameEn}` : ""}
+                </option>
+              ))}
+            </FormSelect>
+          )}
+        </form.Field>
+        <form.Field name="areaId">
+          {(field) => (
+            <FormSelect id="areaId" label="Area" field={field}>
+              <option value="">No area</option>
+              {areas.map((area) => (
+                <option key={area.id} value={area.id}>
+                  {area.nameMy}
+                  {area.nameEn ? ` · ${area.nameEn}` : ""}
+                </option>
+              ))}
+            </FormSelect>
+          )}
+        </form.Field>
+        <form.Field name="priceLevel">
+          {(field) => (
+            <FormSelect id="priceLevel" label="Price level" field={field}>
+              <option value="">No price level</option>
+              {(Object.keys(PRICE_LEVEL_LABELS) as (keyof typeof PRICE_LEVEL_LABELS)[]).map(
+                (level) => (
+                  <option key={level} value={level}>
+                    {PRICE_LEVEL_LABELS[level].symbol} · {PRICE_LEVEL_LABELS[level].name}
                   </option>
-                  {categories.map((category) => (
-                    <option key={category.id} value={category.id}>
-                      {category.nameMy}
-                      {category.nameEn ? ` · ${category.nameEn}` : ""}
-                    </option>
-                  ))}
-                </select>
-                <FieldError errors={messages.map((message) => ({ message }))} />
-              </Field>
-            );
-          }}
+                ),
+              )}
+            </FormSelect>
+          )}
         </form.Field>
         <form.Field name="descriptionMy">
           {(field) => {
@@ -302,11 +357,13 @@ export function AdminPlaceForm({
         <div className="grid gap-4 sm:grid-cols-2">
           {(
             [
-              ["area", "Area"],
               ["addressText", "Address"],
               ["phone", "Phone"],
+              ["phoneSecondary", "Second phone"],
+              ["facebookUrl", "Facebook URL"],
+              ["telegramHandle", "Telegram handle"],
               ["hoursText", "Hours"],
-              ["priceRange", "Price range"],
+              ["priceNote", "Price note"],
             ] as const
           ).map(([key, label]) => (
             <form.Field key={key} name={key}>

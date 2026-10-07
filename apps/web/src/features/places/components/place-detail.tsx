@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
-import { Clock, MapPin, Navigation, Phone, type LucideIcon } from "lucide-react";
+import { Clock, MapPin, Navigation, Phone, Wallet, type LucideIcon } from "lucide-react";
+import { PRICE_LEVEL_LABELS } from "../places-constants";
 import type { Place } from "../types/place";
 import { Skeleton } from "@/components/ui/skeleton";
 import { PlaceGallery } from "./place-gallery";
@@ -76,7 +77,8 @@ function Chip({ children }: { children: ReactNode }) {
 
 export function PlaceDetail({ place }: { place: Place }) {
   const hasMap = place.latitude !== null && place.longitude !== null;
-  const hasInfo = place.addressText || place.hoursText || place.phone;
+  const hasInfo = place.addressText || place.hoursText || place.phone || place.priceNote;
+  const priceLevel = place.priceLevel ? PRICE_LEVEL_LABELS[place.priceLevel] : null;
 
   return (
     <>
@@ -94,8 +96,12 @@ export function PlaceDetail({ place }: { place: Place }) {
           ) : null}
           <div className="mt-3 flex flex-wrap gap-2">
             <Chip>{place.category.nameMy}</Chip>
-            {place.area ? <Chip>{place.area}</Chip> : null}
-            {place.priceRange ? <Chip>{place.priceRange}</Chip> : null}
+            {place.area ? <Chip>{place.area.nameMy}</Chip> : null}
+            {priceLevel ? (
+              <Chip>
+                {priceLevel.symbol} · {priceLevel.name}
+              </Chip>
+            ) : null}
           </div>
         </header>
 
@@ -121,6 +127,11 @@ export function PlaceDetail({ place }: { place: Place }) {
                   >
                     {place.phone}
                   </a>
+                </InfoRow>
+              ) : null}
+              {place.priceNote ? (
+                <InfoRow icon={Wallet} label="Price">
+                  {place.priceNote}
                 </InfoRow>
               ) : null}
             </dl>

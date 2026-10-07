@@ -36,9 +36,9 @@ export function PlaceMapPopup({
         <div>
           <p className="text-muted-foreground text-xs">{place.category.nameMy}</p>
           <p className="font-medium">{place.nameMy || place.nameEn}</p>
-          {place.hoursText || place.priceRange ? (
+          {place.hoursText || place.priceNote ? (
             <p className="text-muted-foreground text-xs">
-              {[place.hoursText, place.priceRange].filter(Boolean).join(" · ")}
+              {[place.hoursText, place.priceNote].filter(Boolean).join(" · ")}
             </p>
           ) : null}
         </div>

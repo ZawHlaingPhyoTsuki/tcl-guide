@@ -25,4 +25,10 @@ export class PlacesPublicController {
   listCategories() {
     return this.placesService.listCategories();
   }
+
+  @Get("areas")
+  @AllowAnonymous()
+  listAreas() {
+    return this.placesService.listAreas();
+  }
 }
