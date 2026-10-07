@@ -25,15 +25,10 @@ import {
 import { NavMain } from "./nav-main";
 import { NavUser } from "./nav-user";
 import { NavSecondary } from "./nav-secondary";
-
-interface SidebarUser {
-  name: string | null;
-  email: string;
-  image?: string | null;
-}
+import type { Session } from "@/features/auth/types/session";
 
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
-  user: SidebarUser;
+  user: Session["user"] | null;
 }
 
 const data = {

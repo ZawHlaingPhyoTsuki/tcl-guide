@@ -4,6 +4,7 @@ import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { AppModule } from "./app.module.js";
 import { setupApp } from "./app.setup.js";
 import { ENV } from "./env.server.js";
+import { parseCorsOrigins } from "./utils/cors.js";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -11,8 +12,12 @@ async function bootstrap() {
   });
   app.enableShutdownHooks();
   setupApp(app);
+
+  // Parse CORS origins from comma-separated string
+  const allowedOrigins = parseCorsOrigins(ENV.CORS_ORIGIN);
+
   app.enableCors({
-    origin: ENV.CORS_ORIGIN,
+    origin: allowedOrigins,
     methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,

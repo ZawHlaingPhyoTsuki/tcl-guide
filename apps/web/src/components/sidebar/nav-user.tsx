@@ -24,14 +24,7 @@ import {
 } from "@/components/ui/sidebar";
 import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
-
-interface NavUserProps {
-  user: {
-    name: string | null;
-    email: string;
-    image?: string | null;
-  } | null;
-}
+import type { Session } from "@/features/auth/types/session";
 
 function initials(name: string | null | undefined, email: string | null | undefined) {
   const source = name?.trim() || email?.trim() || "?";
@@ -43,11 +36,14 @@ function initials(name: string | null | undefined, email: string | null | undefi
     .toUpperCase();
 }
 
+interface NavUserProps {
+  user: Session["user"] | null;
+}
+
 export function NavUser({ user }: NavUserProps) {
   const router = useRouter();
   const { isMobile } = useSidebar();
 
-  // Fallback for logged-out state (e.g., if component is reused outside admin layout)
   if (!user) {
     return (
       <SidebarMenu>

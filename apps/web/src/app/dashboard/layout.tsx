@@ -1,12 +1,15 @@
-import { requireAdminSession } from "@/lib/admin-session";
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import { SiteHeader } from "@/components/sidebar/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-
-export const dynamic = "force-dynamic";
+import { getServerSession } from "@/features/auth/admin-session";
+import { redirect } from "next/navigation";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const session = await requireAdminSession();
+  const session = await getServerSession();
+
+  if (!session || !session.user) {
+    redirect("/login");
+  }
 
   return (
     <SidebarProvider
