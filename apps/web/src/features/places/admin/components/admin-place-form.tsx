@@ -1,7 +1,7 @@
 "use client";
 
 import { useForm } from "@tanstack/react-form";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import {
   Attachment,
@@ -52,11 +52,25 @@ export function AdminPlaceForm({
   const [longitude, setLongitude] = useState(place?.longitude?.toString() ?? "");
   const [photos, setPhotos] = useState<string[]>([...(place?.photos ?? [])]);
   const [removedPhotos, setRemovedPhotos] = useState<string[]>([]);
+  // Selected but not yet uploaded. Nothing reaches storage until submit,
+  // so closing the sheet early can never orphan files.
+  const [pending, setPending] = useState<{ id: string; file: File; previewUrl: string }[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [photoError, setPhotoError] = useState<string | null>(null);
-  const [isUploading, setIsUploading] = useState(false);
   const [previewIndex, setPreviewIndex] = useState<number | null>(null);
+
+  // Object URLs are local-only; revoke leftovers if the sheet closes early.
+  const pendingRef = useRef(pending);
+  pendingRef.current = pending;
+  useEffect(
+    () => () => {
+      pendingRef.current.forEach((item) => URL.revokeObjectURL(item.previewUrl));
+    },
+    [],
+  );
+
+  const allPhotos = [...photos, ...pending.map((item) => item.previewUrl)];
 
   const form = useForm({
     defaultValues: {
@@ -75,6 +89,9 @@ export function AdminPlaceForm({
     onSubmit: async ({ value }) => {
       setError(null);
       setIsSaving(true);
+      // Upload staged files first. On failure the batch URLs are deleted
+      // again, so a failed save never leaves orphans behind either.
+      const uploaded: string[] = [];
       const input: PlaceInput = {
         nameMy: value.nameMy.trim(),
         nameEn: toOptional(value.nameEn),
@@ -91,6 +108,17 @@ export function AdminPlaceForm({
         isActive: value.isActive,
       };
       try {
+        for (const item of pendingRef.current) {
+          const ticket = await requestUpload(item.file.type);
+          const response = await fetch(ticket.uploadUrl, {
+            method: "PUT",
+            headers: { "Content-Type": item.file.type },
+            body: item.file,
+          });
+          if (!response.ok) throw new Error(`Could not upload ${item.file.name}`);
+          uploaded.push(ticket.url);
+        }
+        input.photos = [...photos, ...uploaded];
         const saved = place ? await updatePlace(place.id, input) : await createPlace(input);
         try {
           await Promise.all(removedPhotos.map((url) => removeUpload(url)));
@@ -101,8 +129,12 @@ export function AdminPlaceForm({
           return;
         }
         setRemovedPhotos([]);
+        pendingRef.current.forEach((item) => URL.revokeObjectURL(item.previewUrl));
+        setPending([]);
         onSaved(saved);
       } catch (requestError) {
+        // The place was not saved, so batch URLs would orphan — delete them.
+        await Promise.allSettled(uploaded.map((url) => removeUpload(url)));
         setError(requestError instanceof Error ? requestError.message : "Could not save place");
       } finally {
         setIsSaving(false);
@@ -110,48 +142,34 @@ export function AdminPlaceForm({
     },
   });
 
-  async function handleFiles(files: File[]) {
+  function stageFiles(files: File[]) {
     if (files.length === 0) return;
     setPhotoError(null);
-    setIsUploading(true);
-    try {
-      for (const file of files) {
-        if (!(ACCEPTED_IMAGE_TYPES as readonly string[]).includes(file.type)) {
-          setPhotoError(`Unsupported file type: ${file.name}`);
-          continue;
-        }
-        if (file.size > MAX_IMAGE_BYTES) {
-          setPhotoError(`${file.name} is larger than 5 MB`);
-          continue;
-        }
-        const ticket = await requestUpload(file.type);
-        const response = await fetch(ticket.uploadUrl, {
-          method: "PUT",
-          headers: { "Content-Type": file.type },
-          body: file,
-        });
-        if (!response.ok) {
-          setPhotoError(`Could not upload ${file.name}`);
-          continue;
-        }
-        setPhotos((current) => [...current, ticket.url]);
+    for (const file of files) {
+      if (!(ACCEPTED_IMAGE_TYPES as readonly string[]).includes(file.type)) {
+        setPhotoError(`Unsupported file type: ${file.name}`);
+        continue;
       }
-    } catch (requestError) {
-      setPhotoError(
-        requestError instanceof Error ? requestError.message : "Could not upload photo",
-      );
-    } finally {
-      setIsUploading(false);
+      if (file.size > MAX_IMAGE_BYTES) {
+        setPhotoError(`${file.name} is larger than 5 MB`);
+        continue;
+      }
+      setPending((current) => [
+        ...current,
+        { id: crypto.randomUUID(), file, previewUrl: URL.createObjectURL(file) },
+      ]);
     }
   }
 
+  function removePending(id: string) {
+    const item = pendingRef.current.find((entry) => entry.id === id);
+    if (item) URL.revokeObjectURL(item.previewUrl);
+    setPending((current) => current.filter((entry) => entry.id !== id));
+  }
+
   function handleCancel() {
-    if (!place) {
-      const orphaned = [...photos, ...removedPhotos];
-      if (orphaned.length > 0) {
-        void Promise.allSettled(orphaned.map((url) => removeUpload(url)));
-      }
-    }
+    pendingRef.current.forEach((item) => URL.revokeObjectURL(item.previewUrl));
+    setPending([]);
     onCancel();
   }
 
@@ -227,31 +245,46 @@ export function AdminPlaceForm({
             type="file"
             accept={ACCEPTED_IMAGE_TYPES.join(",")}
             multiple
-            disabled={isUploading}
+            disabled={isSaving}
             onChange={(event) => {
               const files = Array.from(event.target.files ?? []);
               event.target.value = "";
-              void handleFiles(files);
+              stageFiles(files);
             }}
           />
-          {photos.length > 0 ? (
+          {allPhotos.length > 0 ? (
             <div className="flex flex-wrap gap-2">
-              {photos.map((photo, index) => (
-                <Attachment key={photo} size="sm" state="done" className="min-w-0">
+              {[
+                ...photos.map((photo, index) => ({
+                  key: photo,
+                  src: photo,
+                  label: `Photo ${index + 1}`,
+                  onPreview: () => setPreviewIndex(index),
+                  onRemove: () => {
+                    setRemovedPhotos((current) => [...current, photo]);
+                    setPhotos((current) => current.filter((_, i) => i !== index));
+                  },
+                })),
+                ...pending.map((item, pendingIndex) => ({
+                  key: item.id,
+                  src: item.previewUrl,
+                  label: `New photo ${pendingIndex + 1}`,
+                  onPreview: () => setPreviewIndex(photos.length + pendingIndex),
+                  onRemove: () => removePending(item.id),
+                })),
+              ].map((thumb) => (
+                <Attachment key={thumb.key} size="sm" state="done" className="min-w-0">
                   <AttachmentMedia variant="image">
-                    <img src={photo} alt={`Photo ${index + 1}`} />
+                    <img src={thumb.src} alt={thumb.label} />
                   </AttachmentMedia>
                   <AttachmentTrigger
-                    onClick={() => setPreviewIndex(index)}
-                    aria-label={`Preview photo ${index + 1}`}
+                    onClick={thumb.onPreview}
+                    aria-label={`Preview ${thumb.label.toLowerCase()}`}
                   />
                   <AttachmentActions>
                     <AttachmentAction
-                      aria-label="Remove photo"
-                      onClick={() => {
-                        setRemovedPhotos((current) => [...current, photo]);
-                        setPhotos((current) => current.filter((_, i) => i !== index));
-                      }}
+                      aria-label={`Remove ${thumb.label.toLowerCase()}`}
+                      onClick={thumb.onRemove}
                     >
                       <X />
                     </AttachmentAction>
@@ -316,21 +349,10 @@ export function AdminPlaceForm({
           </p>
         ) : null}
         <div className="flex flex-wrap gap-2">
-          <Button type="submit" disabled={isSaving || isUploading}>
-            {isSaving
-              ? "Saving..."
-              : isUploading
-                ? "Uploading..."
-                : place
-                  ? "Save changes"
-                  : "Create place"}
+          <Button type="submit" disabled={isSaving}>
+            {isSaving ? "Saving..." : place ? "Save changes" : "Create place"}
           </Button>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={handleCancel}
-            disabled={isSaving || isUploading}
-          >
+          <Button type="button" variant="outline" onClick={handleCancel} disabled={isSaving}>
             Cancel
           </Button>
         </div>
@@ -338,7 +360,7 @@ export function AdminPlaceForm({
       <form.Subscribe selector={(state) => state.values.nameMy}>
         {(nameMy) => (
           <PhotoPreviewDialog
-            photos={photos}
+            photos={allPhotos}
             index={previewIndex ?? 0}
             placeName={nameMy}
             open={previewIndex !== null}
