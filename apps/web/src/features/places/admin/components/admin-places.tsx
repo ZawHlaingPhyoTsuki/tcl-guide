@@ -156,6 +156,9 @@ export function AdminPlaces({
               categories={categories}
               areas={areas}
               place={editing}
+              existingSlugs={places
+                .filter((item) => item.id !== editing?.id)
+                .map((item) => item.slug)}
               onSaved={savedPlace}
               onCancel={() => {
                 setEditing(null);

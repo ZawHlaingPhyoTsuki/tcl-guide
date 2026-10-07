@@ -173,7 +173,7 @@ export function PlaceDetailSkeleton() {
       aria-label="Loading place"
     >
       <div className="grid gap-6">
-        <Skeleton className="aspect-[4/3] w-full rounded-2xl sm:aspect-[16/9]" />
+        <Skeleton className="aspect-4/3 w-full rounded-2xl sm:aspect-video" />
         <div className="grid gap-2">
           <Skeleton className="h-8 w-2/3" />
           <Skeleton className="h-5 w-1/3" />

@@ -6,6 +6,7 @@ import {
   House as IconHouse,
   LayoutDashboardIcon,
   MapPinIcon,
+  MapPinnedIcon,
   Search as IconSearch,
   Settings as IconSettings,
   TagIcon,
@@ -40,6 +41,7 @@ const data = {
     { title: "Overview", url: "/dashboard", icon: <LayoutDashboardIcon /> },
     { title: "Places", url: "/dashboard/places", icon: <MapPinIcon /> },
     { title: "Categories", url: "/dashboard/categories", icon: <TagIcon /> },
+    { title: "Areas", url: "/dashboard/areas", icon: <MapPinnedIcon /> },
   ],
   navSecondary: [
     {

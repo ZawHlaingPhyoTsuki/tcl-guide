@@ -1,6 +1,6 @@
 "use client";
 
-import { useForm, type AnyFieldApi } from "@tanstack/react-form";
+import { useForm, useStore, type AnyFieldApi } from "@tanstack/react-form";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 
 import {
@@ -11,6 +11,7 @@ import {
   AttachmentTrigger,
 } from "@/components/ui/attachment";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { FormTextField } from "@/components/ui/form-text-field";
 import { Input } from "@/components/ui/input";
@@ -20,7 +21,15 @@ import { X } from "lucide-react";
 
 import { createPlace, removeUpload, requestUpload, updatePlace } from "../../places-actions";
 import { errorMessages, toOptional } from "@/lib/form";
-import { PRICE_LEVEL_LABELS } from "../../places-constants";
+import { cn } from "@/lib/utils";
+import {
+  formatPhotoShrinkHint,
+  PLACE_TAG_LABELS,
+  PLACE_TAGS,
+  PRICE_LEVEL_LABELS,
+} from "../../places-constants";
+import { prepareImageForUpload } from "../../places-image";
+import { slugifyPlaceName } from "../../places-slug";
 
 import { placeFormSchema, type PlaceFormValues, type PlaceInput } from "../../places-schema";
 import type { Category } from "@/features/categories/types/category";
@@ -28,6 +37,7 @@ import type { Area } from "@/features/areas/types/area";
 import type { Place } from "../../types/place";
 import { PhotoPreviewDialog } from "./photo-preview-dialog";
 import { PlaceLocationPicker } from "./place-location-picker";
+import { toast } from "sonner";
 
 const ACCEPTED_IMAGE_TYPES = [
   "image/jpeg",
@@ -74,12 +84,14 @@ export function AdminPlaceForm({
   categories,
   areas,
   place,
+  existingSlugs,
   onSaved,
   onCancel,
 }: {
   categories: Category[];
   areas: Area[];
   place: Place | null;
+  existingSlugs: string[];
   onSaved: (place: Place) => void;
   onCancel: () => void;
 }) {
@@ -94,6 +106,9 @@ export function AdminPlaceForm({
   const [isSaving, setIsSaving] = useState(false);
   const [photoError, setPhotoError] = useState<string | null>(null);
   const [previewIndex, setPreviewIndex] = useState<number | null>(null);
+  // Slug auto-fills from the English name until the admin types one;
+  // editing a place that already has a slug never overwrites it.
+  const [slugTouched, setSlugTouched] = useState(!!place?.slug);
 
   // Object URLs are local-only; revoke leftovers if the sheet closes early.
   const pendingRef = useRef(pending);
@@ -111,6 +126,7 @@ export function AdminPlaceForm({
     defaultValues: {
       nameMy: place?.nameMy ?? "",
       nameEn: place?.nameEn ?? "",
+      slug: place?.slug ?? "",
       descriptionMy: place?.descriptionMy ?? "",
       categoryId: place?.categoryId ?? categories[0]?.id ?? "",
       areaId: place?.areaId ?? "",
@@ -122,11 +138,17 @@ export function AdminPlaceForm({
       hoursText: place?.hoursText ?? "",
       priceLevel: place?.priceLevel ?? "",
       priceNote: place?.priceNote ?? "",
+      tags: place?.tags ?? [],
       isActive: place?.isActive ?? true,
     } satisfies PlaceFormValues,
     validators: { onSubmit: placeFormSchema },
     onSubmit: async ({ value }) => {
       setError(null);
+      const slug = toOptional(value.slug)?.toLowerCase();
+      if (slug && existingSlugs.includes(slug)) {
+        setError(`Slug "${slug}" is already used by another place`);
+        return;
+      }
       setIsSaving(true);
       // Upload staged files first. On failure the batch URLs are deleted
       // again, so a failed save never leaves orphans behind either.
@@ -134,6 +156,7 @@ export function AdminPlaceForm({
       const input: PlaceInput = {
         nameMy: value.nameMy.trim(),
         nameEn: toOptional(value.nameEn),
+        slug,
         descriptionMy: toOptional(value.descriptionMy),
         categoryId: value.categoryId,
         areaId: toOptional(value.areaId),
@@ -145,21 +168,33 @@ export function AdminPlaceForm({
         hoursText: toOptional(value.hoursText),
         priceLevel: toOptional(value.priceLevel) as PlaceInput["priceLevel"],
         priceNote: toOptional(value.priceNote),
+        tags: value.tags,
         latitude: latitude ? Number(latitude) : place ? null : undefined,
         longitude: longitude ? Number(longitude) : place ? null : undefined,
         photos,
         isActive: value.isActive,
       };
       try {
+        let convertedCount = 0;
+        let convertedBytes = 0;
         for (const item of pendingRef.current) {
-          const ticket = await requestUpload(item.file.type);
+          const prepared = await prepareImageForUpload(item.file);
+          if (prepared.converted) {
+            convertedCount += 1;
+            convertedBytes += prepared.savedBytes;
+          }
+          const ticket = await requestUpload(prepared.file.type);
           const response = await fetch(ticket.uploadUrl, {
             method: "PUT",
-            headers: { "Content-Type": item.file.type },
-            body: item.file,
+            headers: { "Content-Type": prepared.file.type },
+            body: prepared.file,
           });
           if (!response.ok) throw new Error(`Could not upload ${item.file.name}`);
           uploaded.push(ticket.url);
+        }
+        if (convertedCount > 0) {
+          const savedKb = Math.round(convertedBytes / 1024);
+          toast.success(formatPhotoShrinkHint(convertedCount, savedKb));
         }
         input.photos = [...photos, ...uploaded];
         const saved = place ? await updatePlace(place.id, input) : await createPlace(input);
@@ -184,6 +219,13 @@ export function AdminPlaceForm({
       }
     },
   });
+
+  const nameEnValue = useStore(form.store, (state) => state.values.nameEn);
+  useEffect(() => {
+    if (!slugTouched && nameEnValue.trim()) {
+      form.setFieldValue("slug", slugifyPlaceName(nameEnValue) ?? "");
+    }
+  }, [nameEnValue, slugTouched, form]);
 
   function stageFiles(files: File[]) {
     if (files.length === 0) return;
@@ -231,6 +273,36 @@ export function AdminPlaceForm({
         </form.Field>
         <form.Field name="nameEn">
           {(field) => <FormTextField id="nameEn" label="English name" field={field} />}
+        </form.Field>
+        <form.Field name="slug">
+          {(field) => {
+            const messages = errorMessages(field.state.meta.errors);
+            const trimmed = field.state.value.trim().toLowerCase();
+            return (
+              <Field data-invalid={messages.length > 0}>
+                <FieldLabel htmlFor="slug">Slug</FieldLabel>
+                <Input
+                  id="slug"
+                  name={field.name}
+                  value={field.state.value}
+                  onBlur={field.handleBlur}
+                  onChange={(event) => {
+                    setSlugTouched(true);
+                    field.handleChange(event.target.value);
+                  }}
+                  placeholder="e.g. shan-noodle-shop"
+                  aria-invalid={messages.length > 0}
+                  aria-describedby="slug-preview"
+                />
+                <p id="slug-preview" className="text-xs text-muted-foreground">
+                  {trimmed
+                    ? `Public page: /places/${trimmed}`
+                    : "Leave empty to generate from the English name on save."}
+                </p>
+                <FieldError errors={messages.map((message) => ({ message }))} />
+              </Field>
+            );
+          }}
         </form.Field>
         <form.Field name="categoryId">
           {(field) => (
@@ -371,6 +443,46 @@ export function AdminPlaceForm({
             </form.Field>
           ))}
         </div>
+        <form.Field name="tags">
+          {(field) => (
+            <div className="grid gap-2">
+              <span id="place-tags-label" className="text-sm font-medium">
+                Tags
+              </span>
+              <div role="group" aria-labelledby="place-tags-label" className="flex flex-wrap gap-2">
+                {PLACE_TAGS.map((tag) => {
+                  const checked = field.state.value.includes(tag);
+                  return (
+                    <label
+                      key={tag}
+                      className={cn(
+                        "inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-full border px-3 text-xs transition-colors",
+                        "outline-offset-2 focus-within:outline-2",
+                        checked
+                          ? "border-primary bg-muted font-medium"
+                          : "text-muted-foreground hover:text-foreground",
+                      )}
+                    >
+                      <Checkbox
+                        checked={checked}
+                        onCheckedChange={(next) => {
+                          const on = next === true;
+                          field.handleChange(
+                            on
+                              ? [...field.state.value, tag]
+                              : field.state.value.filter((item) => item !== tag),
+                          );
+                        }}
+                        aria-label={PLACE_TAG_LABELS[tag]}
+                      />
+                      {PLACE_TAG_LABELS[tag]}
+                    </label>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </form.Field>
         <div className="grid gap-2">
           <div>
             <p className="text-sm font-medium">Location</p>

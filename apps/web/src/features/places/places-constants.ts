@@ -26,3 +26,8 @@ export const PLACE_TAG_LABELS = {
 export type PlaceTag = keyof typeof PLACE_TAG_LABELS;
 
 export const PLACE_TAGS = Object.keys(PLACE_TAG_LABELS) as PlaceTag[];
+
+export function formatPhotoShrinkHint(photoCount: number, savedKb: number): string {
+  const photos = photoCount === 1 ? "photo" : "photos";
+  return `Resized ${photoCount} ${photos} for upload, saving about ${savedKb} KB.`;
+}

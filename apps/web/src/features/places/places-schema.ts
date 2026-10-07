@@ -85,6 +85,12 @@ export type PlaceInput = z.infer<typeof placeInputSchema>;
 export const placeFormSchema = z.object({
   nameMy: z.string().trim().min(1, "Enter a name in Myanmar"),
   nameEn: z.string(),
+  slug: z
+    .string()
+    .refine(
+      (value) => value.trim() === "" || placeSlugSchema.safeParse(value).success,
+      "Lowercase letters, numbers and hyphens only",
+    ),
   descriptionMy: z.string(),
   categoryId: z.string().min(1, "Select a category"),
   areaId: z.string(),
@@ -96,6 +102,7 @@ export const placeFormSchema = z.object({
   hoursText: z.string(),
   priceLevel: z.string(),
   priceNote: z.string(),
+  tags: z.array(z.enum(PLACE_TAGS)),
   isActive: z.boolean(),
 });
 

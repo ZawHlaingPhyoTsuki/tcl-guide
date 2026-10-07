@@ -1,20 +1,26 @@
-- in detail page, clicking sub-image will make preview image (expand)
-- polish the detail page UI
-- [DONE] polish the Place model schema (Phase 1: Area relation, slug, PriceLevel + priceNote, contacts, tags, paired coordinates)
+### UI
 
-- admin setting page
-- in it, add theme toggle, profile edit, etc
+- Fix sidebar collapse toggle hit-area (make the whole circle clickable).
+- Implement sub-image click-to-expand on the detail page.
+- Polish the detail page UI.
+- Create Admin Settings page (theme toggle, profile edit).
+- Replace `Sheet` with `Drawer` on the home page for better mobile UX.
+- Remove "minimal 2 items" logic; allow full drawer toggle.
+- Fix orphaned uploads when closing the form sheet accidentally.
+- Improve the look of `<select>` inputs in forms.
+- Refactor folder structure (move places/categories to `src/features`).
 
-- in dashboard, navigating between places and categories is fetching those data again every time
+### Server
 
-- use drawer instead of sheet in / page as drawer is more for mobile
-- don't do showing minimal 2 place items anymore, user can toggle the drawer
+- [DROP] Investigate/fix redundant data fetching when navigating between dashboard tabs.
+- Add CRUD endpoints for **Areas**.
+- Add CRUD endpoints for **Tags**.
+- Implement server-side rate limiting (Redis).
+- Configure Nginx.
+- In Place model, createdByAdminId is NULL, addressText NULL in seed, tag table
 
-- [DONE] when i upload the image in edit form (maybe in create form too), and accidently close the side sheet. The imaged got upload to storage and when i open the sheet again the image is not here anymore
+### FUTURE Feature
 
-- rate limit, redis on server, ngix,
-
-- select UI in form look ugly
-
-- add CRUD area
-- add CRUD tag
+- **Deli Integration:**
+  - Link places to specific delis.
+  - Filter public place list based on the selected deli.

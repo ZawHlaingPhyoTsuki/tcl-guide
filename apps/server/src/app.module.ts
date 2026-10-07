@@ -3,6 +3,7 @@ import { AuthModule } from "@thallesp/nestjs-better-auth";
 import { AppController } from "./app.controller.js";
 import { AppService } from "./app.service.js";
 import { createAuth } from "./auth.js";
+import { AreasModule } from "./areas/areas.module.js";
 import { CategoriesModule } from "./categories/categories.module.js";
 import { ENV } from "./env.server.js";
 import { PlacesModule } from "./places/places.module.js";
@@ -20,6 +21,7 @@ import { UploadsModule } from "./uploads/uploads.module.js";
     }),
     PlacesModule,
     CategoriesModule,
+    AreasModule,
     UploadsModule,
   ],
   controllers: [AppController],

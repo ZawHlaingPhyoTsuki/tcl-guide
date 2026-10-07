@@ -207,11 +207,11 @@ async function main() {
   console.log(`categories: ${idsBySlug.size} upserted`);
 
   const areaIdsByName = new Map<string, string>();
-  for (const area of areas) {
+  for (const [index, area] of areas.entries()) {
     const saved = await db.area.upsert({
       where: { slug: area.slug },
       update: { nameMy: area.nameMy },
-      create: area,
+      create: { ...area, sortOrder: index },
     });
     areaIdsByName.set(saved.nameMy.toLowerCase(), saved.id);
   }

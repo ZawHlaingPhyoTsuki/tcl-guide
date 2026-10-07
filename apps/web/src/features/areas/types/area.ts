@@ -5,3 +5,7 @@ export type Area = {
   nameEn: string | null;
   sortOrder: number;
 };
+
+export type AdminArea = Area & {
+  placeCount: number;
+};

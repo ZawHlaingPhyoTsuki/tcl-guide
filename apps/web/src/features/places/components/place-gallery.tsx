@@ -11,7 +11,7 @@ export function PlaceGallery({ photos, name }: { photos: string[]; name: string 
   if (photos.length === 0) {
     return (
       <div
-        className="bg-muted text-muted-foreground flex aspect-[4/3] w-full flex-col items-center justify-center gap-2 rounded-2xl sm:aspect-[16/9]"
+        className="bg-muted text-muted-foreground flex aspect-4/3 w-full flex-col items-center justify-center gap-2 rounded-2xl sm:aspect-video"
         role="img"
         aria-label="No photos yet"
       >
@@ -41,12 +41,12 @@ export function PlaceGallery({ photos, name }: { photos: string[]; name: string 
           const el = e.currentTarget;
           setIndex(Math.round(el.scrollLeft / el.clientWidth));
         }}
-        className="flex snap-x snap-mandatory overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        className="flex snap-x snap-mandatory overflow-x-auto scrollbar-none [&::-webkit-scrollbar]:hidden"
       >
         {photos.map((photo, i) => (
           <li
             key={photo}
-            className="relative aspect-[4/3] w-full shrink-0 snap-center sm:aspect-[16/9]"
+            className="relative aspect-4/3 w-full shrink-0 snap-center sm:aspect-video"
           >
             <Image
               src={photo}
