@@ -1,11 +1,7 @@
 import { headers } from "next/headers";
 
 export function serverUrl() {
-  return (
-    process.env.SERVER_URL ??
-    process.env.NEXT_PUBLIC_SERVER_URL ??
-    "http://localhost:3000"
-  ).replace(/\/$/, "");
+  return (process.env.SERVER_URL ?? "http://localhost:3000").replace(/\/$/, "");
 }
 
 export async function getRequestHeaders() {
