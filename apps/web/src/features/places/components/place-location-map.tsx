@@ -13,7 +13,12 @@ export function PlaceLocationMap({ place }: { place: Place }) {
   return (
     <section className="grid gap-3" aria-label="Place location">
       <div className="h-64 overflow-hidden border">
-        <Map className="h-full" center={[place.longitude, place.latitude]} zoom={15}>
+        <Map
+          className="h-full"
+          center={[place.longitude, place.latitude]}
+          zoom={15}
+          styles={{ light: "https://tiles.openfreemap.org/styles/bright" }}
+        >
           <MapMarker longitude={place.longitude} latitude={place.latitude}>
             <MarkerContent />
           </MapMarker>

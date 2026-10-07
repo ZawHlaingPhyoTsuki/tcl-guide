@@ -1,0 +1,3 @@
+- in detail page, clicking sub-image will make preview image (expand)
+- polish the detail page UI
+- polish the Place model schema

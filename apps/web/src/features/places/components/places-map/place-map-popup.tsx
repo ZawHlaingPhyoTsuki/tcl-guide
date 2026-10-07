@@ -44,7 +44,7 @@ export function PlaceMapPopup({
         </div>
         <Link
           href={`/places/${place.id}` as Route}
-          className={buttonVariants({ variant: "outline", size: "sm" })}
+          className={buttonVariants({ variant: "secondary", size: "sm" })}
         >
           View Place
         </Link>
