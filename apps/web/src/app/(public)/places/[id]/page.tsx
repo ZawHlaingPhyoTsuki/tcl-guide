@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 
 import { PlaceDetail } from "@/features/places/components/place-detail";
 import { getPlace } from "@/features/places/places-queries";
@@ -19,13 +20,17 @@ export async function generateMetadata({ params }: PageProps<"/places/[id]">): P
 export default async function PlacePage({ params }: PageProps<"/places/[id]">) {
   const { id } = await params;
   const place = await getPlace(id);
-  void id;
   return (
-    <div className="container mx-auto max-w-3xl px-4 py-2">
-      <Link href="/" className="text-sm text-muted-foreground underline">
-        ← All places
+    // pb-28 on mobile leaves room for the fixed action bar.
+    <div className="container mx-auto max-w-5xl px-4 pt-3 pb-28 lg:pb-12">
+      <Link
+        href="/"
+        className="text-muted-foreground hover:text-foreground -ml-2 inline-flex h-10 items-center gap-1.5 rounded-lg px-2 text-sm"
+      >
+        <ArrowLeft className="size-4" aria-hidden />
+        All places
       </Link>
-      <div className="mt-4">
+      <div className="mt-2">
         <PlaceDetail place={place} />
       </div>
     </div>

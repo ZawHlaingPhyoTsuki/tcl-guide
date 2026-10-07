@@ -10,6 +10,6 @@
 - use drawer instead of sheet in / page as drawer is more for mobile
 - don't do showing minimal 2 place items anymore, user can toggle the drawer
 
-- when i upload the image in edit form (maybe in create form too), and accidently close the side sheet. The imaged got upload to storage and when i open the sheet again the image is not here anymore
+- [DONE] when i upload the image in edit form (maybe in create form too), and accidently close the side sheet. The imaged got upload to storage and when i open the sheet again the image is not here anymore
 
 - rate limit, redis on server, ngix,
