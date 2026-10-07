@@ -18,6 +18,10 @@
       "cache": false,
       "persistent": true
     },
+    "start": {
+      "cache": false,
+      "persistent": true
+    },
     "db:push": {
       "cache": false,
       "interactive": true
@@ -58,13 +62,13 @@
     "AWS_REGION",
     "AWS_SECRET_ACCESS_KEY",
     "BETTER_AUTH_SECRET",
-    "BETTER_AUTH_URL",
     "CI",
     "CORS_ORIGIN",
     "DATABASE_URL",
     "NEON_BUCKET_NAME",
     "NODE_ENV",
     "SERVER_URL",
+    "WEB_URL",
     "VERCEL",
     "VERCEL_ENV",
     "VERCEL_PROJECT_PRODUCTION_URL",

@@ -5,7 +5,7 @@ import { admin } from "better-auth/plugins/admin";
 import type { PrismaClient } from "./generated/client.js";
 
 export type AuthConfig = {
-  BETTER_AUTH_URL: string;
+  WEB_URL: string;
   BETTER_AUTH_SECRET: string;
   CORS_ORIGIN: string;
 };
@@ -19,17 +19,10 @@ export function createAuth(
     database: prismaAdapter(database, {
       provider: "postgresql",
     }),
-    trustedOrigins: [env.CORS_ORIGIN, ...desktopOrigins],
+    trustedOrigins: [env.WEB_URL, ...desktopOrigins],
     emailAndPassword: { enabled: true },
     secret: env.BETTER_AUTH_SECRET,
-    baseURL: env.BETTER_AUTH_URL,
-    advanced: {
-      defaultCookieAttributes: {
-        sameSite: "none",
-        secure: true,
-        httpOnly: true,
-      },
-    },
+    baseURL: env.WEB_URL,
     plugins: [admin()],
   });
 }
