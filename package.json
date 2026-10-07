@@ -10,12 +10,14 @@
     "dev": "turbo run dev",
     "build": "turbo run build",
     "check-types": "turbo run check-types",
+    "test": "turbo run test",
     "dev:web": "turbo run dev -F web --",
     "dev:server": "turbo run dev -F server --",
     "db:push": "turbo run db:push -F server --",
     "db:studio": "turbo run db:studio -F server --",
     "db:generate": "turbo run db:generate -F server --",
     "db:migrate": "turbo run db:migrate -F server --",
+    "db:seed": "turbo run db:seed -F server --",
     "db:start": "docker compose up -d postgres",
     "db:watch": "docker compose up postgres",
     "db:stop": "docker compose stop postgres",
@@ -31,10 +33,11 @@
     "lint:fix": "oxlint --fix",
     "format": "oxfmt --check",
     "format:fix": "oxfmt --write",
-    "check": "oxlint && oxfmt --write",
+    "check": "pnpm lint:fix && pnpm format:fix && pnpm run check-types",
     "prepare": "husky"
   },
   "dependencies": {
+    "@neon/config": "^1.8.3",
     "zod": "catalog:"
   },
   "devDependencies": {
@@ -49,8 +52,11 @@
     "varlock": "catalog:"
   },
   "lint-staged": {
-    "*": [
-      "oxlint",
+    "*.{ts,tsx,js,jsx}": [
+      "oxlint --fix",
+      "oxfmt --write"
+    ],
+    "*.{json,md}": [
       "oxfmt --write"
     ]
   },

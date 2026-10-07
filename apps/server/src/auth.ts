@@ -1,7 +1,8 @@
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
+import { admin } from "better-auth/plugins/admin";
 
-import type { Database } from "./db.js";
+import type { PrismaClient } from "./generated/client.js";
 
 export type AuthConfig = {
   BETTER_AUTH_URL: string;
@@ -11,7 +12,7 @@ export type AuthConfig = {
 
 export function createAuth(
   env: AuthConfig,
-  database: Database,
+  database: PrismaClient,
   desktopOrigins: readonly string[] = [],
 ) {
   return betterAuth({
@@ -29,7 +30,7 @@ export function createAuth(
         httpOnly: true,
       },
     },
-    plugins: [],
+    plugins: [admin()],
   });
 }
 

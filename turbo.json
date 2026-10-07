@@ -13,6 +13,7 @@
     "check-types": {
       "dependsOn": ["^check-types"]
     },
+    "test": {},
     "dev": {
       "cache": false,
       "persistent": true
@@ -28,6 +29,10 @@
     "db:migrate": {
       "cache": false,
       "interactive": true
+    },
+    "db:seed": {
+      "cache": false,
+      "interactive": false
     },
     "db:studio": {
       "cache": false,
@@ -48,11 +53,16 @@
     }
   },
   "globalEnv": [
+    "AWS_ACCESS_KEY_ID",
+    "AWS_ENDPOINT_URL_S3",
+    "AWS_REGION",
+    "AWS_SECRET_ACCESS_KEY",
     "BETTER_AUTH_SECRET",
     "BETTER_AUTH_URL",
     "CI",
     "CORS_ORIGIN",
     "DATABASE_URL",
+    "NEON_BUCKET_NAME",
     "NEXT_PUBLIC_SERVER_URL",
     "NODE_ENV",
     "VERCEL",

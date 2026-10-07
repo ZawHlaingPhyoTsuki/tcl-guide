@@ -1,0 +1,67 @@
+model Category {
+  id        String  @id @default(cuid())
+  slug      String  @unique
+  nameMy    String
+  nameEn    String?
+  places    Place[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("category")
+}
+
+model Area {
+  id        String  @id @default(cuid())
+  slug      String  @unique
+  nameMy    String
+  nameEn    String?
+  sortOrder Int     @default(0)
+  places    Place[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("area")
+}
+
+enum PriceLevel {
+  LOW
+  MID
+  HIGH
+}
+
+model Place {
+  id               String      @id @default(cuid())
+  slug             String      @unique
+  nameMy           String
+  nameEn           String?
+  descriptionMy    String?
+  categoryId       String
+  category         Category    @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  areaId           String?
+  area             Area?       @relation(fields: [areaId], references: [id], onDelete: Restrict)
+  addressText      String?
+  phone            String?
+  phoneSecondary   String?
+  facebookUrl      String?
+  telegramHandle   String?
+  // Temporary V1 representation. Structured opening hours follow
+  // when an "open now" feature is requested.
+  hoursText        String?
+  priceNote        String?
+  priceLevel       PriceLevel?
+  tags             String[]    @default([])
+  latitude         Float?
+  longitude        Float?
+  photos           String[]
+  isActive         Boolean     @default(true)
+  // Plain string, not a relation: User lives in the CLI-managed
+  // auth.prisma file, which auth:generate overwrites.
+  createdByAdminId String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([categoryId])
+  @@index([isActive])
+  @@index([areaId])
+  @@map("place")
+}

@@ -7,6 +7,18 @@ const nextConfig: NextConfig = {
   typedRoutes: true,
   reactCompiler: true,
   output: "standalone",
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
+      },
+      {
+        protocol: "https",
+        hostname: "**.neon.tech",
+      },
+    ],
+  },
 };
 
 export default withVarlock(nextConfig);

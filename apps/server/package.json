@@ -16,12 +16,14 @@
     "start:prod": "node dist/main",
     "check-types": "tsc --noEmit",
     "env:generate": "varlock codegen",
-    "auth:generate": "varlock run -- pnpm dlx auth@latest generate --config src/services.ts --output ./prisma/schema/auth.prisma --yes",
+    "auth:generate": "varlock run -- pnpm dlx auth@latest generate --config src/auth.ts --output ./prisma/schema/auth.prisma --yes",
     "db:push": "prisma db push",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:migrate:deploy": "prisma migrate deploy",
+    "db:seed": "tsx prisma/seed.ts",
     "db:studio": "prisma studio",
+    "db:reset": "prisma migrate reset --force",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:cov": "vitest run --coverage",
@@ -29,6 +31,8 @@
     "test:e2e": "vitest run --config ./vitest.config.e2e.ts"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1146.0",
+    "@aws-sdk/s3-request-presigner": "^3.1146.0",
     "@nestjs/common": "^12.0.1",
     "@nestjs/core": "^12.0.1",
     "@nestjs/platform-express": "^12.0.1",
@@ -56,8 +60,12 @@
     "prisma": "^7.10.0",
     "source-map-support": "^0.5.21",
     "supertest": "^7.0.0",
+    "tsx": "^4.20.3",
     "typescript": "^6.0.2",
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^4.1.2"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
   }
 }
