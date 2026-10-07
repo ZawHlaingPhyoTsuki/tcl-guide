@@ -13,7 +13,18 @@ export async function requireAdminSession() {
   if (!session?.user) redirect("/login");
 
   const role = (session.user as typeof session.user & { role?: string | null }).role;
-  if (role !== "admin") redirect("/dashboard");
+  if (role !== "admin") redirect("/");
 
   return session;
+}
+
+export async function redirectIfAuthenticated() {
+  const session = await authClient.getSession({
+    fetchOptions: { headers: await headers(), throw: true },
+  });
+
+  if (!session?.user) return;
+
+  const role = (session.user as typeof session.user & { role?: string | null }).role;
+  redirect(role === "admin" ? "/dashboard" : "/");
 }

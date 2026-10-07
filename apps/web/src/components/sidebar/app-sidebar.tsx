@@ -25,12 +25,17 @@ import { NavMain } from "./nav-main";
 import { NavUser } from "./nav-user";
 import { NavSecondary } from "./nav-secondary";
 
+interface SidebarUser {
+  name: string | null;
+  email: string;
+  image?: string | null;
+}
+
+interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
+  user: SidebarUser;
+}
+
 const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
   navMain: [
     { title: "Overview", url: "/dashboard", icon: <LayoutDashboardIcon /> },
     { title: "Places", url: "/dashboard/places", icon: <MapPinIcon /> },
@@ -55,7 +60,7 @@ const data = {
   ],
 };
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+export function AppSidebar({ user, ...props }: AppSidebarProps) {
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
@@ -76,14 +81,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
-        {/* <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton render={<Link href="/" />}>
-              <span>View public directory</span>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu> */}
-        <NavUser user={data.user} />
+        <NavUser user={user} />
       </SidebarFooter>
     </Sidebar>
   );
