@@ -1,20 +1,19 @@
 import { createAuthClient } from "better-auth/react";
 
-function getServerUrl(url: string) {
-  const processEnv = (
-    globalThis as {
-      process?: { env?: Record<string, string | undefined> };
-    }
-  ).process?.env;
-  if (typeof window === "undefined" && processEnv?.SERVER_URL) {
-    return processEnv.SERVER_URL.endsWith("/")
-      ? processEnv.SERVER_URL.slice(0, -1)
-      : processEnv.SERVER_URL;
-  }
+function getBaseURL() {
+  // Browser: same-origin so the session cookie stays first-party and is
+  // sent to (and readable by) our own Server Components and middleware.
+  if (typeof window !== "undefined") return "/api/auth";
 
-  return url.endsWith("/") ? url.slice(0, -1) : url;
+  const serverUrl = (
+    process.env.SERVER_URL ??
+    process.env.NEXT_PUBLIC_SERVER_URL ??
+    "http://localhost:3000"
+  ).replace(/\/$/, "");
+
+  return `${serverUrl}/api/auth`;
 }
 
 export const authClient = createAuthClient({
-  baseURL: new URL("/api/auth", getServerUrl(process.env.NEXT_PUBLIC_SERVER_URL!)).toString(),
+  baseURL: getBaseURL(),
 });

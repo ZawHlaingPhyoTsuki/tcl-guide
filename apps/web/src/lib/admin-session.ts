@@ -1,13 +1,19 @@
 import "server-only";
 
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { authClient } from "./auth-client";
 
 export async function requireAdminSession() {
-  const session = await authClient.getSession({
-    fetchOptions: { throw: true },
-  });
+  let session: Awaited<ReturnType<typeof authClient.getSession>>;
+  try {
+    session = await authClient.getSession({
+      fetchOptions: { headers: await headers(), throw: true },
+    });
+  } catch {
+    redirect("/login");
+  }
 
   if (!session?.user) redirect("/login");
 
@@ -18,9 +24,14 @@ export async function requireAdminSession() {
 }
 
 export async function redirectIfAuthenticated() {
-  const session = await authClient.getSession({
-    fetchOptions: { throw: true },
-  });
+  let session: Awaited<ReturnType<typeof authClient.getSession>>;
+  try {
+    session = await authClient.getSession({
+      fetchOptions: { headers: await headers(), throw: true },
+    });
+  } catch {
+    return;
+  }
 
   if (!session?.user) return;
 
