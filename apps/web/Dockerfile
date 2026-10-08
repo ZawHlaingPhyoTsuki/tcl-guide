@@ -8,7 +8,7 @@ COPY apps/server/package.json ./apps/server/package.json
 COPY apps/web/package.json ./apps/web/package.json
 COPY apps/server/.env.schema ./apps/server/.env.schema
 COPY apps/web/.env.schema ./apps/web/.env.schema
-RUN --mount=type=secret,id=web_env,target=/app/apps/web/.env.local --mount=type=secret,id=server_env,target=/app/apps/server/.env.local --mount=type=cache,target=/pnpm-store pnpm install --frozen-lockfile --filter web... --store-dir /pnpm-store
+RUN --mount=type=secret,id=web_env,target=/app/apps/web/.env.local --mount=type=secret,id=server_env,target=/app/apps/server/.env.local --mount=type=cache,target=/pnpm-store pnpm install --frozen-lockfile --store-dir /pnpm-store
 
 COPY . .
 
