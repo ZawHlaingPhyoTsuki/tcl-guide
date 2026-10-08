@@ -1,13 +1,12 @@
 ### UI
 
-- Fix sidebar collapse toggle hit-area (make the whole circle clickable).
 - Implement sub-image click-to-expand on the detail page.
 - Polish the detail page UI.
 - Create Admin Settings page (theme toggle, profile edit).
 - Replace `Sheet` with `Drawer` on the home page for better mobile UX.
-- Remove "minimal 2 items" logic; allow full drawer toggle.
+- Remove "minimal 2 items" logic; allow full drawer toggle. (when user first open the page, the drawer must be expanded)
 - Fix orphaned uploads when closing the form sheet accidentally.
-- Improve the look of `<select>` inputs in forms.
+- Improve the look of `<select>` inputs in forms. using shadcn component
 - Refactor folder structure (move places/categories to `src/features`).
 
 ### Server

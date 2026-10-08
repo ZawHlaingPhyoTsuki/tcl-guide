@@ -90,12 +90,12 @@ export function PlacesExplorer({
           aria-expanded={!sidebarCollapsed}
           aria-label={sidebarCollapsed ? "Show places list" : "Hide places list"}
           onClick={() => setSidebarCollapsed((value) => !value)}
-          className="absolute top-1/2 left-2 z-20 hidden -translate-y-1/2 rounded-full shadow-md md:flex"
+          className="absolute top-1/2 left-2 z-20 hidden size-10 rounded-full shadow-md md:flex"
         >
           {sidebarCollapsed ? (
-            <PanelLeftOpen className="size-4" aria-hidden />
+            <PanelLeftOpen className="size-5" aria-hidden />
           ) : (
-            <PanelLeftClose className="size-4" aria-hidden />
+            <PanelLeftClose className="size-5" aria-hidden />
           )}
         </Button>
         <div className="md:hidden">
