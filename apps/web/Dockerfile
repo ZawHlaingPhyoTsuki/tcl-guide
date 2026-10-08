@@ -2,12 +2,21 @@ FROM node:24-slim AS builder
 RUN npm install -g pnpm@12.8.1
 WORKDIR /app
 
+# Manifests first: code-only edits reuse the install layer below.
+COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
+COPY apps/server/package.json ./apps/server/package.json
+COPY apps/web/package.json ./apps/web/package.json
+COPY apps/server/.env.schema ./apps/server/.env.schema
+COPY apps/web/.env.schema ./apps/web/.env.schema
+RUN --mount=type=secret,id=web_env,target=/app/apps/web/.env.local --mount=type=secret,id=server_env,target=/app/apps/server/.env.local --mount=type=cache,target=/pnpm-store pnpm install --frozen-lockfile --filter web... --store-dir /pnpm-store
+
 COPY . .
-RUN --mount=type=secret,id=web_env,target=/app/apps/web/.env.local --mount=type=secret,id=server_env,target=/app/apps/server/.env.local --mount=type=cache,target=/pnpm-store pnpm install --store-dir /pnpm-store
 
 ARG SERVER_URL
 ENV SERVER_URL=${SERVER_URL}
 ENV NODE_ENV=production
+# Filtered install may skip the root postinstall, so generate web env explicitly.
+RUN --mount=type=secret,id=web_env,target=/app/apps/web/.env.local pnpm --filter web run env:generate
 RUN --mount=type=secret,id=web_env,target=/app/apps/web/.env.local --mount=type=secret,id=server_env,target=/app/apps/server/.env.local cd apps/web && pnpm run build && rm -f .next/standalone/.env* .next/standalone/apps/web/.env*
 RUN pnpm deploy --filter web --prod /app/web-deploy
 # standalone output excludes public/; ensure it exists so the runner copy never fails
