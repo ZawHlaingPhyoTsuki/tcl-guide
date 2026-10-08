@@ -1,7 +1,7 @@
 import "server-only";
 
 import { cookies } from "next/headers";
-import { ENV } from "@/env";
+import { serverUrl } from "@/lib/server-url";
 import type { Session } from "./types/session";
 
 export async function getServerSession(): Promise<Session | null> {
@@ -11,9 +11,7 @@ export async function getServerSession(): Promise<Session | null> {
   if (!sessionCookie) return null;
 
   try {
-    // Call your NestJS backend to validate the session
-    // Use your server URL env variable
-    const apiUrl = ENV.SERVER_URL || "http://localhost:3000";
+    const apiUrl = serverUrl();
 
     const res = await fetch(`${apiUrl}/api/auth/get-session`, {
       headers: {

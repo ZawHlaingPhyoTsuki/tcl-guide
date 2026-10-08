@@ -9,18 +9,18 @@ export interface Session {
     banned: boolean;
     banReason: string | null;
     banExpires: string | null;
-    createdAt: Date;
-    updatedAt: Date;
+    createdAt: string;
+    updatedAt: string;
   };
   session: {
     id: string;
     userId: string;
-    expiresAt: Date;
+    expiresAt: string;
     token: string;
     ipAddress: string | null;
     userAgent: string | null;
     impersonatedBy: string | null;
-    createdAt: Date;
-    updatedAt: Date;
+    createdAt: string;
+    updatedAt: string;
   };
 }

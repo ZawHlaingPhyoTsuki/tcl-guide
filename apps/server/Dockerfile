@@ -7,13 +7,14 @@ RUN --mount=type=secret,id=web_env,target=/app/apps/web/.env.local --mount=type=
 
 ENV NODE_ENV=production
 RUN --mount=type=secret,id=web_env,target=/app/apps/web/.env.local --mount=type=secret,id=server_env,target=/app/apps/server/.env.local cd apps/server && pnpm run build
+RUN pnpm deploy --filter server --prod /app/server-deploy
+RUN mkdir -p /app/server-deploy/dist && cp -r apps/server/dist/. /app/server-deploy/dist/
 
 FROM node:24-slim AS runner
 WORKDIR /app
 ENV NODE_ENV=production
-COPY --from=builder /app /app
+COPY --from=builder /app/server-deploy ./
 
 EXPOSE 3000
 
-WORKDIR /app/apps/server
-CMD ["node", "dist/main"]
+CMD ["node", "dist/main.js"]
