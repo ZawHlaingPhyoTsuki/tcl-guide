@@ -10,6 +10,9 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     bodyParser: false, // Required for Better Auth
   });
+  // Behind Azure App Service TLS is terminated at the proxy: without this
+  // Express sees plain HTTP and Better Auth won't emit Secure cookies.
+  app.getHttpAdapter().getInstance().set("trust proxy", 1);
   app.enableShutdownHooks();
   setupApp(app);
 

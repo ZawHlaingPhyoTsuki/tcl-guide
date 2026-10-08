@@ -4,19 +4,29 @@ import { cookies } from "next/headers";
 import { serverUrl } from "@/lib/server-url";
 import type { Session } from "./types/session";
 
+const SESSION_COOKIE_NAMES = [
+  "__Secure-better-auth.session_token", // production (HTTPS)
+  "better-auth.session_token", // local dev (HTTP)
+] as const;
+
 export async function getServerSession(): Promise<Session | null> {
   const cookieStore = await cookies();
-  const sessionCookie = cookieStore.get("better-auth.session_token");
-
-  if (!sessionCookie) return null;
+  const hasSessionCookie = SESSION_COOKIE_NAMES.some((name) => cookieStore.get(name));
+  if (!hasSessionCookie) return null;
 
   try {
     const apiUrl = serverUrl();
+    // Forward every cookie: get-session also reads the session_data
+    // cookie cache when present, and the secure cookie name differs
+    // between local (http) and prod (https).
+    const cookieHeader = cookieStore
+      .getAll()
+      .map((cookie) => `${cookie.name}=${cookie.value}`)
+      .join("; ");
 
     const res = await fetch(`${apiUrl}/api/auth/get-session`, {
       headers: {
-        // Forward the cookie to NestJS for validation
-        Cookie: `better-auth.session_token=${sessionCookie.value}`,
+        Cookie: cookieHeader,
       },
       cache: "no-store", // Critical: Do not cache private user data
     });
