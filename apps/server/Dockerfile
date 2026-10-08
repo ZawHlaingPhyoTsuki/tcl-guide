@@ -15,6 +15,7 @@ ENV NODE_ENV=production
 # Filtered install may skip the root postinstall, so generate server env explicitly.
 RUN --mount=type=secret,id=server_env,target=/app/apps/server/.env.local pnpm --filter server run env:generate
 # Prisma client is gitignored, so generate it explicitly (fresh checkouts have no src/generated).
+# Stub values from .env.example satisfy validation; generate connects to nothing.
 RUN --mount=type=secret,id=server_env,target=/app/apps/server/.env.local pnpm --filter server run db:generate
 RUN --mount=type=secret,id=web_env,target=/app/apps/web/.env.local --mount=type=secret,id=server_env,target=/app/apps/server/.env.local cd apps/server && pnpm run build
 RUN pnpm deploy --filter server --prod /app/server-deploy
