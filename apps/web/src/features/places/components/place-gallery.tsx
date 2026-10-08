@@ -4,9 +4,12 @@ import Image from "next/image";
 import { useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, ImageOff } from "lucide-react";
 
+import { PhotoPreviewDialog } from "./photo-preview-dialog";
+
 export function PlaceGallery({ photos, name }: { photos: string[]; name: string }) {
   const trackRef = useRef<HTMLUListElement>(null);
   const [index, setIndex] = useState(0);
+  const [preview, setPreview] = useState<number | null>(null);
 
   if (photos.length === 0) {
     return (
@@ -26,6 +29,13 @@ export function PlaceGallery({ photos, name }: { photos: string[]; name: string 
     if (!el) return;
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     el.scrollBy({ left: direction * el.clientWidth, behavior: reduce ? "auto" : "smooth" });
+  }
+
+  function scrollTo(photoIndex: number) {
+    const el = trackRef.current;
+    if (!el) return;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    el.scrollTo({ left: photoIndex * el.clientWidth, behavior: reduce ? "auto" : "smooth" });
   }
 
   const arrow =
@@ -55,6 +65,12 @@ export function PlaceGallery({ photos, name }: { photos: string[]; name: string 
               className="object-cover"
               priority={i === 0}
               sizes="(max-width: 1024px) 100vw, 640px"
+            />
+            <button
+              type="button"
+              onClick={() => setPreview(i)}
+              aria-label={`Expand photo ${i + 1} of ${photos.length}`}
+              className="absolute inset-0 cursor-zoom-in outline-offset-2 focus-visible:outline-2"
             />
           </li>
         ))}
@@ -87,6 +103,22 @@ export function PlaceGallery({ photos, name }: { photos: string[]; name: string 
             {index + 1} / {photos.length}
           </span>
         </>
+      ) : null}
+
+      {preview !== null ? (
+        <PhotoPreviewDialog
+          photos={photos}
+          index={preview}
+          placeName={name}
+          open
+          onOpenChange={(o) => {
+            if (!o) setPreview(null);
+          }}
+          onIndexChange={(i) => {
+            setPreview(i);
+            scrollTo(i);
+          }}
+        />
       ) : null}
     </div>
   );

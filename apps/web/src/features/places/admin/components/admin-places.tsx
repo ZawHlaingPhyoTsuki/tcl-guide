@@ -41,7 +41,7 @@ import { MapPinIcon, SearchIcon } from "lucide-react";
 
 import { deletePlace, updatePlace } from "../../places-actions";
 import { AdminPlaceForm } from "./admin-place-form";
-import { PhotoPreviewDialog } from "./photo-preview-dialog";
+import { PhotoPreviewDialog } from "../../components/photo-preview-dialog";
 import type { Category } from "@/features/categories/types/category";
 import type { Area } from "@/features/areas/types/area";
 

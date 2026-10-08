@@ -1,6 +1,6 @@
 ### UI
 
-- Implement sub-image click-to-expand on the detail page.
+- [DONE] Implement sub-image click-to-expand on the detail page.
 - Polish the detail page UI.
 - Create Admin Settings page (theme toggle, profile edit).
 - Replace `Sheet` with `Drawer` on the home page for better mobile UX.
