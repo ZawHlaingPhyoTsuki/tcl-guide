@@ -21,6 +21,12 @@ Dockerfile
 **/Dockerfile
 docker-compose.yml
 
+# Never shipped to the image; keeps COPY cache valid on doc-only edits
+docs/
+.agents/
+.github/
+*.md
+
 # Env value files stay out of COPY layers; runtime env comes from compose env_file,
 # build-time configuration uses BuildKit secrets; public values use build args
 **/.env

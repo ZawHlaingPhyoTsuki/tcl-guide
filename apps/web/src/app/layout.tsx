@@ -1,13 +1,21 @@
 import type { Metadata } from "next";
-import { Outfit, Inter } from "next/font/google";
+import localFont from "next/font/local";
 
 import "../index.css";
 import Providers from "@/components/providers";
 import { cn } from "@/lib/utils";
 
-const outfitHeading = Outfit({ subsets: ["latin"], variable: "--font-heading" });
+const outfitHeading = localFont({
+  src: "../fonts/outfit-latin.woff2",
+  variable: "--font-heading",
+  display: "swap",
+});
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
+const inter = localFont({
+  src: "../fonts/inter-latin.woff2",
+  variable: "--font-sans",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "tcl-guide",

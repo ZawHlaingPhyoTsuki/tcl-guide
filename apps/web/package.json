@@ -36,7 +36,6 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "catalog:",
-    "@tcl-guide/config": "workspace:*",
     "@types/geojson": "^7946.0.16",
     "@types/node": "catalog:",
     "@types/react": "catalog:",

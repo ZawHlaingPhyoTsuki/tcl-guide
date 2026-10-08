@@ -2,8 +2,7 @@
   "name": "tcl-guide",
   "private": true,
   "workspaces": [
-    "apps/*",
-    "packages/*"
+    "apps/*"
   ],
   "type": "module",
   "scripts": {
@@ -46,7 +45,6 @@
     "zod": "catalog:"
   },
   "devDependencies": {
-    "@tcl-guide/config": "workspace:*",
     "@types/node": "catalog:",
     "husky": "^9.1.7",
     "lint-staged": "^17.5.0",
