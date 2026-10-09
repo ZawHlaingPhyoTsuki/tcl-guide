@@ -5,9 +5,9 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Search } from "lucide-react";
 
-import { Input } from "@/components/ui/input";
+import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
 
-export function PlaceSearch() {
+export function PlaceSearch({ className }: { className?: string }) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -36,19 +36,16 @@ export function PlaceSearch() {
   }, [value, pathname, router, searchParams]);
 
   return (
-    <label className="relative block">
-      <span className="sr-only">Search places</span>
-      <Search
-        className="text-muted-foreground pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2"
-        aria-hidden
-      />
-      <Input
+    <InputGroup className={className}>
+      <InputGroupInput
+        placeholder="Search name, category, area…"
+        type="search"
         value={value}
         onChange={(e) => setValue(e.target.value)}
-        placeholder="Search name, category, area…"
-        className="pl-9"
-        type="search"
       />
-    </label>
+      <InputGroupAddon align="inline-end">
+        <Search className="size-4 text-muted-foreground" />
+      </InputGroupAddon>
+    </InputGroup>
   );
 }

@@ -4,6 +4,7 @@ import localFont from "next/font/local";
 import "../index.css";
 import Providers from "@/components/providers";
 import { cn } from "@/lib/utils";
+import { Inter } from "next/font/google";
 
 const outfitHeading = localFont({
   src: "../fonts/outfit-latin.woff2",
@@ -11,11 +12,7 @@ const outfitHeading = localFont({
   display: "swap",
 });
 
-const inter = localFont({
-  src: "../fonts/inter-latin.woff2",
-  variable: "--font-sans",
-  display: "swap",
-});
+const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
   title: "tcl-guide",
@@ -33,7 +30,7 @@ export default function RootLayout({
       suppressHydrationWarning
       className={cn("font-sans", inter.variable, outfitHeading.variable)}
     >
-      <body className="antialiased">
+      <body className={cn("antialiased", "style-rhea")}>
         <Providers>{children}</Providers>
       </body>
     </html>

@@ -59,7 +59,7 @@
       "oxlint --fix",
       "oxfmt --write"
     ],
-    "*.{json,md}": [
+    "*.{css,json,md}": [
       "oxfmt --write"
     ]
   },

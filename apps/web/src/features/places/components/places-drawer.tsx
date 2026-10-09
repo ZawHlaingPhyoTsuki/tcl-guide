@@ -1,0 +1,111 @@
+"use client";
+
+import type { ReactNode } from "react";
+import { PanelLeftOpen } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerFooter,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer";
+import type { Category } from "@/features/categories/types/category";
+
+import type { Place } from "../types/place";
+import { PlaceFilterChips } from "./place-filter-chips";
+import { PlaceList } from "./place-list";
+
+export type SheetState = "peek" | "expanded";
+
+export { SHEET_SNAP_POINTS };
+
+const SHEET_SNAP_POINTS = { peek: 0.4, expanded: 0.85 } as const;
+
+const VARIANT_CLASSES = {
+  bottom: {
+    trigger: "absolute top-2 left-2 z-20 size-8 rounded-full shadow-md",
+    triggerIcon: "size-4",
+    content: "h-[85dvh] md:hidden",
+    chips: "shrink-0 px-3 pt-1 pb-2",
+    list: "min-h-0 flex-1 overflow-y-auto px-3 pb-4",
+  },
+  side: {
+    trigger: "absolute top-4 left-4 z-20 hidden size-10 rounded-full shadow-md md:flex",
+    triggerIcon: "size-5",
+    content: "max-md:hidden",
+    chips: "shrink-0 px-4 pt-3",
+    list: "min-h-0 flex-1 overflow-y-auto p-4",
+  },
+} as const;
+
+export function PlacesDrawer({
+  places,
+  categories,
+  selectedPlaceId,
+  onSelect,
+  open,
+  onOpenChange,
+  variant,
+  snapPoint,
+  onSnapPointChange,
+  header,
+}: {
+  places: Place[];
+  categories: Category[];
+  selectedPlaceId: string | null;
+  onSelect: (id: string) => void;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  variant: "bottom" | "side";
+  snapPoint?: number | string | null;
+  onSnapPointChange?: (snapPoint: number | string | null) => void;
+  header?: ReactNode;
+}) {
+  const classes = VARIANT_CLASSES[variant];
+
+  return (
+    <Drawer
+      open={open}
+      onOpenChange={onOpenChange}
+      modal={false}
+      disablePointerDismissal
+      showSwipeHandle={variant === "bottom"}
+      swipeDirection={variant === "bottom" ? "down" : "left"}
+      snapPoints={
+        variant === "bottom" ? [SHEET_SNAP_POINTS.peek, SHEET_SNAP_POINTS.expanded] : undefined
+      }
+      snapPoint={snapPoint}
+      onSnapPointChange={onSnapPointChange}
+    >
+      <DrawerTrigger
+        render={
+          <Button
+            type="button"
+            size="icon"
+            variant="outline"
+            aria-label="Toggle places list"
+            className={classes.trigger}
+          />
+        }
+      >
+        <PanelLeftOpen className={classes.triggerIcon} aria-hidden />
+      </DrawerTrigger>
+      <DrawerContent aria-label="Places list" initialFocus={false} className={classes.content}>
+        <DrawerTitle className="sr-only">Places list</DrawerTitle>
+        {header}
+        <div className={classes.chips}>
+          <PlaceFilterChips categories={categories} />
+        </div>
+        <div className={classes.list}>
+          <PlaceList places={places} selectedPlaceId={selectedPlaceId} onSelect={onSelect} />
+        </div>
+        <DrawerFooter>
+          <DrawerClose render={<Button>Close</Button>} />
+        </DrawerFooter>
+      </DrawerContent>
+    </Drawer>
+  );
+}
