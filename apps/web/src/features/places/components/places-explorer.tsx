@@ -6,8 +6,7 @@ import type { Category } from "@/features/categories/types/category";
 
 import type { Place } from "../types/place";
 import { PlacesMap } from "./places-map/places-map";
-import { PlacesSideDrawer } from "./desktop/places-side-drawer";
-import { PlacesBottomDrawer, type SheetState } from "./mobile/places-bottom-drawer";
+import { PlacesDrawer, SHEET_SNAP_POINTS, type SheetState } from "./places-drawer";
 import { PlaceSearch } from "./place-search";
 
 export function PlacesExplorer({
@@ -51,31 +50,41 @@ export function PlacesExplorer({
         onSelect={setSelectedPlaceId}
       />
 
-      {/* Desktop side drawer */}
-      <PlacesSideDrawer
+      <PlacesDrawer
+        variant="side"
         places={places}
         categories={categories}
         selectedPlaceId={effectiveSelected}
         onSelect={setSelectedPlaceId}
         open={sidebarOpen}
         onOpenChange={setSidebarOpen}
+        header={
+          <div className="flex items-center gap-2 border-b p-4">
+            <div className="min-w-0 flex-1">
+              <Suspense>
+                <PlaceSearch />
+              </Suspense>
+            </div>
+          </div>
+        }
       />
-
-      {/* Mobile search and drawer */}
       <div className="md:hidden">
         <Suspense>
           <div className="absolute top-2 right-16 left-14">
-            <PlaceSearch isMobile />
+            <PlaceSearch className="bg-background! shadow-md!" />
           </div>
-          <PlacesBottomDrawer
+          <PlacesDrawer
+            variant="bottom"
             places={places}
             categories={categories}
             selectedPlaceId={effectiveSelected}
             onSelect={handleMobileSelect}
-            state={sheetState}
-            onStateChange={setSheetState}
             open={sheetOpen}
             onOpenChange={setSheetOpen}
+            snapPoint={SHEET_SNAP_POINTS[sheetState]}
+            onSnapPointChange={(snap) =>
+              setSheetState(snap === SHEET_SNAP_POINTS.expanded ? "expanded" : "peek")
+            }
           />
         </Suspense>
       </div>

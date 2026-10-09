@@ -6,9 +6,8 @@ import { useEffect, useState } from "react";
 import { Search } from "lucide-react";
 
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
-import { cn } from "cn";
 
-export function PlaceSearch({ isMobile }: { isMobile?: boolean }) {
+export function PlaceSearch({ className }: { className?: string }) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -37,7 +36,7 @@ export function PlaceSearch({ isMobile }: { isMobile?: boolean }) {
   }, [value, pathname, router, searchParams]);
 
   return (
-    <InputGroup className={cn(isMobile && "!bg-background !shadow-md")}>
+    <InputGroup className={className}>
       <InputGroupInput
         placeholder="Search name, category, area…"
         type="search"
