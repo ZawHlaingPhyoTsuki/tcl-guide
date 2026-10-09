@@ -1,13 +1,14 @@
 "use client";
 
 import { Suspense } from "react";
-import { PanelLeftOpen, XIcon } from "lucide-react";
+import { PanelLeftOpen } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
   Drawer,
   DrawerClose,
   DrawerContent,
+  DrawerFooter,
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
@@ -54,13 +55,7 @@ export function PlacesSideDrawer({
       >
         <PanelLeftOpen className="size-5" aria-hidden />
       </DrawerTrigger>
-      <DrawerContent
-        aria-label="Places list"
-        showOverlay={false}
-        showCloseButton={false}
-        initialFocus={false}
-        className="max-md:hidden"
-      >
+      <DrawerContent aria-label="Places list" initialFocus={false} className="max-md:hidden">
         <DrawerTitle className="sr-only">Places list</DrawerTitle>
         <div className="flex items-center gap-2 border-b p-4">
           <div className="min-w-0 flex-1">
@@ -68,19 +63,6 @@ export function PlacesSideDrawer({
               <PlaceSearch />
             </Suspense>
           </div>
-          <DrawerClose
-            render={
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon-sm"
-                aria-label="Close places list"
-                className="shrink-0"
-              />
-            }
-          >
-            <XIcon aria-hidden />
-          </DrawerClose>
         </div>
         <div className="shrink-0 px-4 pt-3">
           <Suspense>
@@ -90,6 +72,9 @@ export function PlacesSideDrawer({
         <div className="min-h-0 flex-1 overflow-y-auto p-4">
           <PlaceList places={places} selectedPlaceId={selectedPlaceId} onSelect={onSelect} />
         </div>
+        <DrawerFooter>
+          <DrawerClose render={<Button>Close</Button>} />
+        </DrawerFooter>
       </DrawerContent>
     </Drawer>
   );

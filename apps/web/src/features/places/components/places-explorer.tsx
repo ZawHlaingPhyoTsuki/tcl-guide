@@ -7,7 +7,7 @@ import type { Category } from "@/features/categories/types/category";
 import type { Place } from "../types/place";
 import { PlacesMap } from "./places-map/places-map";
 import { PlacesSideDrawer } from "./desktop/places-side-drawer";
-import { PlacesBottomSheet, type SheetState } from "./mobile/places-bottom-sheet";
+import { PlacesBottomDrawer, type SheetState } from "./mobile/places-bottom-drawer";
 import { PlaceSearch } from "./place-search";
 
 export function PlacesExplorer({
@@ -50,6 +50,8 @@ export function PlacesExplorer({
         selectedPlaceId={effectiveSelected}
         onSelect={setSelectedPlaceId}
       />
+
+      {/* Desktop side drawer */}
       <PlacesSideDrawer
         places={places}
         categories={categories}
@@ -58,12 +60,14 @@ export function PlacesExplorer({
         open={sidebarOpen}
         onOpenChange={setSidebarOpen}
       />
+
+      {/* Mobile search and drawer */}
       <div className="md:hidden">
         <Suspense>
           <div className="absolute top-2 right-16 left-14">
-            <PlaceSearch />
+            <PlaceSearch isMobile />
           </div>
-          <PlacesBottomSheet
+          <PlacesBottomDrawer
             places={places}
             categories={categories}
             selectedPlaceId={effectiveSelected}

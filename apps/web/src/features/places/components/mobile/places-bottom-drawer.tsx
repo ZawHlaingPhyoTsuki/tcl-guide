@@ -3,7 +3,14 @@
 import { PanelLeftOpen } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Drawer, DrawerContent, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerFooter,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer";
 import type { Category } from "@/features/categories/types/category";
 
 import type { Place } from "../../types/place";
@@ -14,7 +21,7 @@ export type SheetState = "peek" | "expanded";
 
 const SNAP_POINTS = [0.4, 0.85] as const;
 
-export function PlacesBottomSheet({
+export function PlacesBottomDrawer({
   places,
   categories,
   selectedPlaceId,
@@ -41,6 +48,7 @@ export function PlacesBottomSheet({
       onOpenChange={onOpenChange}
       modal={false}
       disablePointerDismissal
+      showSwipeHandle
       swipeDirection="down"
       snapPoints={[...SNAP_POINTS]}
       snapPoint={expanded ? SNAP_POINTS[1] : SNAP_POINTS[0]}
@@ -53,19 +61,13 @@ export function PlacesBottomSheet({
             size="icon"
             variant="outline"
             aria-label="Toggle places list"
-            className="absolute top-2 left-2 z-20 size-10 rounded-full shadow-md md:hidden"
+            className="absolute top-2 left-2 z-20 size-8 rounded-full shadow-md md:hidden"
           />
         }
       >
-        <PanelLeftOpen className="size-5" aria-hidden />
+        <PanelLeftOpen className="size-4" aria-hidden />
       </DrawerTrigger>
-      <DrawerContent
-        aria-label="Places list"
-        showOverlay={false}
-        showCloseButton={false}
-        initialFocus={false}
-        className="h-[85dvh] md:hidden"
-      >
+      <DrawerContent aria-label="Places list" initialFocus={false} className="h-[85dvh] md:hidden">
         <DrawerTitle className="sr-only">Places list</DrawerTitle>
         <div className="shrink-0 px-3 pt-1 pb-2">
           <PlaceFilterChips categories={categories} />
@@ -73,6 +75,9 @@ export function PlacesBottomSheet({
         <div className="min-h-0 flex-1 overflow-y-auto px-3 pb-4">
           <PlaceList places={places} selectedPlaceId={selectedPlaceId} onSelect={onSelect} />
         </div>
+        <DrawerFooter>
+          <DrawerClose render={<Button>Close</Button>} />
+        </DrawerFooter>
       </DrawerContent>
     </Drawer>
   );
