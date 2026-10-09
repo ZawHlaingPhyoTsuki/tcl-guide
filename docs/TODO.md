@@ -1,13 +1,13 @@
 ### UI
 
 - [DONE] Implement sub-image click-to-expand on the detail page.
-- Polish the detail page UI.
+- [ON_HOLD] Polish the detail page UI.
 - Create Admin Settings page (theme toggle, profile edit).
 - Replace `Sheet` with `Drawer` on the home page for better mobile UX.
 - Remove "minimal 2 items" logic; allow full drawer toggle. (when user first open the page, the drawer must be expanded)
-- Fix orphaned uploads when closing the form sheet accidentally.
 - Improve the look of `<select>` inputs in forms. using shadcn component
 - Refactor folder structure (move places/categories to `src/features`).
+- in mobile view, align and make same size for both drawer trigger button and search bar(don't make search bar glassmor)
 
 ### Server
 
