@@ -5,52 +5,55 @@ import {
   NotFoundException,
 } from "@nestjs/common";
 
+import { PrismaService } from "../../prisma/prisma.service.js";
+import { toAdminItem, withPlaceCount } from "../taxonomy.js";
 import type { CreateCategoryDto, UpdateCategoryDto } from "./categories.schemas.js";
-import { CategoriesRepository } from "./categories.repository.js";
-
-type CategoryWithCount = Awaited<ReturnType<CategoriesRepository["list"]>>[number];
-
-type AdminCategory = Omit<CategoryWithCount, "_count"> & { placeCount: number };
-
-function toAdminCategory(category: CategoryWithCount): AdminCategory {
-  const { _count, ...rest } = category;
-  return { ...rest, placeCount: _count.places };
-}
 
 @Injectable()
 export class CategoriesAdminService {
-  constructor(private readonly categoriesRepository: CategoriesRepository) {}
+  constructor(private readonly db: PrismaService) {}
 
   async list() {
-    const categories = await this.categoriesRepository.list();
-    return categories.map(toAdminCategory);
+    const categories = await this.db.category.findMany({
+      orderBy: [{ nameEn: "asc" }, { nameMy: "asc" }],
+      include: withPlaceCount,
+    });
+    return categories.map(toAdminItem);
   }
 
   async create(dto: CreateCategoryDto) {
-    if (await this.categoriesRepository.findBySlug(dto.slug)) {
+    if (await this.db.category.findUnique({ where: { slug: dto.slug } })) {
       throw new ConflictException(`Category "${dto.slug}" already exists`);
     }
-    return toAdminCategory(await this.categoriesRepository.create(dto));
+    const category = await this.db.category.create({ data: dto, include: withPlaceCount });
+    return toAdminItem(category);
   }
 
   async update(id: string, dto: UpdateCategoryDto) {
     await this.getCategory(id);
-    return toAdminCategory(await this.categoriesRepository.update(id, dto));
+    const category = await this.db.category.update({
+      where: { id },
+      data: dto,
+      include: withPlaceCount,
+    });
+    return toAdminItem(category);
   }
 
   async remove(id: string) {
     const category = await this.getCategory(id);
-    const places = category._count.places;
-    if (places > 0) {
+    if (category._count.places > 0) {
       throw new BadRequestException(
-        `Category "${category.slug}" still has ${places} places; move them to another category first`,
+        `Category "${category.slug}" still has ${category._count.places} places; move them to another category first`,
       );
     }
-    await this.categoriesRepository.delete(id);
+    await this.db.category.delete({ where: { id } });
   }
 
   private async getCategory(id: string) {
-    const category = await this.categoriesRepository.findById(id);
+    const category = await this.db.category.findUnique({
+      where: { id },
+      include: withPlaceCount,
+    });
     if (!category) throw new NotFoundException(`Category ${id} not found`);
     return category;
   }

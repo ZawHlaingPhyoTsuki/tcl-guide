@@ -3,8 +3,24 @@ import { Suspense } from "react";
 import type { Route } from "next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-import { getAdminPlaceSummary } from "../../places-queries";
-import { AdminPlacesMapSection, AdminPlacesMapSkeleton } from "./admin-places-map-section";
+import { getAdminPlaceSummary, getAdminPlaces } from "../../places-queries";
+import { PlacesMapSkeleton } from "../../components/places-map/places-map";
+import { AdminPlacesMap } from "./admin-places-map";
+
+async function AdminPlacesMapContent() {
+  const places = await getAdminPlaces();
+  return (
+    <section className="grid gap-3">
+      <div>
+        <h2 className="text-lg font-semibold">Place locations</h2>
+        <p className="text-sm text-muted-foreground">
+          Review every saved Place location, including Places hidden from the public directory.
+        </p>
+      </div>
+      <AdminPlacesMap places={places} />
+    </section>
+  );
+}
 
 export async function AdminDashboard() {
   const summary = await getAdminPlaceSummary();
@@ -40,8 +56,8 @@ export async function AdminDashboard() {
           }
         />
       </section>
-      <Suspense fallback={<AdminPlacesMapSkeleton />}>
-        <AdminPlacesMapSection />
+      <Suspense fallback={<PlacesMapSkeleton />}>
+        <AdminPlacesMapContent />
       </Suspense>
       <section className="flex flex-wrap items-center gap-x-4 gap-y-2 border-t pt-5 text-sm">
         <Link

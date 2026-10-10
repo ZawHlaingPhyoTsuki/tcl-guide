@@ -1,8 +1,8 @@
 import { BadRequestException, ConflictException, NotFoundException } from "@nestjs/common";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import type { PrismaService } from "../../prisma/prisma.service.js";
 import { AreasAdminService } from "./areas-admin.service.js";
-import type { AreasRepository } from "./areas.repository.js";
 
 function area(overrides: Record<string, unknown> = {}) {
   return {
@@ -19,19 +19,16 @@ function area(overrides: Record<string, unknown> = {}) {
 }
 
 function makeService() {
-  const repository = {
-    list: vi.fn(),
-    findById: vi.fn(),
-    findBySlug: vi.fn(),
-    maxSortOrder: vi.fn().mockResolvedValue(2),
+  const areaDelegate = {
+    findMany: vi.fn(),
+    findUnique: vi.fn(),
+    aggregate: vi.fn().mockResolvedValue({ _max: { sortOrder: 2 } }),
     create: vi.fn(),
     update: vi.fn(),
     delete: vi.fn(),
   };
-  return {
-    repository,
-    service: new AreasAdminService(repository as unknown as AreasRepository),
-  };
+  const db = { area: areaDelegate } as unknown as PrismaService;
+  return { areaDb: areaDelegate, service: new AreasAdminService(db) };
 }
 
 describe("AreasAdminService", () => {
@@ -40,8 +37,8 @@ describe("AreasAdminService", () => {
   });
 
   it("maps the place count onto each area", async () => {
-    const { repository, service } = makeService();
-    repository.list.mockResolvedValue([area({ _count: { places: 3 } })]);
+    const { areaDb, service } = makeService();
+    areaDb.findMany.mockResolvedValue([area({ _count: { places: 3 } })]);
 
     await expect(service.list()).resolves.toEqual([
       expect.objectContaining({ slug: "san-sai", placeCount: 3 }),
@@ -49,72 +46,82 @@ describe("AreasAdminService", () => {
   });
 
   it("appends a new area after the latest order", async () => {
-    const { repository, service } = makeService();
-    repository.findBySlug.mockResolvedValue(null);
-    repository.create.mockImplementation(async (dto: Record<string, unknown>) => area(dto));
+    const { areaDb, service } = makeService();
+    areaDb.findUnique.mockResolvedValue(null);
+    areaDb.create.mockImplementation(async (args: { data: Record<string, unknown> }) =>
+      area(args.data),
+    );
 
     await service.create({ slug: "riverside", nameMy: "Riverside" });
 
-    expect(repository.create).toHaveBeenCalledWith(
-      expect.objectContaining({ slug: "riverside", sortOrder: 3 }),
+    expect(areaDb.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ slug: "riverside", sortOrder: 3 }),
+      }),
     );
   });
 
   it("respects an explicit sort order on create", async () => {
-    const { repository, service } = makeService();
-    repository.findBySlug.mockResolvedValue(null);
-    repository.create.mockImplementation(async (dto: Record<string, unknown>) => area(dto));
+    const { areaDb, service } = makeService();
+    areaDb.findUnique.mockResolvedValue(null);
+    areaDb.create.mockImplementation(async (args: { data: Record<string, unknown> }) =>
+      area(args.data),
+    );
 
     await service.create({ slug: "riverside", nameMy: "Riverside", sortOrder: 0 });
 
-    expect(repository.create).toHaveBeenCalledWith(expect.objectContaining({ sortOrder: 0 }));
-    expect(repository.maxSortOrder).not.toHaveBeenCalled();
+    expect(areaDb.create).toHaveBeenCalledWith(
+      expect.objectContaining({ data: expect.objectContaining({ sortOrder: 0 }) }),
+    );
+    expect(areaDb.aggregate).not.toHaveBeenCalled();
   });
 
   it("rejects a duplicate slug with a conflict", async () => {
-    const { repository, service } = makeService();
-    repository.findBySlug.mockResolvedValue(area());
+    const { areaDb, service } = makeService();
+    areaDb.findUnique.mockResolvedValue(area());
 
     await expect(service.create({ slug: "san-sai", nameMy: "x" })).rejects.toThrow(
       ConflictException,
     );
-    expect(repository.create).not.toHaveBeenCalled();
+    expect(areaDb.create).not.toHaveBeenCalled();
   });
 
   it("rejects deleting an area that still has places", async () => {
-    const { repository, service } = makeService();
-    repository.findById.mockResolvedValue(area({ _count: { places: 2 } }));
+    const { areaDb, service } = makeService();
+    areaDb.findUnique.mockResolvedValue(area({ _count: { places: 2 } }));
 
     await expect(service.remove("area1")).rejects.toThrow(BadRequestException);
-    expect(repository.delete).not.toHaveBeenCalled();
+    expect(areaDb.delete).not.toHaveBeenCalled();
   });
 
   it("deletes an empty area", async () => {
-    const { repository, service } = makeService();
-    repository.findById.mockResolvedValue(area());
+    const { areaDb, service } = makeService();
+    areaDb.findUnique.mockResolvedValue(area());
 
     await expect(service.remove("area1")).resolves.toBeUndefined();
-    expect(repository.delete).toHaveBeenCalledWith("area1");
+    expect(areaDb.delete).toHaveBeenCalledWith({ where: { id: "area1" } });
   });
 
   it("updates the sort order when reordering", async () => {
-    const { repository, service } = makeService();
-    repository.findById.mockResolvedValue(area());
-    repository.update.mockImplementation(async (_id: string, dto: Record<string, unknown>) =>
-      area(dto),
+    const { areaDb, service } = makeService();
+    areaDb.findUnique.mockResolvedValue(area());
+    areaDb.update.mockImplementation(async (args: { data: Record<string, unknown> }) =>
+      area(args.data),
     );
 
     await service.update("area1", { nameMy: "San Sai", sortOrder: 2 });
 
-    expect(repository.update).toHaveBeenCalledWith("area1", {
-      nameMy: "San Sai",
-      sortOrder: 2,
-    });
+    expect(areaDb.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { id: "area1" },
+        data: expect.objectContaining({ nameMy: "San Sai", sortOrder: 2 }),
+      }),
+    );
   });
 
   it("turns an unknown area into a not-found error", async () => {
-    const { repository, service } = makeService();
-    repository.findById.mockResolvedValue(null);
+    const { areaDb, service } = makeService();
+    areaDb.findUnique.mockResolvedValue(null);
 
     await expect(service.update("missing", { nameMy: "x" })).rejects.toThrow(NotFoundException);
   });

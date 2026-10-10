@@ -3,7 +3,7 @@
 import { MapPin } from "lucide-react";
 
 import { MapMarker, MarkerContent, MarkerLabel } from "@/components/ui/map";
-import { cn } from "@/lib/utils";
+import { cn } from "cn";
 
 export function PlaceMapMarker({
   longitude,

@@ -28,7 +28,7 @@ import { X } from "lucide-react";
 
 import { createPlace, removeUpload, requestUpload, updatePlace } from "../../places-actions";
 import { errorMessages, toOptional } from "@/lib/form";
-import { cn } from "@/lib/utils";
+import { cn } from "cn";
 import {
   formatPhotoShrinkHint,
   PLACE_TAG_LABELS,

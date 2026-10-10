@@ -1,6 +1,5 @@
 import { Module } from "@nestjs/common";
 
-import { PrismaModule } from "../../prisma/prisma.module.js";
 import { UploadsModule } from "../uploads/uploads.module.js";
 import { PlacesAdminController } from "./places-admin.controller.js";
 import { PlacesAdminService } from "./places-admin.service.js";
@@ -9,7 +8,7 @@ import { PlacesPublicService } from "./places-public.service.js";
 import { PlacesRepository } from "./places.repository.js";
 
 @Module({
-  imports: [PrismaModule, UploadsModule],
+  imports: [UploadsModule],
   controllers: [PlacesPublicController, PlacesAdminController],
   providers: [PlacesRepository, PlacesPublicService, PlacesAdminService],
 })

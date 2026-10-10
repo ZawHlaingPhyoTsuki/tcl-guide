@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 
-import { getCategories } from "@/features/categories/categories-queries";
+import { categoriesTransport } from "@/features/categories/categories-transport";
 import { PlacesExplorer } from "@/features/places/components/places-explorer";
 import { PlacesMapSkeleton } from "@/features/places/components/places-map/places-map";
 import { PlaceListSkeleton } from "@/features/places/components/place-list";
@@ -14,7 +14,7 @@ export default async function Home({ searchParams }: PageProps<"/">) {
   // Single fetch: map, list, popup, and sheet all derive from this Place[].
   const [places, categories] = await Promise.all([
     getPlaces({ category, search }),
-    getCategories(),
+    categoriesTransport.getCategories(),
   ]);
 
   return (

@@ -5,55 +5,63 @@ import {
   NotFoundException,
 } from "@nestjs/common";
 
+import { PrismaService } from "../../prisma/prisma.service.js";
+import { toAdminItem, withPlaceCount } from "../taxonomy.js";
 import type { CreateAreaDto, UpdateAreaDto } from "./areas.schemas.js";
-import { AreasRepository } from "./areas.repository.js";
-
-type AreaWithCount = Awaited<ReturnType<AreasRepository["list"]>>[number];
-
-type AdminArea = Omit<AreaWithCount, "_count"> & { placeCount: number };
-
-function toAdminArea(area: AreaWithCount): AdminArea {
-  const { _count, ...rest } = area;
-  return { ...rest, placeCount: _count.places };
-}
 
 @Injectable()
 export class AreasAdminService {
-  constructor(private readonly areasRepository: AreasRepository) {}
+  constructor(private readonly db: PrismaService) {}
 
   async list() {
-    const areas = await this.areasRepository.list();
-    return areas.map(toAdminArea);
+    const areas = await this.db.area.findMany({
+      orderBy: [{ sortOrder: "asc" }, { nameMy: "asc" }],
+      include: withPlaceCount,
+    });
+    return areas.map(toAdminItem);
   }
 
   async create(dto: CreateAreaDto) {
-    if (await this.areasRepository.findBySlug(dto.slug)) {
+    if (await this.db.area.findUnique({ where: { slug: dto.slug } })) {
       throw new ConflictException(`Area "${dto.slug}" already exists`);
     }
     // New areas append after the latest order instead of piling onto 0.
-    const sortOrder = dto.sortOrder ?? (await this.areasRepository.maxSortOrder()) + 1;
-    return toAdminArea(await this.areasRepository.create({ ...dto, sortOrder }));
+    const sortOrder = dto.sortOrder ?? (await this.maxSortOrder()) + 1;
+    const area = await this.db.area.create({
+      data: { ...dto, sortOrder },
+      include: withPlaceCount,
+    });
+    return toAdminItem(area);
   }
 
   async update(id: string, dto: UpdateAreaDto) {
     await this.getArea(id);
-    return toAdminArea(await this.areasRepository.update(id, dto));
+    const area = await this.db.area.update({
+      where: { id },
+      data: dto,
+      include: withPlaceCount,
+    });
+    return toAdminItem(area);
   }
 
   async remove(id: string) {
     const area = await this.getArea(id);
-    const places = area._count.places;
-    if (places > 0) {
+    if (area._count.places > 0) {
       throw new BadRequestException(
-        `Area "${area.slug}" still has ${places} places; move them to another area first`,
+        `Area "${area.slug}" still has ${area._count.places} places; move them to another area first`,
       );
     }
-    await this.areasRepository.delete(id);
+    await this.db.area.delete({ where: { id } });
   }
 
   private async getArea(id: string) {
-    const area = await this.areasRepository.findById(id);
+    const area = await this.db.area.findUnique({ where: { id }, include: withPlaceCount });
     if (!area) throw new NotFoundException(`Area ${id} not found`);
     return area;
+  }
+
+  private async maxSortOrder(): Promise<number> {
+    const result = await this.db.area.aggregate({ _max: { sortOrder: true } });
+    return result._max.sortOrder ?? 0;
   }
 }

@@ -6,7 +6,7 @@ import { LayoutGrid, UtensilsCrossed } from "lucide-react";
 
 import type { Category } from "@/features/categories/types/category";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { cn } from "cn";
 
 export function PlaceFilterChips({
   categories,

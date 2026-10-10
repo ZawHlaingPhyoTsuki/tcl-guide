@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useEffect, useRef } from "react";
 import { ArrowUpRight } from "lucide-react";
 
-import { cn } from "@/lib/utils";
+import { cn } from "cn";
 
 import type { Place } from "../types/place";
 

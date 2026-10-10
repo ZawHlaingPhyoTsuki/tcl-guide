@@ -1,7 +1,6 @@
 import { Module } from "@nestjs/common";
 import { AuthModule } from "@thallesp/nestjs-better-auth";
 import { AppController } from "./app.controller.js";
-import { AppService } from "./app.service.js";
 import { createAuth } from "./auth.js";
 import { AreasModule } from "./modules/areas/areas.module.js";
 import { CategoriesModule } from "./modules/categories/categories.module.js";
@@ -25,6 +24,5 @@ import { UploadsModule } from "./modules/uploads/uploads.module.js";
     UploadsModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
 })
 export class AppModule {}

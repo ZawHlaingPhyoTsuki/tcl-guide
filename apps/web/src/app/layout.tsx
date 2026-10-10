@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 
-import "../index.css";
+import "../styles/globals.css";
 import Providers from "@/components/providers";
-import { cn } from "@/lib/utils";
+import { cn } from "cn";
 import { Inter } from "next/font/google";
 
 const outfitHeading = localFont({

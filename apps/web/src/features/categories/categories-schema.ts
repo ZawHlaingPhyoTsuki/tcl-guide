@@ -1,7 +1,6 @@
 import { z } from "zod";
 
-const SLUG_PATTERN = /^[a-z0-9]+([_-][a-z0-9]+)*$/;
-const SLUG_MESSAGE = "Lowercase letters, numbers, _ or - only";
+import { SLUG_MESSAGE, SLUG_PATTERN } from "@/lib/slug";
 
 export const categoryInputSchema = z.object({
   slug: z.string().trim().regex(SLUG_PATTERN, SLUG_MESSAGE),

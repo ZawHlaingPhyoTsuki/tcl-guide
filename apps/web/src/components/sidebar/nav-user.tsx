@@ -24,7 +24,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { authClient } from "@/lib/auth-client";
-import { cn } from "@/lib/utils";
+import { cn } from "cn";
 import type { Session } from "@/features/auth/types/session";
 
 function initials(name: string | null | undefined, email: string | null | undefined) {
