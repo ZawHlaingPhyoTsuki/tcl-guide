@@ -5,11 +5,17 @@ import { ArrowLeft } from "lucide-react";
 import { PlaceDetail } from "@/features/places/components/place-detail";
 import { getPlace } from "@/features/places/places-queries";
 import { PublicFooter } from "@/components/public-footer";
+import { displayName } from "@/i18n/display-name";
+import { getDictionary } from "@/i18n/get-dictionary";
+import { getLocale } from "@/i18n/get-locale";
 
 export async function generateMetadata({ params }: PageProps<"/places/[id]">): Promise<Metadata> {
   const place = await getPlace((await params).id);
+  const locale = await getLocale();
+  const primary = displayName(place.nameMy, place.nameEn, locale);
+  const secondary = displayName(place.nameEn, place.nameMy, locale);
   return {
-    title: place.nameEn ? `${place.nameMy} · ${place.nameEn}` : place.nameMy,
+    title: secondary && secondary !== primary ? `${primary} · ${secondary}` : primary,
     openGraph: place.photos[0] ? { images: [place.photos[0]] } : undefined,
   };
 }
@@ -20,7 +26,7 @@ export async function generateMetadata({ params }: PageProps<"/places/[id]">): P
 // generateMetadata above is deduplicated by fetch memoization.
 export default async function PlacePage({ params }: PageProps<"/places/[id]">) {
   const { id } = await params;
-  const place = await getPlace(id);
+  const [place, t] = await Promise.all([getPlace(id), getDictionary()]);
   return (
     <>
       {/* pb-28 on mobile leaves room for the fixed action bar. */}
@@ -30,7 +36,7 @@ export default async function PlacePage({ params }: PageProps<"/places/[id]">) {
           className="text-muted-foreground hover:text-foreground -ml-2 inline-flex h-10 items-center gap-1.5 rounded-lg px-2 text-sm"
         >
           <ArrowLeft className="size-4" aria-hidden />
-          All places
+          {t.detailBack}
         </Link>
         <div className="mt-2">
           <PlaceDetail place={place} />

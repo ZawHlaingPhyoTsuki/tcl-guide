@@ -1,6 +1,7 @@
 "use client";
 
 import { Skeleton } from "@/components/ui/skeleton";
+import { useDictionary } from "@/i18n/dictionary-provider";
 
 import type { Place } from "../types/place";
 import { PlaceListItem } from "./place-list-item";
@@ -14,10 +15,9 @@ export function PlaceList({
   selectedPlaceId: string | null;
   onSelect: (id: string) => void;
 }) {
+  const t = useDictionary();
   if (places.length === 0) {
-    return (
-      <p className="text-muted-foreground p-1 text-sm">No places found. Try different filters.</p>
-    );
+    return <p className="text-muted-foreground p-1 text-sm">{t.list.empty}</p>;
   }
   return (
     <div className="grid gap-2" role="list">
@@ -34,8 +34,9 @@ export function PlaceList({
 }
 
 export function PlaceListSkeleton() {
+  const t = useDictionary();
   return (
-    <div className="grid gap-2" aria-busy="true" aria-label="Loading places">
+    <div className="grid gap-2" aria-busy="true" aria-label={t.list.loading}>
       {[0, 1, 2].map((index) => (
         <div key={index} className="flex gap-3 rounded-lg border p-3">
           <Skeleton className="size-20 shrink-0 rounded-md" />

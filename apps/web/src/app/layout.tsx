@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 
 import "../styles/globals.css";
 import Providers from "@/components/providers";
+import { getLocale } from "@/i18n/get-locale";
 import { cn } from "cn";
 import { Inter } from "next/font/google";
 
@@ -19,19 +20,20 @@ export const metadata: Metadata = {
   description: "tcl-guide",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const locale = await getLocale();
   return (
     <html
-      lang="en"
+      lang={locale === "my" ? "my" : "en"}
       suppressHydrationWarning
       className={cn("font-sans", inter.variable, outfitHeading.variable)}
     >
       <body className={cn("antialiased", "style-rhea")}>
-        <Providers>{children}</Providers>
+        <Providers locale={locale}>{children}</Providers>
       </body>
     </html>
   );

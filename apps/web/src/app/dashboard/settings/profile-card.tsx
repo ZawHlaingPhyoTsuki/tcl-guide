@@ -8,10 +8,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { useDictionary } from "@/i18n/dictionary-provider";
 import { authClient } from "@/lib/auth-client";
 
 export function ProfileCard({ name, email }: { name: string | null; email: string }) {
   const router = useRouter();
+  const t = useDictionary();
   const initialName = name ?? "";
   const [displayName, setDisplayName] = useState(initialName);
   const [savingName, setSavingName] = useState(false);
@@ -28,17 +30,17 @@ export function ProfileCard({ name, email }: { name: string | null; email: strin
     const { error } = await authClient.updateUser({ name: displayName.trim() });
     setSavingName(false);
     if (error) {
-      toast.error(error.message ?? "Could not save profile");
+      toast.error(error.message ?? t.settings.errorProfile);
       return;
     }
-    toast.success("Profile saved");
+    toast.success(t.settings.profileSaved);
     router.refresh();
   }
 
   async function savePassword(event: SubmitEvent) {
     event.preventDefault();
     if (newPassword !== confirmPassword) {
-      setPasswordError("New passwords do not match");
+      setPasswordError(t.settings.passwordMismatch);
       return;
     }
     setPasswordError(null);
@@ -50,25 +52,25 @@ export function ProfileCard({ name, email }: { name: string | null; email: strin
     });
     setSavingPassword(false);
     if (error) {
-      setPasswordError(error.message ?? "Could not change password");
+      setPasswordError(error.message ?? t.settings.errorPassword);
       return;
     }
     setCurrentPassword("");
     setNewPassword("");
     setConfirmPassword("");
-    toast.success("Password changed");
+    toast.success(t.settings.passwordChanged);
   }
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Profile</CardTitle>
-        <CardDescription>Your admin display name and password.</CardDescription>
+        <CardTitle>{t.settings.profile}</CardTitle>
+        <CardDescription>{t.settings.profileBody}</CardDescription>
       </CardHeader>
       <CardContent className="grid gap-6">
         <form onSubmit={saveName} className="grid gap-3">
           <Field>
-            <FieldLabel htmlFor="profile-name">Display name</FieldLabel>
+            <FieldLabel htmlFor="profile-name">{t.settings.displayName}</FieldLabel>
             <div className="flex gap-2">
               <Input
                 id="profile-name"
@@ -80,18 +82,18 @@ export function ProfileCard({ name, email }: { name: string | null; email: strin
                 type="submit"
                 disabled={savingName || !displayName.trim() || displayName === initialName}
               >
-                {savingName ? "Saving..." : "Save"}
+                {savingName ? t.settings.saving : t.settings.save}
               </Button>
             </div>
           </Field>
           <Field>
-            <FieldLabel htmlFor="profile-email">Email</FieldLabel>
+            <FieldLabel htmlFor="profile-email">{t.settings.email}</FieldLabel>
             <Input id="profile-email" value={email} disabled />
           </Field>
         </form>
         <form onSubmit={savePassword} className="grid gap-3 border-t pt-6">
           <Field>
-            <FieldLabel htmlFor="profile-current-password">Current password</FieldLabel>
+            <FieldLabel htmlFor="profile-current-password">{t.settings.currentPassword}</FieldLabel>
             <Input
               id="profile-current-password"
               type="password"
@@ -101,7 +103,7 @@ export function ProfileCard({ name, email }: { name: string | null; email: strin
             />
           </Field>
           <Field>
-            <FieldLabel htmlFor="profile-new-password">New password</FieldLabel>
+            <FieldLabel htmlFor="profile-new-password">{t.settings.newPassword}</FieldLabel>
             <Input
               id="profile-new-password"
               type="password"
@@ -111,7 +113,7 @@ export function ProfileCard({ name, email }: { name: string | null; email: strin
             />
           </Field>
           <Field data-invalid={passwordError !== null}>
-            <FieldLabel htmlFor="profile-confirm-password">Confirm new password</FieldLabel>
+            <FieldLabel htmlFor="profile-confirm-password">{t.settings.confirmPassword}</FieldLabel>
             <Input
               id="profile-confirm-password"
               type="password"
@@ -128,7 +130,7 @@ export function ProfileCard({ name, email }: { name: string | null; email: strin
             disabled={savingPassword || !currentPassword || !newPassword}
             className="justify-self-start"
           >
-            {savingPassword ? "Changing..." : "Change password"}
+            {savingPassword ? t.settings.changing : t.settings.changePassword}
           </Button>
         </form>
       </CardContent>

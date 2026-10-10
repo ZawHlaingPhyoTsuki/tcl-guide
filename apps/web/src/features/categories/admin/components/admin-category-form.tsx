@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { FieldGroup } from "@/components/ui/field";
 import { FormTextField } from "@/components/ui/form-text-field";
 import { toOptional } from "@/lib/form";
+import { useDictionary } from "@/i18n/dictionary-provider";
 
 import { createCategory, updateCategory } from "../../categories-actions";
 import { categoryFormSchema, type CategoryFormValues } from "../../categories-schema";
@@ -23,6 +24,7 @@ export function AdminCategoryForm({
 }) {
   const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const t = useDictionary();
 
   const form = useForm({
     defaultValues: {
@@ -41,7 +43,9 @@ export function AdminCategoryForm({
           : await createCategory({ slug: value.slug.trim(), nameMy: value.nameMy.trim(), nameEn });
         onSaved(saved);
       } catch (requestError) {
-        setError(requestError instanceof Error ? requestError.message : "Could not save category");
+        setError(
+          requestError instanceof Error ? requestError.message : t.adminCategoryForm.errorSave,
+        );
       } finally {
         setIsSaving(false);
       }
@@ -54,14 +58,14 @@ export function AdminCategoryForm({
         event.preventDefault();
         form.handleSubmit();
       }}
-      aria-label="Category form"
+      aria-label={t.adminCategoryForm.formLabel}
     >
       <FieldGroup className="gap-4 border-t pt-4">
         {category ? (
           <div className="grid gap-1">
-            <p className="text-sm font-medium">Slug</p>
+            <p className="text-sm font-medium">{t.adminCategoryForm.slug}</p>
             <p className="text-xs text-muted-foreground">
-              {category.slug} · used in public filter URLs, cannot be changed
+              {category.slug} {t.adminCategoryForm.slugLocked}
             </p>
           </div>
         ) : (
@@ -69,23 +73,25 @@ export function AdminCategoryForm({
             {(field) => (
               <FormTextField
                 id="slug"
-                label="Slug *"
-                placeholder="e.g. street_food"
+                label={t.adminCategoryForm.slugLabel}
+                placeholder={t.adminCategoryForm.slugPlaceholder}
                 field={field}
                 hint={
-                  <p className="text-xs text-muted-foreground">
-                    Used in public filter URLs, e.g. ?category=street_food. Cannot be changed later.
-                  </p>
+                  <p className="text-xs text-muted-foreground">{t.adminCategoryForm.slugHint}</p>
                 }
               />
             )}
           </form.Field>
         )}
         <form.Field name="nameMy">
-          {(field) => <FormTextField id="nameMy" label="Name in Myanmar *" field={field} />}
+          {(field) => (
+            <FormTextField id="nameMy" label={t.adminCategoryForm.nameMy} field={field} />
+          )}
         </form.Field>
         <form.Field name="nameEn">
-          {(field) => <FormTextField id="nameEn" label="English name" field={field} />}
+          {(field) => (
+            <FormTextField id="nameEn" label={t.adminCategoryForm.nameEn} field={field} />
+          )}
         </form.Field>
         {error ? (
           <p role="alert" className="text-destructive text-xs">
@@ -94,10 +100,14 @@ export function AdminCategoryForm({
         ) : null}
         <div className="flex flex-wrap gap-2">
           <Button type="submit" disabled={isSaving}>
-            {isSaving ? "Saving..." : category ? "Save changes" : "Create category"}
+            {isSaving
+              ? t.adminCategoryForm.saving
+              : category
+                ? t.adminCategoryForm.saveChanges
+                : t.adminCategoryForm.createCategory}
           </Button>
           <Button type="button" variant="outline" onClick={onCancel} disabled={isSaving}>
-            Cancel
+            {t.adminCategoryForm.cancel}
           </Button>
         </div>
       </FieldGroup>

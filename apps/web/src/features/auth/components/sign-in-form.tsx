@@ -11,11 +11,13 @@ import { toast } from "sonner";
 import z from "zod";
 
 import { authClient } from "@/lib/auth-client";
+import { useDictionary } from "@/i18n/dictionary-provider";
 
 import Loader from "../../../components/loader";
 
 export default function SignInForm() {
   const router = useRouter();
+  const t = useDictionary();
   const { isPending } = authClient.useSession();
 
   const form = useForm({
@@ -33,7 +35,7 @@ export default function SignInForm() {
           onSuccess: () => {
             router.push("/dashboard");
             router.refresh();
-            toast.success("Sign in successful");
+            toast.success(t.auth.signInSuccess);
           },
           onError: (error) => {
             toast.error(error.error.message || error.error.statusText);
@@ -55,7 +57,7 @@ export default function SignInForm() {
 
   return (
     <div className="mx-auto w-full mt-10 max-w-md p-6">
-      <h1 className="mb-6 text-center text-3xl font-bold">Welcome Back</h1>
+      <h1 className="mb-6 text-center text-3xl font-bold">{t.auth.welcomeBack}</h1>
 
       <form
         onSubmit={(e) => {
@@ -69,7 +71,7 @@ export default function SignInForm() {
           <form.Field name="email">
             {(field) => (
               <div className="space-y-2">
-                <Label htmlFor={field.name}>Email</Label>
+                <Label htmlFor={field.name}>{t.auth.email}</Label>
                 <Input
                   id={field.name}
                   name={field.name}
@@ -92,7 +94,7 @@ export default function SignInForm() {
           <form.Field name="password">
             {(field) => (
               <div className="space-y-2">
-                <Label htmlFor={field.name}>Password</Label>
+                <Label htmlFor={field.name}>{t.auth.password}</Label>
                 <Input
                   id={field.name}
                   name={field.name}
@@ -116,7 +118,7 @@ export default function SignInForm() {
         >
           {({ canSubmit, isSubmitting }) => (
             <Button type="submit" className="w-full" disabled={!canSubmit || isSubmitting}>
-              {isSubmitting ? "Submitting..." : "Sign In"}
+              {isSubmitting ? t.auth.submitting : t.auth.signIn}
             </Button>
           )}
         </form.Subscribe>
@@ -124,7 +126,7 @@ export default function SignInForm() {
 
       <div className="mt-4 text-center">
         <Link href={"/signup" as Route} className={buttonVariants({ variant: "link" })}>
-          Need an account? Sign Up
+          {t.auth.needAccount}
         </Link>
       </div>
     </div>

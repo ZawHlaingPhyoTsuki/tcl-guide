@@ -11,11 +11,13 @@ import { toast } from "sonner";
 import z from "zod";
 
 import { authClient } from "@/lib/auth-client";
+import { useDictionary } from "@/i18n/dictionary-provider";
 
 import Loader from "../../../components/loader";
 
 export default function SignUpForm() {
   const router = useRouter();
+  const t = useDictionary();
   const { isPending } = authClient.useSession();
 
   const form = useForm({
@@ -35,7 +37,7 @@ export default function SignUpForm() {
           onSuccess: () => {
             router.push("/dashboard");
             router.refresh();
-            toast.success("Sign up successful");
+            toast.success(t.auth.signUpSuccess);
           },
           onError: (error) => {
             toast.error(error.error.message || error.error.statusText);
@@ -58,7 +60,7 @@ export default function SignUpForm() {
 
   return (
     <div className="mx-auto w-full mt-10 max-w-md p-6">
-      <h1 className="mb-6 text-center text-3xl font-bold">Create Account</h1>
+      <h1 className="mb-6 text-center text-3xl font-bold">{t.auth.createAccount}</h1>
 
       <form
         onSubmit={(e) => {
@@ -72,7 +74,7 @@ export default function SignUpForm() {
           <form.Field name="name">
             {(field) => (
               <div className="space-y-2">
-                <Label htmlFor={field.name}>Name</Label>
+                <Label htmlFor={field.name}>{t.auth.name}</Label>
                 <Input
                   id={field.name}
                   name={field.name}
@@ -94,7 +96,7 @@ export default function SignUpForm() {
           <form.Field name="email">
             {(field) => (
               <div className="space-y-2">
-                <Label htmlFor={field.name}>Email</Label>
+                <Label htmlFor={field.name}>{t.auth.email}</Label>
                 <Input
                   id={field.name}
                   name={field.name}
@@ -117,7 +119,7 @@ export default function SignUpForm() {
           <form.Field name="password">
             {(field) => (
               <div className="space-y-2">
-                <Label htmlFor={field.name}>Password</Label>
+                <Label htmlFor={field.name}>{t.auth.password}</Label>
                 <Input
                   id={field.name}
                   name={field.name}
@@ -141,7 +143,7 @@ export default function SignUpForm() {
         >
           {({ canSubmit, isSubmitting }) => (
             <Button type="submit" className="w-full" disabled={!canSubmit || isSubmitting}>
-              {isSubmitting ? "Submitting..." : "Sign Up"}
+              {isSubmitting ? t.auth.submitting : t.auth.signUp}
             </Button>
           )}
         </form.Subscribe>
@@ -149,7 +151,7 @@ export default function SignUpForm() {
 
       <div className="mt-4 text-center">
         <Link href={"/login" as Route} className={buttonVariants({ variant: "link" })}>
-          Already have an account? Sign In
+          {t.auth.haveAccount}
         </Link>
       </div>
     </div>

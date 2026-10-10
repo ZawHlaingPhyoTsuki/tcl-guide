@@ -8,9 +8,11 @@ import { Search } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
+import { useDictionary } from "@/i18n/dictionary-provider";
 
 export function LandingSearch() {
   const router = useRouter();
+  const t = useDictionary();
   const [value, setValue] = useState("");
 
   function submit(event: React.SubmitEvent<HTMLFormElement>) {
@@ -23,11 +25,11 @@ export function LandingSearch() {
     <form onSubmit={submit} role="search" className="flex gap-2">
       <InputGroup className="h-11 bg-background shadow-md">
         <InputGroupInput
-          placeholder="Search noodles, cafes, bakeries…"
+          placeholder={t.landing.searchPlaceholder}
           type="search"
           value={value}
           onChange={(event) => setValue(event.target.value)}
-          aria-label="Search places"
+          aria-label={t.landing.searchLabel}
           className="h-full"
         />
         <InputGroupAddon align="inline-end">
@@ -35,7 +37,7 @@ export function LandingSearch() {
         </InputGroupAddon>
       </InputGroup>
       <Button type="submit" size="lg" className="shrink-0">
-        Search
+        {t.landing.searchButton}
       </Button>
     </form>
   );

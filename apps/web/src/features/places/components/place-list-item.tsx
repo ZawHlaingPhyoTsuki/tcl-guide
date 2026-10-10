@@ -7,6 +7,9 @@ import { ArrowUpRight } from "lucide-react";
 
 import { cn } from "cn";
 
+import { useDictionary, useLocale } from "@/i18n/dictionary-provider";
+import { displayName } from "@/i18n/display-name";
+
 import type { Place } from "../types/place";
 
 export function PlaceListItem({
@@ -19,6 +22,10 @@ export function PlaceListItem({
   onSelect: (id: string) => void;
 }) {
   const ref = useRef<HTMLButtonElement>(null);
+  const t = useDictionary();
+  const locale = useLocale();
+  const name = displayName(place.nameMy, place.nameEn, locale);
+  const secondary = displayName(place.nameEn, place.nameMy, locale);
 
   // Keep the selected row visible when selection comes from the map.
   useEffect(() => {
@@ -54,24 +61,24 @@ export function PlaceListItem({
             aria-hidden
             className="bg-muted text-muted-foreground flex size-20 shrink-0 items-center justify-center rounded-md text-xs"
           >
-            No photo
+            {t.listItem.noPhoto}
           </div>
         )}
         <span className="grid min-w-0 flex-1 gap-0.5">
-          <span className="truncate font-medium">{place.nameMy}</span>
-          {place.nameEn ? (
-            <span className="text-muted-foreground truncate text-sm">{place.nameEn}</span>
+          <span className="truncate font-medium">{name}</span>
+          {secondary && secondary !== name ? (
+            <span className="text-muted-foreground truncate text-sm">{secondary}</span>
           ) : null}
           <span className="text-muted-foreground truncate text-xs">
-            {place.category.nameMy}
-            {place.area ? ` · ${place.area.nameMy}` : ""}
+            {displayName(place.category.nameMy, place.category.nameEn, locale)}
+            {place.area ? ` · ${displayName(place.area.nameMy, place.area.nameEn, locale)}` : ""}
           </span>
           {status ? <span className="truncate text-xs">{status}</span> : null}
         </span>
       </button>
       <Link
         href={`/places/${place.id}` as Route}
-        aria-label={`View ${place.nameMy} details`}
+        aria-label={t.listItem.viewDetails(name)}
         className="text-muted-foreground hover:text-foreground focus-visible:ring-ring flex size-9 shrink-0 items-center justify-center rounded-md transition-colors focus-visible:ring-2 focus-visible:outline-none"
       >
         <ArrowUpRight className="size-4" aria-hidden />

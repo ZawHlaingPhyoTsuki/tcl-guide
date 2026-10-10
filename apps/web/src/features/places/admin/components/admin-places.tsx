@@ -47,6 +47,8 @@ import type { Area } from "@/features/areas/types/area";
 
 import type { Place } from "../../types/place";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { useDictionary, useLocale } from "@/i18n/dictionary-provider";
+import { displayName } from "@/i18n/display-name";
 
 export function AdminPlaces({
   initialPlaces,
@@ -69,6 +71,8 @@ export function AdminPlaces({
     name: string;
     index: number;
   } | null>(null);
+  const t = useDictionary();
+  const locale = useLocale();
 
   const filteredPlaces = useMemo(() => {
     const query = search.trim().toLocaleLowerCase();
@@ -98,7 +102,7 @@ export function AdminPlaces({
       const saved = await updatePlace(place.id, { isActive: !place.isActive });
       setPlaces((current) => current.map((item) => (item.id === saved.id ? saved : item)));
     } catch (requestError) {
-      setError(requestError instanceof Error ? requestError.message : "Could not update place");
+      setError(requestError instanceof Error ? requestError.message : t.adminPlaces.errorUpdate);
     } finally {
       setIsUpdating(null);
     }
@@ -112,7 +116,7 @@ export function AdminPlaces({
       setPlaces((current) => current.filter((item) => item.id !== place.id));
       setDeleting(null);
     } catch (requestError) {
-      setError(requestError instanceof Error ? requestError.message : "Could not delete place");
+      setError(requestError instanceof Error ? requestError.message : t.adminPlaces.errorDelete);
     } finally {
       setIsUpdating(null);
     }
@@ -122,8 +126,8 @@ export function AdminPlaces({
     <div className="grid gap-5">
       <div className="flex flex-col gap-4 border-b pb-5 sm:flex-row sm:items-end sm:justify-between">
         <div className="grid gap-1">
-          <p className="text-sm text-muted-foreground">The working directory for Tachileik</p>
-          <h2 className="text-2xl font-semibold tracking-tight">Places</h2>
+          <p className="text-sm text-muted-foreground">{t.adminPlaces.kicker}</p>
+          <h2 className="text-2xl font-semibold tracking-tight">{t.adminPlaces.title}</h2>
         </div>
         <Button
           onClick={() => {
@@ -131,7 +135,7 @@ export function AdminPlaces({
             setIsCreating(true);
           }}
         >
-          Add a place
+          {t.adminPlaces.addPlace}
         </Button>
       </div>
       <Sheet
@@ -145,10 +149,12 @@ export function AdminPlaces({
       >
         <SheetContent side="right" className="sm:max-w-2xl">
           <SheetHeader>
-            <SheetTitle>{editing ? `Edit ${editing.nameMy}` : "Add a place"}</SheetTitle>
-            <SheetDescription>
-              Keep the public directory accurate with practical, verified details.
-            </SheetDescription>
+            <SheetTitle>
+              {editing
+                ? t.adminPlaces.editPlace(displayName(editing.nameMy, editing.nameEn, locale))
+                : t.adminPlaces.addPlace}
+            </SheetTitle>
+            <SheetDescription>{t.adminPlaces.sheetDescription}</SheetDescription>
           </SheetHeader>
           <ScrollArea className="min-h-0 flex-1 px-4 pb-6">
             <AdminPlaceForm
@@ -172,20 +178,20 @@ export function AdminPlaces({
       <div className="grid gap-3 sm:grid-cols-[1fr_auto] sm:items-end">
         <div className="grid gap-1">
           <label htmlFor="place-search" className="text-sm font-medium">
-            Find a place
+            {t.adminPlaces.findLabel}
           </label>
-          <p className="text-xs text-muted-foreground">Search by name, area, or address.</p>
+          <p className="text-xs text-muted-foreground">{t.adminPlaces.findHint}</p>
           <p className="text-xs text-muted-foreground tabular-nums">
             {search.trim()
-              ? `${filteredPlaces.length} of ${places.length} places`
-              : `${places.length} places`}
+              ? t.adminPlaces.countFiltered(filteredPlaces.length, places.length)
+              : t.adminPlaces.countAll(places.length)}
           </p>
         </div>
         <Input
           id="place-search"
           value={search}
           onChange={(event) => setSearch(event.target.value)}
-          placeholder="Name, area, or address"
+          placeholder={t.adminPlaces.searchPlaceholder}
         />
       </div>
       {error ? (
@@ -199,8 +205,8 @@ export function AdminPlaces({
             <EmptyMedia variant="icon">
               <MapPinIcon />
             </EmptyMedia>
-            <EmptyTitle>No places yet</EmptyTitle>
-            <EmptyDescription>Add the first place to start the public directory.</EmptyDescription>
+            <EmptyTitle>{t.adminPlaces.emptyTitle}</EmptyTitle>
+            <EmptyDescription>{t.adminPlaces.emptyBody}</EmptyDescription>
           </EmptyHeader>
         </Empty>
       ) : filteredPlaces.length === 0 ? (
@@ -209,8 +215,8 @@ export function AdminPlaces({
             <EmptyMedia variant="icon">
               <SearchIcon />
             </EmptyMedia>
-            <EmptyTitle>No matching places</EmptyTitle>
-            <EmptyDescription>Try a different name, area, or address.</EmptyDescription>
+            <EmptyTitle>{t.adminPlaces.noMatchTitle}</EmptyTitle>
+            <EmptyDescription>{t.adminPlaces.noMatchBody}</EmptyDescription>
           </EmptyHeader>
         </Empty>
       ) : (
@@ -227,9 +233,15 @@ export function AdminPlaces({
                   <button
                     type="button"
                     onClick={() =>
-                      setPreview({ photos: place.photos, name: place.nameMy, index: 0 })
+                      setPreview({
+                        photos: place.photos,
+                        name: displayName(place.nameMy, place.nameEn, locale),
+                        index: 0,
+                      })
                     }
-                    aria-label={`View photos of ${place.nameMy}`}
+                    aria-label={t.adminPlaces.viewPhotos(
+                      displayName(place.nameMy, place.nameEn, locale),
+                    )}
                     className="block size-full cursor-zoom-in"
                   >
                     <img src={place.photos[0]} alt="" />
@@ -243,19 +255,28 @@ export function AdminPlaces({
               ) : null}
               <ItemContent className="min-w-0">
                 <ItemTitle>
-                  {place.nameMy}
-                  {place.nameEn ? (
+                  {displayName(place.nameMy, place.nameEn, locale)}
+                  {locale === "my" &&
+                  place.nameEn &&
+                  place.nameEn !== displayName(place.nameMy, place.nameEn, locale) ? (
                     <span className="text-muted-foreground">{place.nameEn}</span>
+                  ) : null}
+                  {locale === "en" &&
+                  place.nameMy &&
+                  place.nameMy !== displayName(place.nameMy, place.nameEn, locale) ? (
+                    <span className="text-muted-foreground">{place.nameMy}</span>
                   ) : null}
                 </ItemTitle>
                 <ItemDescription>
-                  {place.category.nameMy}
-                  {place.area ? ` · ${place.area.nameMy}` : ""}
+                  {displayName(place.category.nameMy, place.category.nameEn, locale)}
+                  {place.area
+                    ? ` · ${displayName(place.area.nameMy, place.area.nameEn, locale)}`
+                    : ""}
                 </ItemDescription>
               </ItemContent>
               <ItemActions className="max-sm:basis-full max-sm:justify-end">
                 <Badge variant={place.isActive ? "default" : "outline"}>
-                  {place.isActive ? "Published" : "Hidden"}
+                  {place.isActive ? t.adminPlaces.published : t.adminPlaces.hidden}
                 </Badge>
                 <Button
                   size="sm"
@@ -265,7 +286,7 @@ export function AdminPlaces({
                     setEditing(place);
                   }}
                 >
-                  Edit
+                  {t.adminPlaces.edit}
                 </Button>
                 <Button
                   size="sm"
@@ -273,10 +294,14 @@ export function AdminPlaces({
                   disabled={isUpdating === place.id}
                   onClick={() => toggleActive(place)}
                 >
-                  {isUpdating === place.id ? "Updating..." : place.isActive ? "Hide" : "Publish"}
+                  {isUpdating === place.id
+                    ? t.adminPlaces.updating
+                    : place.isActive
+                      ? t.adminPlaces.hide
+                      : t.adminPlaces.publish}
                 </Button>
                 <Button size="sm" variant="ghost" onClick={() => setDeleting(place.id)}>
-                  Delete
+                  {t.adminPlaces.delete}
                 </Button>
               </ItemActions>
             </Item>
@@ -291,15 +316,12 @@ export function AdminPlaces({
       >
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>Delete this place?</DialogTitle>
-            <DialogDescription>
-              This permanently removes the place from the directory. Hiding it is safer if it may
-              return later.
-            </DialogDescription>
+            <DialogTitle>{t.adminPlaces.deleteTitle}</DialogTitle>
+            <DialogDescription>{t.adminPlaces.deleteBody}</DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDeleting(null)}>
-              Keep place
+              {t.adminPlaces.keepPlace}
             </Button>
             <Button
               variant="destructive"
@@ -309,7 +331,9 @@ export function AdminPlaces({
                 if (place) void remove(place);
               }}
             >
-              {deleting && isUpdating === deleting ? "Deleting..." : "Delete place"}
+              {deleting && isUpdating === deleting
+                ? t.adminPlaces.deleting
+                : t.adminPlaces.deleteConfirm}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -331,8 +355,9 @@ export function AdminPlaces({
 }
 
 export function AdminPlacesSkeleton() {
+  const t = useDictionary();
   return (
-    <div className="grid gap-2" aria-busy="true" aria-label="Loading places">
+    <div className="grid gap-2" aria-busy="true" aria-label={t.adminPlaces.loading}>
       {[0, 1, 2].map((item) => (
         <Skeleton key={item} className="h-20 w-full" />
       ))}

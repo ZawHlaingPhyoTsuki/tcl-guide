@@ -6,27 +6,28 @@ import { Monitor, Moon, Sun } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-
-const THEMES = [
-  { value: "light", label: "Light", icon: Sun },
-  { value: "dark", label: "Dark", icon: Moon },
-  { value: "system", label: "System", icon: Monitor },
-] as const;
+import { useDictionary } from "@/i18n/dictionary-provider";
 
 export function AppearanceCard() {
   const { theme, setTheme } = useTheme();
+  const t = useDictionary();
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
+  const themes = [
+    { value: "light", label: t.settings.light, icon: Sun },
+    { value: "dark", label: t.settings.dark, icon: Moon },
+    { value: "system", label: t.settings.system, icon: Monitor },
+  ] as const;
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Appearance</CardTitle>
-        <CardDescription>How the directory looks on this device.</CardDescription>
+        <CardTitle>{t.settings.appearance}</CardTitle>
+        <CardDescription>{t.settings.appearanceBody}</CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="flex gap-2" role="group" aria-label="Theme">
-          {THEMES.map(({ value, label, icon: Icon }) => (
+        <div className="flex gap-2" role="group" aria-label={t.settings.themeLabel}>
+          {themes.map(({ value, label, icon: Icon }) => (
             <Button
               key={value}
               type="button"

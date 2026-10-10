@@ -14,6 +14,8 @@ import {
 import type { Place } from "../../types/place";
 import { PlaceMapMarker } from "./place-map-marker";
 import { PlaceMapPopup } from "./place-map-popup";
+import { useLocale } from "@/i18n/dictionary-provider";
+import { displayName } from "@/i18n/display-name";
 
 const TACHILEIK: [number, number] = [99.882, 20.447];
 
@@ -54,6 +56,7 @@ export function PlacesMap({
   editable?: PlacesMapEditable;
 }) {
   const mapRef = useRef<MapRef | null>(null);
+  const locale = useLocale();
 
   const mappedPlaces = useMemo(
     () =>
@@ -112,7 +115,7 @@ export function PlacesMap({
           key={place.id}
           longitude={place.longitude}
           latitude={place.latitude}
-          name={place.nameMy || place.nameEn || place.id}
+          name={displayName(place.nameMy, place.nameEn, locale) || place.id}
           selected={place.id === selectedPlaceId}
           onSelect={() => onSelect?.(place.id === selectedPlaceId ? null : place.id)}
         />
