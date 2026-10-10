@@ -34,6 +34,8 @@ Content is bilingual (Burmese + English) throughout.
   sets the location.
 - **Category & area management**: full CRUD; deleting an area (or category)
   still referenced by places is blocked.
+- **Settings page**: Light/Dark/System theme toggle plus admin profile
+  (display name, password change).
 - **Forms** built on shadcn components (selects, inputs, sheets, dialogs)
   with inline validation errors.
 
@@ -41,7 +43,7 @@ Content is bilingual (Burmese + English) throughout.
 
 Public browsing needs no account. All management is gated by Better Auth
 (admin plugin); the first admin is bootstrapped from the `ADMIN_EMAIL`
-environment variable.
+environment variable, and the dashboard layout redirects non-admins away.
 
 ## Tech snapshot
 

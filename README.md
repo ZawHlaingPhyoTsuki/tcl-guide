@@ -112,8 +112,6 @@ tcl-guide/
 ├── apps/
 │   ├── web/         # Frontend application (Next.js, owns its shadcn/ui setup)
 │   └── server/      # Backend API (NestJS, modular monolith; owns auth + Prisma)
-└── packages/
-    └── config/      # Shared TypeScript config
 ```
 
 ## Available Scripts
