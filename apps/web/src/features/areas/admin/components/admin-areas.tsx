@@ -174,8 +174,13 @@ export function AdminAreas({ initialAreas }: { initialAreas: AdminArea[] }) {
       ) : (
         <ItemGroup>
           {ordered.map((area, index) => (
-            <Item key={area.id} size="sm" variant="outline" className="bg-card hover:bg-muted/30">
-              <ItemContent>
+            <Item
+              key={area.id}
+              size="sm"
+              variant="outline"
+              className="bg-card sm:flex-nowrap hover:bg-muted/30"
+            >
+              <ItemContent className="min-w-0">
                 <ItemTitle>
                   {area.nameMy}
                   {area.nameEn ? (
@@ -184,7 +189,7 @@ export function AdminAreas({ initialAreas }: { initialAreas: AdminArea[] }) {
                 </ItemTitle>
                 <ItemDescription>?area={area.slug}</ItemDescription>
               </ItemContent>
-              <ItemActions>
+              <ItemActions className="max-sm:basis-full max-sm:justify-end">
                 <Badge variant="outline" className="tabular-nums">
                   {area.placeCount} {area.placeCount === 1 ? "place" : "places"}
                 </Badge>
