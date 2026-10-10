@@ -216,7 +216,12 @@ export function AdminPlaces({
       ) : (
         <ItemGroup>
           {filteredPlaces.map((place) => (
-            <Item key={place.id} size="sm" variant="outline" className="bg-card hover:bg-muted/30">
+            <Item
+              key={place.id}
+              size="sm"
+              variant="outline"
+              className="bg-card sm:flex-nowrap hover:bg-muted/30"
+            >
               {place.photos[0] ? (
                 <ItemMedia variant="image">
                   <button
@@ -236,7 +241,7 @@ export function AdminPlaces({
                   +{place.photos.length - 1}
                 </span>
               ) : null}
-              <ItemContent>
+              <ItemContent className="min-w-0">
                 <ItemTitle>
                   {place.nameMy}
                   {place.nameEn ? (
@@ -248,7 +253,7 @@ export function AdminPlaces({
                   {place.area ? ` · ${place.area.nameMy}` : ""}
                 </ItemDescription>
               </ItemContent>
-              <ItemActions>
+              <ItemActions className="max-sm:basis-full max-sm:justify-end">
                 <Badge variant={place.isActive ? "default" : "outline"}>
                   {place.isActive ? "Published" : "Hidden"}
                 </Badge>
