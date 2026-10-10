@@ -1,6 +1,6 @@
 "use client";
 
-import { useForm, useStore, type AnyFieldApi } from "@tanstack/react-form";
+import { useForm, useSelector, type AnyFieldApi } from "@tanstack/react-form";
 import { useEffect, useRef, useState } from "react";
 
 import {
@@ -244,7 +244,7 @@ export function AdminPlaceForm({
     },
   });
 
-  const nameEnValue = useStore(form.store, (state) => state.values.nameEn);
+  const nameEnValue = useSelector(form.store, (state) => state.values.nameEn);
   useEffect(() => {
     if (!slugTouched && nameEnValue.trim()) {
       form.setFieldValue("slug", slugifyPlaceName(nameEnValue) ?? "");
