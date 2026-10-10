@@ -2,7 +2,6 @@
 
 - [ON_HOLD] Polish the detail page UI.
 - Create Admin Settings page (theme toggle, profile edit).
-- Refactor folder structure (move places/categories to `src/features`).
 
 ### Server
 
@@ -12,6 +11,10 @@
 - Implement server-side rate limiting (Redis).
 - Configure Nginx.
 - In Place model, createdByAdminId is NULL, addressText NULL in seed, tag table
+
+### Codebase
+
+- refactor agent skills
 
 ### FUTURE Feature
 

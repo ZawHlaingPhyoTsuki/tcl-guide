@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { UploadsService } from "./uploads.service.js";
 
-vi.mock("../env.server.js", () => ({
+vi.mock("../../env.server.js", () => ({
   ENV: {
     AWS_ENDPOINT_URL_S3: "https://storage.example.test",
     AWS_REGION: "ap-southeast-1",

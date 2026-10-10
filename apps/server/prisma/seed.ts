@@ -7,8 +7,8 @@ import { PrismaPg } from "@prisma/adapter-pg";
 
 import { PrismaClient, type Prisma } from "../src/generated/client.js";
 import { ENV } from "../src/env.server.js";
-import { buildPlaceSlug } from "../src/places/place-slug.js";
-import { createPlaceSchema } from "../src/places/places.schemas.js";
+import { buildPlaceSlug } from "../src/modules/places/place-slug.js";
+import { createPlaceSchema } from "../src/modules/places/places.schemas.js";
 
 const db = new PrismaClient({
   adapter: new PrismaPg({ connectionString: ENV.DATABASE_URL }),

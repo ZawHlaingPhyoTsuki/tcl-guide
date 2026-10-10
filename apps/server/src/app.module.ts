@@ -3,13 +3,13 @@ import { AuthModule } from "@thallesp/nestjs-better-auth";
 import { AppController } from "./app.controller.js";
 import { AppService } from "./app.service.js";
 import { createAuth } from "./auth.js";
-import { AreasModule } from "./areas/areas.module.js";
-import { CategoriesModule } from "./categories/categories.module.js";
+import { AreasModule } from "./modules/areas/areas.module.js";
+import { CategoriesModule } from "./modules/categories/categories.module.js";
 import { ENV } from "./env.server.js";
-import { PlacesModule } from "./places/places.module.js";
+import { PlacesModule } from "./modules/places/places.module.js";
 import { PrismaModule } from "./prisma/prisma.module.js";
 import { PrismaService } from "./prisma/prisma.service.js";
-import { UploadsModule } from "./uploads/uploads.module.js";
+import { UploadsModule } from "./modules/uploads/uploads.module.js";
 
 @Module({
   imports: [
