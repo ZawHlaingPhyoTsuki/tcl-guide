@@ -13,6 +13,7 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 import type { Category } from "@/features/categories/types/category";
+import { useDictionary } from "@/i18n/dictionary-provider";
 
 import type { Place } from "../types/place";
 import { PlaceFilterChips } from "./place-filter-chips";
@@ -65,6 +66,7 @@ export function PlacesDrawer({
   header?: ReactNode;
 }) {
   const classes = VARIANT_CLASSES[variant];
+  const t = useDictionary();
 
   return (
     <Drawer
@@ -86,15 +88,15 @@ export function PlacesDrawer({
             type="button"
             size="icon"
             variant="outline"
-            aria-label="Toggle places list"
+            aria-label={t.drawer.toggle}
             className={classes.trigger}
           />
         }
       >
         <PanelLeftOpen className={classes.triggerIcon} aria-hidden />
       </DrawerTrigger>
-      <DrawerContent aria-label="Places list" initialFocus={false} className={classes.content}>
-        <DrawerTitle className="sr-only">Places list</DrawerTitle>
+      <DrawerContent aria-label={t.drawer.title} initialFocus={false} className={classes.content}>
+        <DrawerTitle className="sr-only">{t.drawer.title}</DrawerTitle>
         {header}
         <div className={classes.chips}>
           <PlaceFilterChips categories={categories} />
@@ -103,7 +105,7 @@ export function PlacesDrawer({
           <PlaceList places={places} selectedPlaceId={selectedPlaceId} onSelect={onSelect} />
         </div>
         <DrawerFooter>
-          <DrawerClose render={<Button>Close</Button>} />
+          <DrawerClose render={<Button>{t.drawer.close}</Button>} />
         </DrawerFooter>
       </DrawerContent>
     </Drawer>

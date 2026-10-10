@@ -6,16 +6,15 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getAdminPlaceSummary, getAdminPlaces } from "../../places-queries";
 import { PlacesMapSkeleton } from "../../components/places-map/places-map";
 import { AdminPlacesMap } from "./admin-places-map";
+import { getDictionary } from "@/i18n/get-dictionary";
 
 async function AdminPlacesMapContent() {
-  const places = await getAdminPlaces();
+  const [places, t] = await Promise.all([getAdminPlaces(), getDictionary()]);
   return (
     <section className="grid gap-3">
       <div>
-        <h2 className="text-lg font-semibold">Place locations</h2>
-        <p className="text-sm text-muted-foreground">
-          Review every saved Place location, including Places hidden from the public directory.
-        </p>
+        <h2 className="text-lg font-semibold">{t.overview.mapTitle}</h2>
+        <p className="text-sm text-muted-foreground">{t.overview.mapBody}</p>
       </div>
       <AdminPlacesMap places={places} />
     </section>
@@ -23,37 +22,30 @@ async function AdminPlacesMapContent() {
 }
 
 export async function AdminDashboard() {
-  const summary = await getAdminPlaceSummary();
+  const [summary, t] = await Promise.all([getAdminPlaceSummary(), getDictionary()]);
 
   return (
     <div className="grid gap-8">
       <section className="grid gap-2 border-b pb-6">
-        <p className="text-sm text-muted-foreground">A practical view of the local directory</p>
-        <h1 className="max-w-2xl text-3xl font-semibold tracking-tight">
-          Keep Tachileik easy to explore.
-        </h1>
-        <p className="max-w-xl text-sm leading-6 text-muted-foreground">
-          Add the places people need, keep details current, and publish only what is ready to be
-          seen.
-        </p>
+        <p className="text-sm text-muted-foreground">{t.overview.introKicker}</p>
+        <h1 className="max-w-2xl text-3xl font-semibold tracking-tight">{t.overview.introTitle}</h1>
+        <p className="max-w-xl text-sm leading-6 text-muted-foreground">{t.overview.introBody}</p>
       </section>
-      <section className="grid gap-3 sm:grid-cols-3" aria-label="Directory summary">
+      <section className="grid gap-3 sm:grid-cols-3" aria-label={t.overview.summaryLabel}>
         <SummaryCard
-          label="All places"
+          label={t.overview.allPlaces}
           value={summary.allPlaces}
-          detail="Records in the directory"
+          detail={t.overview.allPlacesDetail}
         />
         <SummaryCard
-          label="Published"
+          label={t.overview.published}
           value={summary.publishedPlaces}
-          detail="Visible to visitors"
+          detail={t.overview.publishedDetail}
         />
         <SummaryCard
-          label="Areas covered"
+          label={t.overview.areasCovered}
           value={summary.areasCovered}
-          detail={
-            summary.hiddenPlaces ? `${summary.hiddenPlaces} hidden for review` : "No hidden records"
-          }
+          detail={t.overview.hiddenDetail(summary.hiddenPlaces)}
         />
       </section>
       <Suspense fallback={<PlacesMapSkeleton />}>
@@ -64,10 +56,10 @@ export async function AdminDashboard() {
           href={"/dashboard/places" as Route}
           className="font-medium underline underline-offset-4"
         >
-          Manage places
+          {t.overview.managePlaces}
         </Link>
         <Link href={"/" as Route} className="text-muted-foreground underline underline-offset-4">
-          View public directory
+          {t.overview.viewPublic}
         </Link>
       </section>
     </div>
@@ -86,12 +78,13 @@ function SummaryCard({ label, value, detail }: { label: string; value: number; d
   );
 }
 
-export function AdminDashboardSkeleton() {
+export async function AdminDashboardSkeleton() {
+  const t = await getDictionary();
   return (
     <div
       className="h-72 animate-pulse border bg-muted/30"
       aria-busy="true"
-      aria-label="Loading dashboard"
+      aria-label={t.overview.loading}
     />
   );
 }

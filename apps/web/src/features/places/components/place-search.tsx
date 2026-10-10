@@ -6,12 +6,14 @@ import { useEffect, useState } from "react";
 import { Search } from "lucide-react";
 
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
+import { useDictionary } from "@/i18n/dictionary-provider";
 
 export function PlaceSearch({ className }: { className?: string }) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const initial = searchParams.get("search") ?? "";
+  const t = useDictionary();
   const [value, setValue] = useState(initial);
 
   // Keep input in sync with back/forward navigation.
@@ -38,7 +40,7 @@ export function PlaceSearch({ className }: { className?: string }) {
   return (
     <InputGroup className={className}>
       <InputGroupInput
-        placeholder="Search name, category, area…"
+        placeholder={t.search.placeholder}
         type="search"
         value={value}
         onChange={(e) => setValue(e.target.value)}

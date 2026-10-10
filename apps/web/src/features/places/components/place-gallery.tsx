@@ -5,9 +5,11 @@ import { useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, ImageOff } from "lucide-react";
 
 import { PhotoPreviewDialog } from "./photo-preview-dialog";
+import { useDictionary } from "@/i18n/dictionary-provider";
 
 export function PlaceGallery({ photos, name }: { photos: string[]; name: string }) {
   const trackRef = useRef<HTMLUListElement>(null);
+  const t = useDictionary();
   const [index, setIndex] = useState(0);
   const [preview, setPreview] = useState<number | null>(null);
 
@@ -16,10 +18,10 @@ export function PlaceGallery({ photos, name }: { photos: string[]; name: string 
       <div
         className="bg-muted text-muted-foreground flex aspect-4/3 w-full flex-col items-center justify-center gap-2 rounded-2xl sm:aspect-video"
         role="img"
-        aria-label="No photos yet"
+        aria-label={t.gallery.noPhotos}
       >
         <ImageOff className="size-6" aria-hidden />
-        <span className="text-sm">No photos yet</span>
+        <span className="text-sm">{t.gallery.noPhotos}</span>
       </div>
     );
   }
@@ -46,7 +48,7 @@ export function PlaceGallery({ photos, name }: { photos: string[]; name: string 
       <ul
         ref={trackRef}
         tabIndex={0}
-        aria-label={`${name} photos`}
+        aria-label={t.gallery.photosOf(name)}
         onScroll={(e) => {
           const el = e.currentTarget;
           setIndex(Math.round(el.scrollLeft / el.clientWidth));
@@ -69,7 +71,7 @@ export function PlaceGallery({ photos, name }: { photos: string[]; name: string 
             <button
               type="button"
               onClick={() => setPreview(i)}
-              aria-label={`Expand photo ${i + 1} of ${photos.length}`}
+              aria-label={t.gallery.expand(i + 1, photos.length)}
               className="absolute inset-0 cursor-zoom-in outline-offset-2 focus-visible:outline-2"
             />
           </li>
@@ -82,7 +84,7 @@ export function PlaceGallery({ photos, name }: { photos: string[]; name: string 
             type="button"
             onClick={() => go(-1)}
             disabled={index === 0}
-            aria-label="Previous photo"
+            aria-label={t.gallery.previous}
             className={`${arrow} left-3`}
           >
             <ChevronLeft className="size-5" aria-hidden />
@@ -91,7 +93,7 @@ export function PlaceGallery({ photos, name }: { photos: string[]; name: string 
             type="button"
             onClick={() => go(1)}
             disabled={index === photos.length - 1}
-            aria-label="Next photo"
+            aria-label={t.gallery.next}
             className={`${arrow} right-3`}
           >
             <ChevronRight className="size-5" aria-hidden />

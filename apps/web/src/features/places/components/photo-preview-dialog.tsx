@@ -5,6 +5,7 @@ import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useDictionary } from "@/i18n/dictionary-provider";
 
 export function PhotoPreviewDialog({
   photos,
@@ -23,6 +24,7 @@ export function PhotoPreviewDialog({
 }) {
   const total = photos.length;
   const current = index;
+  const t = useDictionary();
 
   useEffect(() => {
     if (!open || total < 2) return;
@@ -38,13 +40,11 @@ export function PhotoPreviewDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-2xl">
         <DialogHeader>
-          <DialogTitle className="sr-only">
-            {placeName ? `Photos of ${placeName}` : "Photo preview"}
-          </DialogTitle>
+          <DialogTitle className="sr-only">{t.photoDialog.title(placeName)}</DialogTitle>
         </DialogHeader>
         <img
           src={photos[current]}
-          alt={`Photo ${current + 1} of ${total}`}
+          alt={t.photoDialog.photoAlt(current + 1, total)}
           className="max-h-[70vh] w-full object-contain"
         />
         <div className="flex items-center justify-between gap-2">
@@ -54,12 +54,12 @@ export function PhotoPreviewDialog({
             size="icon-sm"
             disabled={current === 0}
             onClick={() => onIndexChange(current - 1)}
-            aria-label="Previous photo"
+            aria-label={t.photoDialog.previous}
           >
             <ChevronLeft />
           </Button>
           <p className="text-xs text-muted-foreground tabular-nums">
-            Photo {current + 1} of {total}
+            {t.photoDialog.counter(current + 1, total)}
           </p>
           <Button
             type="button"
@@ -67,7 +67,7 @@ export function PhotoPreviewDialog({
             size="icon-sm"
             disabled={current === total - 1}
             onClick={() => onIndexChange(current + 1)}
-            aria-label="Next photo"
+            aria-label={t.photoDialog.next}
           >
             <ChevronRight />
           </Button>

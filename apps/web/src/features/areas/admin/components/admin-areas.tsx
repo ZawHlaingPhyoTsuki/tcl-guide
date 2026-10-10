@@ -29,6 +29,7 @@ import {
 } from "@/components/ui/item";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ArrowDownIcon, ArrowUpIcon, MapPinIcon } from "lucide-react";
+import { useDictionary } from "@/i18n/dictionary-provider";
 
 import { deleteArea, updateArea } from "../../areas-actions";
 import { AdminAreaForm } from "./admin-area-form";
@@ -39,6 +40,7 @@ function byOrder(a: AdminArea, b: AdminArea) {
 }
 
 export function AdminAreas({ initialAreas }: { initialAreas: AdminArea[] }) {
+  const t = useDictionary();
   const [areas, setAreas] = useState(initialAreas);
   const [editing, setEditing] = useState<AdminArea | null>(null);
   const [isCreating, setIsCreating] = useState(false);
@@ -89,7 +91,7 @@ export function AdminAreas({ initialAreas }: { initialAreas: AdminArea[] }) {
       }
       setAreas((current) => current.map((item) => savedById.get(item.id) ?? item));
     } catch (requestError) {
-      setError(requestError instanceof Error ? requestError.message : "Could not reorder areas");
+      setError(requestError instanceof Error ? requestError.message : t.adminAreas.errorReorder);
     } finally {
       setBusy(null);
     }
@@ -103,7 +105,7 @@ export function AdminAreas({ initialAreas }: { initialAreas: AdminArea[] }) {
       setAreas((current) => current.filter((item) => item.id !== area.id));
       setDeleting(null);
     } catch (requestError) {
-      setError(requestError instanceof Error ? requestError.message : "Could not delete area");
+      setError(requestError instanceof Error ? requestError.message : t.adminAreas.errorDelete);
     } finally {
       setBusy(null);
     }
@@ -115,10 +117,8 @@ export function AdminAreas({ initialAreas }: { initialAreas: AdminArea[] }) {
     <div className="grid gap-5">
       <div className="flex flex-col gap-4 border-b pb-5 sm:flex-row sm:items-end sm:justify-between">
         <div className="grid gap-1">
-          <p className="text-sm text-muted-foreground">
-            Where places are in the public directory. Lowest order shows first.
-          </p>
-          <h2 className="text-2xl font-semibold tracking-tight">Areas</h2>
+          <p className="text-sm text-muted-foreground">{t.adminAreas.kicker}</p>
+          <h2 className="text-2xl font-semibold tracking-tight">{t.adminAreas.title}</h2>
         </div>
         <Button
           onClick={() => {
@@ -126,7 +126,7 @@ export function AdminAreas({ initialAreas }: { initialAreas: AdminArea[] }) {
             setIsCreating(true);
           }}
         >
-          Add an area
+          {t.adminAreas.addArea}
         </Button>
       </div>
       <Dialog
@@ -140,10 +140,10 @@ export function AdminAreas({ initialAreas }: { initialAreas: AdminArea[] }) {
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{editing ? `Edit ${editing.nameMy}` : "Add an area"}</DialogTitle>
-            <DialogDescription>
-              Slugs become public filter URLs; names and order can be changed anytime.
-            </DialogDescription>
+            <DialogTitle>
+              {editing ? t.adminAreas.editArea(editing.nameMy) : t.adminAreas.addArea}
+            </DialogTitle>
+            <DialogDescription>{t.adminAreas.sheetDescription}</DialogDescription>
           </DialogHeader>
           <AdminAreaForm
             key={editing?.id ?? "new"}
@@ -167,8 +167,8 @@ export function AdminAreas({ initialAreas }: { initialAreas: AdminArea[] }) {
             <EmptyMedia variant="icon">
               <MapPinIcon />
             </EmptyMedia>
-            <EmptyTitle>No areas yet</EmptyTitle>
-            <EmptyDescription>Add the first area to locate places.</EmptyDescription>
+            <EmptyTitle>{t.adminAreas.emptyTitle}</EmptyTitle>
+            <EmptyDescription>{t.adminAreas.emptyBody}</EmptyDescription>
           </EmptyHeader>
         </Empty>
       ) : (
@@ -191,13 +191,13 @@ export function AdminAreas({ initialAreas }: { initialAreas: AdminArea[] }) {
               </ItemContent>
               <ItemActions className="max-sm:basis-full max-sm:justify-end">
                 <Badge variant="outline" className="tabular-nums">
-                  {area.placeCount} {area.placeCount === 1 ? "place" : "places"}
+                  {area.placeCount} {t.adminAreas.countUnit(area.placeCount)}
                 </Badge>
                 <Button
                   size="icon-sm"
                   variant="outline"
                   disabled={index === 0 || busy === area.id}
-                  aria-label={`Move ${area.nameMy} up`}
+                  aria-label={t.adminAreas.moveUp(area.nameMy)}
                   onClick={() => void move(area, -1)}
                 >
                   <ArrowUpIcon />
@@ -206,7 +206,7 @@ export function AdminAreas({ initialAreas }: { initialAreas: AdminArea[] }) {
                   size="icon-sm"
                   variant="outline"
                   disabled={index === ordered.length - 1 || busy === area.id}
-                  aria-label={`Move ${area.nameMy} down`}
+                  aria-label={t.adminAreas.moveDown(area.nameMy)}
                   onClick={() => void move(area, 1)}
                 >
                   <ArrowDownIcon />
@@ -219,16 +219,16 @@ export function AdminAreas({ initialAreas }: { initialAreas: AdminArea[] }) {
                     setEditing(area);
                   }}
                 >
-                  Edit
+                  {t.adminAreas.edit}
                 </Button>
                 <Button
                   size="sm"
                   variant="ghost"
                   disabled={area.placeCount > 0 || busy === area.id}
-                  title={area.placeCount > 0 ? "Move its places to another area first" : undefined}
+                  title={area.placeCount > 0 ? t.adminAreas.moveBlocked : undefined}
                   onClick={() => setDeleting(area.id)}
                 >
-                  {busy === area.id ? "Deleting..." : "Delete"}
+                  {busy === area.id ? t.adminAreas.deleting : t.adminAreas.delete}
                 </Button>
               </ItemActions>
             </Item>
@@ -260,7 +260,7 @@ export function AdminAreas({ initialAreas }: { initialAreas: AdminArea[] }) {
                 if (area) void remove(area);
               }}
             >
-              {deleting && busy === deleting ? "Deleting..." : "Delete area"}
+              {deleting && busy === deleting ? t.adminAreas.deleting : t.adminAreas.deleteConfirm}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -270,8 +270,9 @@ export function AdminAreas({ initialAreas }: { initialAreas: AdminArea[] }) {
 }
 
 export function AdminAreasSkeleton() {
+  const t = useDictionary();
   return (
-    <div className="grid gap-2" aria-busy="true" aria-label="Loading areas">
+    <div className="grid gap-2" aria-busy="true" aria-label={t.adminAreas.loading}>
       {[0, 1, 2].map((item) => (
         <Skeleton key={item} className="h-16 w-full" />
       ))}

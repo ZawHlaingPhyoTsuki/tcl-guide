@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/sidebar";
 import { authClient } from "@/lib/auth-client";
 import { cn } from "cn";
+import { useDictionary } from "@/i18n/dictionary-provider";
 import type { Session } from "@/features/auth/types/session";
 
 function initials(name: string | null | undefined, email: string | null | undefined) {
@@ -43,6 +44,7 @@ interface NavUserProps {
 
 export function NavUser({ user }: NavUserProps) {
   const router = useRouter();
+  const t = useDictionary();
   const { isMobile } = useSidebar();
 
   if (!user) {
@@ -54,7 +56,7 @@ export function NavUser({ user }: NavUserProps) {
             className={cn(buttonVariants({ variant: "outline" }), "w-full")}
           >
             <LogInIcon aria-hidden />
-            Sign In
+            {t.dashboard.signIn}
           </Link>
         </SidebarMenuItem>
       </SidebarMenu>
@@ -70,7 +72,7 @@ export function NavUser({ user }: NavUserProps) {
       {
         onSuccess: () => {
           router.push("/");
-          toast.success("Signed out");
+          toast.success(t.dashboard.signedOut);
         },
         onError: (error) => {
           toast.error(error.error.message || error.error.statusText);
@@ -123,7 +125,7 @@ export function NavUser({ user }: NavUserProps) {
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={onSignOut}>
               <LogOutIcon />
-              Log out
+              {t.dashboard.logOut}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

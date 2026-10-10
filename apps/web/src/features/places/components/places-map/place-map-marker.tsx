@@ -4,6 +4,7 @@ import { MapPin } from "lucide-react";
 
 import { MapMarker, MarkerContent, MarkerLabel } from "@/components/ui/map";
 import { cn } from "cn";
+import { useDictionary } from "@/i18n/dictionary-provider";
 
 export function PlaceMapMarker({
   longitude,
@@ -18,6 +19,7 @@ export function PlaceMapMarker({
   selected: boolean;
   onSelect: () => void;
 }) {
+  const t = useDictionary();
   return (
     <MapMarker longitude={longitude} latitude={latitude} onClick={onSelect}>
       <MarkerContent
@@ -30,7 +32,7 @@ export function PlaceMapMarker({
         ) : (
           <span
             className="bg-primary block size-4 rounded-full border-2 border-white shadow-md"
-            aria-label={`Select ${name}`}
+            aria-label={t.marker.select(name)}
           />
         )}
         <MarkerLabel position="bottom" className={cn(selected && "font-semibold")}>

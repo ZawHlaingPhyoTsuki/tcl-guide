@@ -29,12 +29,14 @@ import {
 } from "@/components/ui/item";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TagIcon } from "lucide-react";
+import { useDictionary } from "@/i18n/dictionary-provider";
 
 import { deleteCategory } from "../../categories-actions";
 import { AdminCategoryForm } from "./admin-category-form";
 import type { AdminCategory } from "../../types/category";
 
 export function AdminCategories({ initialCategories }: { initialCategories: AdminCategory[] }) {
+  const t = useDictionary();
   const [categories, setCategories] = useState(initialCategories);
   const [editing, setEditing] = useState<AdminCategory | null>(null);
   const [isCreating, setIsCreating] = useState(false);
@@ -61,7 +63,9 @@ export function AdminCategories({ initialCategories }: { initialCategories: Admi
       setCategories((current) => current.filter((item) => item.id !== category.id));
       setDeleting(null);
     } catch (requestError) {
-      setError(requestError instanceof Error ? requestError.message : "Could not delete category");
+      setError(
+        requestError instanceof Error ? requestError.message : t.adminCategories.errorDelete,
+      );
     } finally {
       setBusy(null);
     }
@@ -71,10 +75,8 @@ export function AdminCategories({ initialCategories }: { initialCategories: Admi
     <div className="grid gap-5">
       <div className="flex flex-col gap-4 border-b pb-5 sm:flex-row sm:items-end sm:justify-between">
         <div className="grid gap-1">
-          <p className="text-sm text-muted-foreground">
-            How places are grouped in the public directory
-          </p>
-          <h2 className="text-2xl font-semibold tracking-tight">Categories</h2>
+          <p className="text-sm text-muted-foreground">{t.adminCategories.kicker}</p>
+          <h2 className="text-2xl font-semibold tracking-tight">{t.adminCategories.title}</h2>
         </div>
         <Button
           onClick={() => {
@@ -82,7 +84,7 @@ export function AdminCategories({ initialCategories }: { initialCategories: Admi
             setIsCreating(true);
           }}
         >
-          Add a category
+          {t.adminCategories.addCategory}
         </Button>
       </div>
       <Dialog
@@ -96,10 +98,12 @@ export function AdminCategories({ initialCategories }: { initialCategories: Admi
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{editing ? `Edit ${editing.nameMy}` : "Add a category"}</DialogTitle>
-            <DialogDescription>
-              Slugs become public filter URLs; names can be changed anytime.
-            </DialogDescription>
+            <DialogTitle>
+              {editing
+                ? t.adminCategories.editCategory(editing.nameMy)
+                : t.adminCategories.addCategory}
+            </DialogTitle>
+            <DialogDescription>{t.adminCategories.sheetDescription}</DialogDescription>
           </DialogHeader>
           <AdminCategoryForm
             key={editing?.id ?? "new"}
@@ -123,8 +127,8 @@ export function AdminCategories({ initialCategories }: { initialCategories: Admi
             <EmptyMedia variant="icon">
               <TagIcon />
             </EmptyMedia>
-            <EmptyTitle>No categories yet</EmptyTitle>
-            <EmptyDescription>Add the first category to group places.</EmptyDescription>
+            <EmptyTitle>{t.adminCategories.emptyTitle}</EmptyTitle>
+            <EmptyDescription>{t.adminCategories.emptyBody}</EmptyDescription>
           </EmptyHeader>
         </Empty>
       ) : (
@@ -147,7 +151,7 @@ export function AdminCategories({ initialCategories }: { initialCategories: Admi
               </ItemContent>
               <ItemActions>
                 <Badge variant="outline" className="tabular-nums">
-                  {category.placeCount} {category.placeCount === 1 ? "place" : "places"}
+                  {category.placeCount} {t.adminCategories.countUnit(category.placeCount)}
                 </Badge>
                 <Button
                   size="sm"
@@ -157,20 +161,16 @@ export function AdminCategories({ initialCategories }: { initialCategories: Admi
                     setEditing(category);
                   }}
                 >
-                  Edit
+                  {t.adminCategories.edit}
                 </Button>
                 <Button
                   size="sm"
                   variant="ghost"
                   disabled={category.placeCount > 0 || busy === category.id}
-                  title={
-                    category.placeCount > 0
-                      ? "Move its places to another category first"
-                      : undefined
-                  }
+                  title={category.placeCount > 0 ? t.adminCategories.moveBlocked : undefined}
                   onClick={() => setDeleting(category.id)}
                 >
-                  {busy === category.id ? "Deleting..." : "Delete"}
+                  {busy === category.id ? t.adminCategories.deleting : t.adminCategories.delete}
                 </Button>
               </ItemActions>
             </Item>
@@ -185,14 +185,12 @@ export function AdminCategories({ initialCategories }: { initialCategories: Admi
       >
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>Delete this category?</DialogTitle>
-            <DialogDescription>
-              This permanently removes the category. It only applies to categories with no places.
-            </DialogDescription>
+            <DialogTitle>{t.adminCategories.deleteTitle}</DialogTitle>
+            <DialogDescription>{t.adminCategories.deleteBody}</DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDeleting(null)}>
-              Keep category
+              {t.adminCategories.keepCategory}
             </Button>
             <Button
               variant="destructive"
@@ -202,7 +200,9 @@ export function AdminCategories({ initialCategories }: { initialCategories: Admi
                 if (category) void remove(category);
               }}
             >
-              {deleting && busy === deleting ? "Deleting..." : "Delete category"}
+              {deleting && busy === deleting
+                ? t.adminCategories.deleting
+                : t.adminCategories.deleteConfirm}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -213,7 +213,11 @@ export function AdminCategories({ initialCategories }: { initialCategories: Admi
 
 export function AdminCategoriesSkeleton() {
   return (
-    <div className="grid gap-2" aria-busy="true" aria-label="Loading categories">
+    <div
+      className="grid gap-2"
+      aria-busy="true"
+      aria-label={useDictionary().adminCategories.loading}
+    >
       {[0, 1, 2].map((item) => (
         <Skeleton key={item} className="h-16 w-full" />
       ))}

@@ -3,6 +3,9 @@ import { Clock, MapPin, Navigation, Phone, Wallet, type LucideIcon } from "lucid
 import { PRICE_LEVEL_LABELS } from "../places-constants";
 import type { Place } from "../types/place";
 import { Skeleton } from "@/components/ui/skeleton";
+import { displayName } from "@/i18n/display-name";
+import { getDictionary, type Dictionary } from "@/i18n/get-dictionary";
+import { getLocale } from "@/i18n/get-locale";
 import { PlaceGallery } from "./place-gallery";
 import { PlaceLocationMap } from "./place-location-map";
 
@@ -16,7 +19,15 @@ function getDirectionsUrl(place: Place): string | null {
   return null;
 }
 
-function Actions({ place, className = "" }: { place: Place; className?: string }) {
+function Actions({
+  place,
+  t,
+  className = "",
+}: {
+  place: Place;
+  t: Dictionary;
+  className?: string;
+}) {
   const directionsUrl = getDirectionsUrl(place);
   const telHref = place.phone ? `tel:${place.phone.replace(/[^\d+]/g, "")}` : null;
   if (!directionsUrl && !telHref) return null;
@@ -34,13 +45,13 @@ function Actions({ place, className = "" }: { place: Place; className?: string }
           className={`${base} bg-primary text-primary-foreground hover:bg-primary/90`}
         >
           <Navigation className="size-4" aria-hidden />
-          Directions
+          {t.detail.directions}
         </a>
       ) : null}
       {telHref ? (
         <a href={telHref} className={`${base} border-border bg-background hover:bg-muted border`}>
           <Phone className="size-4" aria-hidden />
-          Call
+          {t.detail.call}
         </a>
       ) : null}
     </div>
@@ -75,52 +86,56 @@ function Chip({ children }: { children: ReactNode }) {
   );
 }
 
-export function PlaceDetail({ place }: { place: Place }) {
+export async function PlaceDetail({ place }: { place: Place }) {
+  const [t, locale] = await Promise.all([getDictionary(), getLocale()]);
   const hasMap = place.latitude !== null && place.longitude !== null;
   const hasInfo = place.addressText || place.hoursText || place.phone || place.priceNote;
-  const priceLevel = place.priceLevel ? PRICE_LEVEL_LABELS[place.priceLevel] : null;
+  const name = displayName(place.nameMy, place.nameEn, locale);
+  const secondaryName = displayName(place.nameEn, place.nameMy, locale);
 
   return (
     <>
       <article className="grid gap-x-8 gap-y-6 lg:grid-cols-[minmax(0,1fr)_21rem] lg:items-start">
         <div className="lg:col-start-1 lg:row-start-1">
-          <PlaceGallery photos={place.photos} name={place.nameMy} />
+          <PlaceGallery photos={place.photos} name={name} />
         </div>
 
         <header className="lg:col-start-1 lg:row-start-2">
           <h1 className="text-2xl leading-snug font-semibold sm:text-3xl sm:leading-snug">
-            {place.nameMy}
+            {name}
           </h1>
-          {place.nameEn ? (
-            <p className="text-muted-foreground mt-1 text-base">{place.nameEn}</p>
+          {secondaryName && secondaryName !== name ? (
+            <p className="text-muted-foreground mt-1 text-base">{secondaryName}</p>
           ) : null}
           <div className="mt-3 flex flex-wrap gap-2">
-            <Chip>{place.category.nameMy}</Chip>
-            {place.area ? <Chip>{place.area.nameMy}</Chip> : null}
-            {priceLevel ? (
+            <Chip>{displayName(place.category.nameMy, place.category.nameEn, locale)}</Chip>
+            {place.area ? (
+              <Chip>{displayName(place.area.nameMy, place.area.nameEn, locale)}</Chip>
+            ) : null}
+            {place.priceLevel ? (
               <Chip>
-                {priceLevel.symbol} · {priceLevel.name}
+                {PRICE_LEVEL_LABELS[place.priceLevel].symbol} · {t.priceLevels[place.priceLevel]}
               </Chip>
             ) : null}
           </div>
         </header>
 
         <section className="border-border rounded-2xl border p-4 lg:col-start-2 lg:row-span-2 lg:row-start-1">
-          <Actions place={place} className="hidden lg:flex" />
+          <Actions place={place} t={t} className="hidden lg:flex" />
           {hasInfo ? (
             <dl className="grid gap-4 lg:mt-5">
               {place.addressText ? (
-                <InfoRow icon={MapPin} label="Address">
+                <InfoRow icon={MapPin} label={t.detail.address}>
                   {place.addressText}
                 </InfoRow>
               ) : null}
               {place.hoursText ? (
-                <InfoRow icon={Clock} label="Opening hours">
+                <InfoRow icon={Clock} label={t.detail.hours}>
                   {place.hoursText}
                 </InfoRow>
               ) : null}
               {place.phone ? (
-                <InfoRow icon={Phone} label="Phone">
+                <InfoRow icon={Phone} label={t.detail.phone}>
                   <a
                     href={`tel:${place.phone.replace(/[^\d+]/g, "")}`}
                     className="underline-offset-4 hover:underline"
@@ -130,7 +145,7 @@ export function PlaceDetail({ place }: { place: Place }) {
                 </InfoRow>
               ) : null}
               {place.priceNote ? (
-                <InfoRow icon={Wallet} label="Price">
+                <InfoRow icon={Wallet} label={t.detail.price}>
                   {place.priceNote}
                 </InfoRow>
               ) : null}
@@ -140,7 +155,7 @@ export function PlaceDetail({ place }: { place: Place }) {
 
         {place.descriptionMy ? (
           <section className="lg:col-start-1 lg:row-start-3">
-            <h2 className="sr-only">About</h2>
+            <h2 className="sr-only">{t.detail.about}</h2>
             <p className="max-w-prose text-base leading-loose whitespace-pre-line">
               {place.descriptionMy}
             </p>
@@ -149,7 +164,7 @@ export function PlaceDetail({ place }: { place: Place }) {
 
         {hasMap ? (
           <section className="lg:col-start-2 lg:row-start-3">
-            <h2 className="sr-only">Location</h2>
+            <h2 className="sr-only">{t.detail.location}</h2>
             <div className="border-border h-56 overflow-hidden rounded-2xl border">
               <PlaceLocationMap place={place} />
             </div>
@@ -159,18 +174,19 @@ export function PlaceDetail({ place }: { place: Place }) {
 
       {/* Mobile: the two actions people come here for stay within thumb reach. */}
       <div className="border-border bg-background/95 fixed inset-x-0 bottom-0 z-40 border-t px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur lg:hidden">
-        <Actions place={place} className="mx-auto max-w-3xl" />
+        <Actions place={place} t={t} className="mx-auto max-w-3xl" />
       </div>
     </>
   );
 }
 
-export function PlaceDetailSkeleton() {
+export async function PlaceDetailSkeleton() {
+  const t = await getDictionary();
   return (
     <div
       className="grid gap-x-8 gap-y-6 lg:grid-cols-[minmax(0,1fr)_21rem]"
       aria-busy="true"
-      aria-label="Loading place"
+      aria-label={t.detail.loading}
     >
       <div className="grid gap-6">
         <Skeleton className="aspect-4/3 w-full rounded-2xl sm:aspect-video" />

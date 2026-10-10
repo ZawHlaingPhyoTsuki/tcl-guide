@@ -7,6 +7,8 @@ import { LayoutGrid, UtensilsCrossed } from "lucide-react";
 import type { Category } from "@/features/categories/types/category";
 import { Button } from "@/components/ui/button";
 import { cn } from "cn";
+import { useDictionary, useLocale } from "@/i18n/dictionary-provider";
+import { displayName } from "@/i18n/display-name";
 
 export function PlaceFilterChips({
   categories,
@@ -19,6 +21,8 @@ export function PlaceFilterChips({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const active = searchParams.get("category");
+  const t = useDictionary();
+  const locale = useLocale();
 
   function select(slug: string | null) {
     const params = new URLSearchParams(searchParams.toString());
@@ -31,7 +35,7 @@ export function PlaceFilterChips({
   return (
     <div
       role="group"
-      aria-label="Filter by category"
+      aria-label={t.chips.filterLabel}
       className={cn(
         "flex gap-2 overflow-x-auto pb-1 scrollbar-none [&::-webkit-scrollbar]:hidden",
         className,
@@ -45,7 +49,7 @@ export function PlaceFilterChips({
         className="shrink-0"
       >
         <LayoutGrid aria-hidden />
-        All
+        {t.chips.all}
       </Button>
       {categories.map((category) => {
         const isActive = active === category.slug;
@@ -59,7 +63,7 @@ export function PlaceFilterChips({
             className="shrink-0"
           >
             <UtensilsCrossed aria-hidden />
-            {category.nameMy}
+            {displayName(category.nameMy, category.nameEn, locale)}
           </Button>
         );
       })}
