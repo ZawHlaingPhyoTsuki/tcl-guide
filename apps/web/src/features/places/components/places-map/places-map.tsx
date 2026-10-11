@@ -103,7 +103,7 @@ export function PlacesMap({
       zoom={draft ? 15 : 13}
       styles={{
         light: "https://tiles.openfreemap.org/styles/bright",
-        dark: "https://tiles.openfreemap.org/styles/dark",
+        // dark: "https://tiles.openfreemap.org/styles/dark", // intentionally not used, as it is too dark for our map pins to be visible
       }}
     >
       {/* Hidden on phones (pinch-zoom works), but the admin picker keeps them. */}
