@@ -27,14 +27,14 @@ const SHEET_SNAP_POINTS = { peek: 0.3, expanded: 0.85 } as const;
 
 const VARIANT_CLASSES = {
   bottom: {
-    trigger: "absolute top-2 left-2 z-20 size-8 rounded-full shadow-md",
+    trigger: "absolute top-2 left-2 z-20 size-10 rounded-full bg-card shadow-md",
     triggerIcon: "size-4",
     content: "h-[85dvh] md:hidden",
     chips: "shrink-0 px-3 pt-1 pb-2",
     list: "min-h-0 flex-1 overflow-y-auto px-3 pb-4",
   },
   side: {
-    trigger: "absolute top-4 left-4 z-20 hidden size-10 rounded-full shadow-md md:flex",
+    trigger: "absolute top-4 left-4 z-20 hidden size-10 rounded-full bg-card shadow-md md:flex",
     triggerIcon: "size-5",
     content: "max-md:hidden",
     chips: "shrink-0 px-4 pt-3",

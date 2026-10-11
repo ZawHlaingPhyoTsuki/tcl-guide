@@ -26,12 +26,12 @@ export function PlaceMapMarker({
         className={cn("flex min-h-11 min-w-11 items-center justify-center", selected && "z-10")}
       >
         {selected ? (
-          <span className="bg-destructive flex size-6 items-center justify-center rounded-full border-2 border-white shadow-md">
-            <MapPin className="size-3.5 text-white" aria-hidden />
+          <span className="flex size-9 items-center justify-center rounded-full border-2 border-white bg-primary shadow-lg ring-4 ring-primary/30">
+            <MapPin className="size-4 text-primary-foreground" aria-hidden />
           </span>
         ) : (
           <span
-            className="bg-primary block size-4 rounded-full border-2 border-white shadow-md"
+            className="block size-4 rounded-full border-2 border-white bg-primary shadow-md transition-transform hover:scale-125"
             aria-label={t.marker.select(name)}
           />
         )}

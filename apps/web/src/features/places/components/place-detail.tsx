@@ -93,7 +93,7 @@ function InfoRow({
       </span>
       <div className="min-w-0 pt-0.5">
         <dt className="text-xs text-muted-foreground">{label}</dt>
-        <dd className="leading-relaxed break-words whitespace-pre-line">{children}</dd>
+        <dd className="leading-relaxed wrap-break-word whitespace-pre-line">{children}</dd>
       </div>
     </div>
   );

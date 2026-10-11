@@ -10,12 +10,16 @@ import {
   useMap,
   type MapRef,
 } from "@/components/ui/map";
+import { DESKTOP_QUERY, useMediaQuery } from "@/hooks/use-media-query";
+import { useLocale } from "@/i18n/dictionary-provider";
+import { displayName } from "@/i18n/display-name";
 
 import type { Place } from "../../types/place";
 import { PlaceMapMarker } from "./place-map-marker";
 import { PlaceMapPopup } from "./place-map-popup";
-import { useLocale } from "@/i18n/dictionary-provider";
-import { displayName } from "@/i18n/display-name";
+import { useMapCamera, type PlacesMapViewport } from "../../hooks/use-map-camera";
+
+export type { PlacesMapViewport };
 
 const TACHILEIK: [number, number] = [99.882, 20.447];
 
@@ -48,15 +52,18 @@ export function PlacesMap({
   onSelect,
   includeInactive = false,
   editable,
+  viewport,
 }: {
   places: Place[];
   selectedPlaceId?: string | null;
   onSelect?: (id: string | null) => void;
   includeInactive?: boolean;
   editable?: PlacesMapEditable;
+  viewport?: PlacesMapViewport;
 }) {
   const mapRef = useRef<MapRef | null>(null);
   const locale = useLocale();
+  const isDesktop = useMediaQuery(DESKTOP_QUERY, true);
 
   const mappedPlaces = useMemo(
     () =>
@@ -76,15 +83,14 @@ export function PlacesMap({
       : null;
   const center: [number, number] = draft ? [draft.longitude, draft.latitude] : TACHILEIK;
 
-  // List/map sync: pan to selection. Runs on selection change only.
-  useEffect(() => {
-    if (!selected || !mapRef.current) return;
-    mapRef.current.flyTo({
-      center: [selected.longitude, selected.latitude],
-      zoom: Math.max(mapRef.current.getZoom(), 15),
-      duration: 600,
-    });
-  }, [selected?.id]);
+  useMapCamera({
+    mapRef,
+    places: mappedPlaces,
+    selected,
+    fitResults: !editable,
+    viewport,
+    isDesktop,
+  });
 
   return (
     <Map
@@ -92,12 +98,16 @@ export function PlacesMap({
       className="absolute inset-0"
       center={center}
       zoom={draft ? 15 : 13}
-      styles={{ light: "https://tiles.openfreemap.org/styles/bright" }}
+      styles={{
+        light: "https://tiles.openfreemap.org/styles/bright",
+        dark: "https://tiles.openfreemap.org/styles/dark",
+      }}
     >
-      <MapControls position="top-right" showLocate={false} />
+      {/* Hidden on phones (pinch-zoom works), but the admin picker keeps them. */}
+      {isDesktop || editable ? <MapControls position="top-right" showLocate={false} /> : null}
       {editable ? (
         <>
-          <MapClickHandler onPick={(lat, lng) => editable.onPick(lat, lng)} />
+          <MapClickHandler onPick={editable.onPick} />
           {draft ? (
             <MapMarker
               longitude={draft.longitude}

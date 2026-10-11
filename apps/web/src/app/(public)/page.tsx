@@ -91,14 +91,14 @@ export default async function LandingPage() {
           <Link
             href={"/map" as Route}
             aria-label={t.landing.browseMap}
-            className="group relative block aspect-[4/3] overflow-hidden rounded-3xl border border-border bg-card shadow-xl transition-shadow hover:shadow-2xl"
+            className="group relative block aspect-4/3 overflow-hidden rounded-3xl border border-border bg-card shadow-xl transition-shadow hover:shadow-2xl"
           >
             {/* dotted grid */}
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,var(--border)_1px,transparent_0)] bg-size-[22px_22px]" />
             {/* "roads" */}
-            <div className="absolute top-[46%] -left-[10%] h-3 w-[120%] -rotate-12 rounded-full bg-muted" />
-            <div className="absolute -top-[10%] left-[38%] h-[120%] w-3 rotate-[18deg] rounded-full bg-muted" />
-            <div className="absolute top-[18%] -left-[10%] h-2 w-[120%] rotate-6 rounded-full bg-muted/70" />
+            <div className="absolute top-[46%] left-[-10%] h-3 w-[120%] -rotate-12 rounded-full bg-muted" />
+            <div className="absolute top-[-10%] left-[38%] h-[120%] w-3 rotate-18 rounded-full bg-muted" />
+            <div className="absolute top-[18%] left-[-10%] h-2 w-[120%] rotate-6 rounded-full bg-muted/70" />
 
             {/* pins */}
             {pins.map((pin, i) => (

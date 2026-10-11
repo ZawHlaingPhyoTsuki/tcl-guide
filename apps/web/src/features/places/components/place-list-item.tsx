@@ -37,9 +37,9 @@ export function PlaceListItem({
   return (
     <div
       className={cn(
-        "flex w-full items-center gap-3 rounded-lg border p-3 transition-colors",
-        "hover:bg-muted/50 focus-within:ring-ring focus-within:ring-2 focus-within:outline-none",
-        active && "border-primary bg-muted/50 ring-1 ring-primary",
+        "flex w-full items-center gap-3 rounded-2xl border border-border/70 bg-card p-3 shadow-sm transition-all",
+        "hover:border-primary/40 hover:shadow-md focus-within:ring-2 focus-within:ring-ring focus-within:outline-none",
+        active && "border-primary bg-primary/5 ring-1 ring-primary",
       )}
     >
       <button
