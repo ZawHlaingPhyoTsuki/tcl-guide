@@ -5,6 +5,11 @@
 - add recommendation in detail page
 - fo "nearbyPlaces" card, use the sidebar places cards
 - improve the nearByPlaces login
+- [VERIFYING]in production,
+  - in home page, i can scroll hori a little(about 10px?)
+  - in detail page too, same as i can scroll horizentally a little
+  - after i zoom out with my finger, it work normamly and look good
+  - no problem at auth pages
 
 ### Server
 
