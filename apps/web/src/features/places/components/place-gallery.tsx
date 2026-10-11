@@ -4,19 +4,24 @@ import Image from "next/image";
 import { useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, ImageOff } from "lucide-react";
 
+import { PhotoPreviewDialog } from "./photo-preview-dialog";
+import { useDictionary } from "@/i18n/dictionary-provider";
+
 export function PlaceGallery({ photos, name }: { photos: string[]; name: string }) {
   const trackRef = useRef<HTMLUListElement>(null);
+  const t = useDictionary();
   const [index, setIndex] = useState(0);
+  const [preview, setPreview] = useState<number | null>(null);
 
   if (photos.length === 0) {
     return (
       <div
-        className="bg-muted text-muted-foreground flex aspect-4/3 w-full flex-col items-center justify-center gap-2 rounded-2xl sm:aspect-video"
+        className="bg-muted text-muted-foreground flex aspect-4/3 w-full flex-col items-center justify-center gap-2 rounded-3xl sm:aspect-video"
         role="img"
-        aria-label="No photos yet"
+        aria-label={t.gallery.noPhotos}
       >
         <ImageOff className="size-6" aria-hidden />
-        <span className="text-sm">No photos yet</span>
+        <span className="text-sm">{t.gallery.noPhotos}</span>
       </div>
     );
   }
@@ -28,15 +33,22 @@ export function PlaceGallery({ photos, name }: { photos: string[]; name: string 
     el.scrollBy({ left: direction * el.clientWidth, behavior: reduce ? "auto" : "smooth" });
   }
 
+  function scrollTo(photoIndex: number) {
+    const el = trackRef.current;
+    if (!el) return;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    el.scrollTo({ left: photoIndex * el.clientWidth, behavior: reduce ? "auto" : "smooth" });
+  }
+
   const arrow =
-    "bg-background/90 text-foreground hover:bg-background absolute top-1/2 hidden size-9 -translate-y-1/2 items-center justify-center rounded-full shadow-sm outline-offset-2 focus-visible:outline-2 disabled:pointer-events-none disabled:opacity-0 md:flex";
+    "bg-background/90 text-foreground hover:bg-background absolute top-1/2 hidden size-10 -translate-y-1/2 items-center justify-center rounded-full shadow-md outline-offset-2 focus-visible:outline-2 disabled:pointer-events-none disabled:opacity-0 md:flex";
 
   return (
-    <div className="bg-muted relative overflow-hidden rounded-2xl">
+    <div className="relative overflow-hidden rounded-3xl border border-border/70 bg-muted shadow-md">
       <ul
         ref={trackRef}
         tabIndex={0}
-        aria-label={`${name} photos`}
+        aria-label={t.gallery.photosOf(name)}
         onScroll={(e) => {
           const el = e.currentTarget;
           setIndex(Math.round(el.scrollLeft / el.clientWidth));
@@ -56,6 +68,12 @@ export function PlaceGallery({ photos, name }: { photos: string[]; name: string 
               priority={i === 0}
               sizes="(max-width: 1024px) 100vw, 640px"
             />
+            <button
+              type="button"
+              onClick={() => setPreview(i)}
+              aria-label={t.gallery.expand(i + 1, photos.length)}
+              className="absolute inset-0 cursor-zoom-in outline-offset-2 focus-visible:outline-2"
+            />
           </li>
         ))}
       </ul>
@@ -66,7 +84,7 @@ export function PlaceGallery({ photos, name }: { photos: string[]; name: string 
             type="button"
             onClick={() => go(-1)}
             disabled={index === 0}
-            aria-label="Previous photo"
+            aria-label={t.gallery.previous}
             className={`${arrow} left-3`}
           >
             <ChevronLeft className="size-5" aria-hidden />
@@ -75,7 +93,7 @@ export function PlaceGallery({ photos, name }: { photos: string[]; name: string 
             type="button"
             onClick={() => go(1)}
             disabled={index === photos.length - 1}
-            aria-label="Next photo"
+            aria-label={t.gallery.next}
             className={`${arrow} right-3`}
           >
             <ChevronRight className="size-5" aria-hidden />
@@ -87,6 +105,22 @@ export function PlaceGallery({ photos, name }: { photos: string[]; name: string 
             {index + 1} / {photos.length}
           </span>
         </>
+      ) : null}
+
+      {preview !== null ? (
+        <PhotoPreviewDialog
+          photos={photos}
+          index={preview}
+          placeName={name}
+          open
+          onOpenChange={(o) => {
+            if (!o) setPreview(null);
+          }}
+          onIndexChange={(i) => {
+            setPreview(i);
+            scrollTo(i);
+          }}
+        />
       ) : null}
     </div>
   );

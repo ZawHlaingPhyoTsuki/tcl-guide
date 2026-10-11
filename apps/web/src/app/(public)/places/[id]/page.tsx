@@ -3,12 +3,19 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
 import { PlaceDetail } from "@/features/places/components/place-detail";
-import { getPlace } from "@/features/places/places-queries";
+import { getPlace, getPlaces } from "@/features/places/places-queries";
+import { PublicFooter } from "@/components/public-footer";
+import { displayName } from "@/i18n/display-name";
+import { getDictionary } from "@/i18n/get-dictionary";
+import { getLocale } from "@/i18n/get-locale";
 
 export async function generateMetadata({ params }: PageProps<"/places/[id]">): Promise<Metadata> {
   const place = await getPlace((await params).id);
+  const locale = await getLocale();
+  const primary = displayName(place.nameMy, place.nameEn, locale);
+  const secondary = displayName(place.nameEn, place.nameMy, locale);
   return {
-    title: place.nameEn ? `${place.nameMy} · ${place.nameEn}` : place.nameMy,
+    title: secondary && secondary !== primary ? `${primary} · ${secondary}` : primary,
     openGraph: place.photos[0] ? { images: [place.photos[0]] } : undefined,
   };
 }
@@ -20,19 +27,62 @@ export async function generateMetadata({ params }: PageProps<"/places/[id]">): P
 export default async function PlacePage({ params }: PageProps<"/places/[id]">) {
   const { id } = await params;
   const place = await getPlace(id);
+  const [nearby, t, locale] = await Promise.all([
+    place.area ? getPlaces({ area: place.area.slug }) : Promise.resolve([]),
+    getDictionary(),
+    getLocale(),
+  ]);
+  const nearbyPlaces = nearby.filter((item) => item.id !== place.id).slice(0, 4);
+  const name = displayName(place.nameMy, place.nameEn, locale);
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Restaurant",
+    name,
+    url: `/places/${place.slug}`,
+    image: place.photos,
+    telephone: place.phone ?? undefined,
+    address: place.addressText
+      ? { "@type": "PostalAddress", streetAddress: place.addressText }
+      : undefined,
+    geo:
+      place.latitude !== null && place.longitude !== null
+        ? {
+            "@type": "GeoCoordinates",
+            latitude: place.latitude,
+            longitude: place.longitude,
+          }
+        : undefined,
+    sameAs: [
+      place.facebookUrl,
+      place.telegramHandle ? `https://t.me/${place.telegramHandle.replace(/^@/, "")}` : null,
+    ].filter(Boolean),
+  };
   return (
-    // pb-28 on mobile leaves room for the fixed action bar.
-    <div className="container mx-auto max-w-5xl px-4 pt-3 pb-28 lg:pb-12">
-      <Link
-        href="/"
-        className="text-muted-foreground hover:text-foreground -ml-2 inline-flex h-10 items-center gap-1.5 rounded-lg px-2 text-sm"
-      >
-        <ArrowLeft className="size-4" aria-hidden />
-        All places
-      </Link>
-      <div className="mt-2">
-        <PlaceDetail place={place} />
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
+        }}
+      />
+      <div className="bg-linear-to-b from-primary/10 to-transparent">
+        {/* pb-28 on mobile leaves room for the fixed action bar. */}
+        <div className="mx-auto max-w-6xl px-4 pt-4 pb-28 sm:pt-6 lg:pb-14">
+          <Link
+            href="/map"
+            className="inline-flex h-10 items-center gap-1.5 rounded-full border border-border bg-card px-4 text-sm font-medium text-muted-foreground shadow-sm transition-colors hover:border-primary/40 hover:text-foreground"
+          >
+            <ArrowLeft className="size-4" aria-hidden />
+            {t.detailBack}
+          </Link>
+          <div className="mt-4">
+            <PlaceDetail place={place} nearbyPlaces={nearbyPlaces} />
+          </div>
+        </div>
       </div>
-    </div>
+      <div className="pb-24 lg:pb-0">
+        <PublicFooter />
+      </div>
+    </>
   );
 }

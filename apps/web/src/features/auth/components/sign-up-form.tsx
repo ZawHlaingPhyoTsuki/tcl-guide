@@ -11,11 +11,14 @@ import { toast } from "sonner";
 import z from "zod";
 
 import { authClient } from "@/lib/auth-client";
+import { useDictionary } from "@/i18n/dictionary-provider";
 
 import Loader from "../../../components/loader";
+import { AuthShell, FieldError } from "@/components/auth-shell";
 
 export default function SignUpForm() {
   const router = useRouter();
+  const t = useDictionary();
   const { isPending } = authClient.useSession();
 
   const form = useForm({
@@ -35,7 +38,7 @@ export default function SignUpForm() {
           onSuccess: () => {
             router.push("/dashboard");
             router.refresh();
-            toast.success("Sign up successful");
+            toast.success(t.auth.signUpSuccess);
           },
           onError: (error) => {
             toast.error(error.error.message || error.error.statusText);
@@ -57,9 +60,17 @@ export default function SignUpForm() {
   }
 
   return (
-    <div className="mx-auto w-full mt-10 max-w-md p-6">
-      <h1 className="mb-6 text-center text-3xl font-bold">Create Account</h1>
-
+    <AuthShell
+      title={t.auth.createAccount}
+      footer={
+        <Link
+          href={"/login" as Route}
+          className={buttonVariants({ variant: "link", className: "text-muted-foreground" })}
+        >
+          {t.auth.haveAccount}
+        </Link>
+      }
+    >
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -68,90 +79,77 @@ export default function SignUpForm() {
         }}
         className="space-y-4"
       >
-        <div>
-          <form.Field name="name">
-            {(field) => (
-              <div className="space-y-2">
-                <Label htmlFor={field.name}>Name</Label>
-                <Input
-                  id={field.name}
-                  name={field.name}
-                  value={field.state.value}
-                  onBlur={field.handleBlur}
-                  onChange={(e) => field.handleChange(e.target.value)}
-                />
-                {field.state.meta.errors.map((error) => (
-                  <p key={error?.message} className="text-red-500">
-                    {error?.message}
-                  </p>
-                ))}
-              </div>
-            )}
-          </form.Field>
-        </div>
+        <form.Field name="name">
+          {(field) => (
+            <div className="space-y-2">
+              <Label htmlFor={field.name}>{t.auth.name}</Label>
+              <Input
+                id={field.name}
+                name={field.name}
+                autoComplete="name"
+                className="h-11"
+                value={field.state.value}
+                onBlur={field.handleBlur}
+                onChange={(e) => field.handleChange(e.target.value)}
+              />
+              <FieldError errors={field.state.meta.errors} />
+            </div>
+          )}
+        </form.Field>
 
-        <div>
-          <form.Field name="email">
-            {(field) => (
-              <div className="space-y-2">
-                <Label htmlFor={field.name}>Email</Label>
-                <Input
-                  id={field.name}
-                  name={field.name}
-                  type="email"
-                  value={field.state.value}
-                  onBlur={field.handleBlur}
-                  onChange={(e) => field.handleChange(e.target.value)}
-                />
-                {field.state.meta.errors.map((error) => (
-                  <p key={error?.message} className="text-red-500">
-                    {error?.message}
-                  </p>
-                ))}
-              </div>
-            )}
-          </form.Field>
-        </div>
+        <form.Field name="email">
+          {(field) => (
+            <div className="space-y-2">
+              <Label htmlFor={field.name}>{t.auth.email}</Label>
+              <Input
+                id={field.name}
+                name={field.name}
+                type="email"
+                autoComplete="email"
+                className="h-11"
+                value={field.state.value}
+                onBlur={field.handleBlur}
+                onChange={(e) => field.handleChange(e.target.value)}
+              />
+              <FieldError errors={field.state.meta.errors} />
+            </div>
+          )}
+        </form.Field>
 
-        <div>
-          <form.Field name="password">
-            {(field) => (
-              <div className="space-y-2">
-                <Label htmlFor={field.name}>Password</Label>
-                <Input
-                  id={field.name}
-                  name={field.name}
-                  type="password"
-                  value={field.state.value}
-                  onBlur={field.handleBlur}
-                  onChange={(e) => field.handleChange(e.target.value)}
-                />
-                {field.state.meta.errors.map((error) => (
-                  <p key={error?.message} className="text-red-500">
-                    {error?.message}
-                  </p>
-                ))}
-              </div>
-            )}
-          </form.Field>
-        </div>
+        <form.Field name="password">
+          {(field) => (
+            <div className="space-y-2">
+              <Label htmlFor={field.name}>{t.auth.password}</Label>
+              <Input
+                id={field.name}
+                name={field.name}
+                type="password"
+                autoComplete="new-password"
+                className="h-11"
+                value={field.state.value}
+                onBlur={field.handleBlur}
+                onChange={(e) => field.handleChange(e.target.value)}
+              />
+              <FieldError errors={field.state.meta.errors} />
+            </div>
+          )}
+        </form.Field>
 
         <form.Subscribe
           selector={(state) => ({ canSubmit: state.canSubmit, isSubmitting: state.isSubmitting })}
         >
           {({ canSubmit, isSubmitting }) => (
-            <Button type="submit" className="w-full" disabled={!canSubmit || isSubmitting}>
-              {isSubmitting ? "Submitting..." : "Sign Up"}
+            <Button
+              type="submit"
+              size="lg"
+              className="h-12 w-full rounded-full text-base font-semibold shadow-md shadow-primary/25"
+              disabled={!canSubmit || isSubmitting}
+            >
+              {isSubmitting ? t.auth.submitting : t.auth.signUp}
             </Button>
           )}
         </form.Subscribe>
       </form>
-
-      <div className="mt-4 text-center">
-        <Link href={"/login" as Route} className={buttonVariants({ variant: "link" })}>
-          Already have an account? Sign In
-        </Link>
-      </div>
-    </div>
+    </AuthShell>
   );
 }

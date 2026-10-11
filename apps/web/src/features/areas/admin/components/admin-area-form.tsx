@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { FieldGroup } from "@/components/ui/field";
 import { FormTextField } from "@/components/ui/form-text-field";
 import { toOptional } from "@/lib/form";
+import { useDictionary } from "@/i18n/dictionary-provider";
 
 import { createArea, updateArea } from "../../areas-actions";
 import { areaFormSchema, type AreaFormValues } from "../../areas-schema";
@@ -23,6 +24,7 @@ export function AdminAreaForm({
 }) {
   const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const t = useDictionary();
 
   const form = useForm({
     defaultValues: {
@@ -41,7 +43,7 @@ export function AdminAreaForm({
           : await createArea({ slug: value.slug.trim(), nameMy: value.nameMy.trim(), nameEn });
         onSaved(saved);
       } catch (requestError) {
-        setError(requestError instanceof Error ? requestError.message : "Could not save area");
+        setError(requestError instanceof Error ? requestError.message : t.adminAreaForm.errorSave);
       } finally {
         setIsSaving(false);
       }
@@ -54,14 +56,14 @@ export function AdminAreaForm({
         event.preventDefault();
         form.handleSubmit();
       }}
-      aria-label="Area form"
+      aria-label={t.adminAreaForm.formLabel}
     >
       <FieldGroup className="gap-4 border-t pt-4">
         {area ? (
           <div className="grid gap-1">
-            <p className="text-sm font-medium">Slug</p>
+            <p className="text-sm font-medium">{t.adminAreaForm.slug}</p>
             <p className="text-xs text-muted-foreground">
-              {area.slug} · used in public filter URLs, cannot be changed
+              {area.slug} {t.adminAreaForm.slugLocked}
             </p>
           </div>
         ) : (
@@ -69,23 +71,19 @@ export function AdminAreaForm({
             {(field) => (
               <FormTextField
                 id="slug"
-                label="Slug *"
-                placeholder="e.g. san-sai"
+                label={t.adminAreaForm.slugLabel}
+                placeholder={t.adminAreaForm.slugPlaceholder}
                 field={field}
-                hint={
-                  <p className="text-xs text-muted-foreground">
-                    Used in public filter URLs, e.g. ?area=san-sai. Cannot be changed later.
-                  </p>
-                }
+                hint={<p className="text-xs text-muted-foreground">{t.adminAreaForm.slugHint}</p>}
               />
             )}
           </form.Field>
         )}
         <form.Field name="nameMy">
-          {(field) => <FormTextField id="nameMy" label="Name in Myanmar *" field={field} />}
+          {(field) => <FormTextField id="nameMy" label={t.adminAreaForm.nameMy} field={field} />}
         </form.Field>
         <form.Field name="nameEn">
-          {(field) => <FormTextField id="nameEn" label="English name" field={field} />}
+          {(field) => <FormTextField id="nameEn" label={t.adminAreaForm.nameEn} field={field} />}
         </form.Field>
         {error ? (
           <p role="alert" className="text-destructive text-xs">
@@ -94,10 +92,14 @@ export function AdminAreaForm({
         ) : null}
         <div className="flex flex-wrap gap-2">
           <Button type="submit" disabled={isSaving}>
-            {isSaving ? "Saving..." : area ? "Save changes" : "Create area"}
+            {isSaving
+              ? t.adminAreaForm.saving
+              : area
+                ? t.adminAreaForm.saveChanges
+                : t.adminAreaForm.createArea}
           </Button>
           <Button type="button" variant="outline" onClick={onCancel} disabled={isSaving}>
-            Cancel
+            {t.adminAreaForm.cancel}
           </Button>
         </div>
       </FieldGroup>

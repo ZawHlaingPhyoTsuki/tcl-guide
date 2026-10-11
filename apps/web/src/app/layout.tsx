@@ -1,40 +1,39 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 
-import "../index.css";
+import "../styles/globals.css";
 import Providers from "@/components/providers";
-import { cn } from "@/lib/utils";
+import { getLocale } from "@/i18n/get-locale";
+import { cn } from "cn";
+import { Inter } from "next/font/google";
 
 const outfitHeading = localFont({
   src: "../fonts/outfit-latin.woff2",
-  variable: "--font-heading",
+  variable: "--font-display",
   display: "swap",
 });
 
-const inter = localFont({
-  src: "../fonts/inter-latin.woff2",
-  variable: "--font-sans",
-  display: "swap",
-});
+const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
   title: "tcl-guide",
   description: "tcl-guide",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const locale = await getLocale();
   return (
     <html
-      lang="en"
+      lang={locale === "my" ? "my" : "en"}
       suppressHydrationWarning
       className={cn("font-sans", inter.variable, outfitHeading.variable)}
     >
-      <body className="antialiased">
-        <Providers>{children}</Providers>
+      <body className={cn("antialiased", "style-rhea")}>
+        <Providers locale={locale}>{children}</Providers>
       </body>
     </html>
   );

@@ -74,10 +74,16 @@ time (7 categories, 6 areas born ordered, 10 places).
 Slug detail route with permanent redirect from old id URLs; area + price +
 tag filters in URL; search across area names, tag labels, nameEn/My.
 
-## Phase 4 — Detail page (pending)
+## Phase 4 — Detail page (done)
 
-Second phone + contact links, tags chips, share button, relative updated
-line, correction link, nearby places, lazy map, JSON-LD.
+- Detail pages show the second phone, Facebook, and Telegram contact links.
+- Tags render as translated chips.
+- Share button uses the Web Share API with a clipboard fallback.
+- Updated timestamps render through locale-aware relative time.
+- Correction link points to the existing contact page with the place name.
+- Nearby places are loaded from the same area and limited to four listings.
+- The location map mounts when it approaches the viewport.
+- Restaurant JSON-LD includes available contact, image, address, geo, and social data.
 
 ## Phase 5 — Robustness, SEO, analytics (pending)
 

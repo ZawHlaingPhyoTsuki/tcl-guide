@@ -25,39 +25,40 @@ import {
 import { NavMain } from "./nav-main";
 import { NavUser } from "./nav-user";
 import { NavSecondary } from "./nav-secondary";
+import { useDictionary } from "@/i18n/dictionary-provider";
 import type { Session } from "@/features/auth/types/session";
 
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
   user: Session["user"] | null;
 }
 
-const data = {
-  navMain: [
-    { title: "Overview", url: "/dashboard", icon: <LayoutDashboardIcon /> },
-    { title: "Places", url: "/dashboard/places", icon: <MapPinIcon /> },
-    { title: "Categories", url: "/dashboard/categories", icon: <TagIcon /> },
-    { title: "Areas", url: "/dashboard/areas", icon: <MapPinnedIcon /> },
-  ],
-  navSecondary: [
-    {
-      title: "Settings",
-      url: "#",
-      icon: IconSettings,
-    },
-    {
-      title: "Go to Website",
-      url: "/",
-      icon: IconHouse,
-    },
-    {
-      title: "Search",
-      url: "#",
-      icon: IconSearch,
-    },
-  ],
-};
-
 export function AppSidebar({ user, ...props }: AppSidebarProps) {
+  const t = useDictionary();
+  const data = {
+    navMain: [
+      { title: t.dashboard.overview, url: "/dashboard", icon: <LayoutDashboardIcon /> },
+      { title: t.dashboard.places, url: "/dashboard/places", icon: <MapPinIcon /> },
+      { title: t.dashboard.categories, url: "/dashboard/categories", icon: <TagIcon /> },
+      { title: t.dashboard.areas, url: "/dashboard/areas", icon: <MapPinnedIcon /> },
+    ],
+    navSecondary: [
+      {
+        title: t.dashboard.settings,
+        url: "/dashboard/settings",
+        icon: IconSettings,
+      },
+      {
+        title: t.dashboard.goToWebsite,
+        url: "/",
+        icon: IconHouse,
+      },
+      {
+        title: t.dashboard.searchLink,
+        url: "#",
+        icon: IconSearch,
+      },
+    ],
+  };
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
@@ -68,7 +69,7 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
               render={<Link href="/dashboard" />}
             >
               <BookOpenIcon className="size-5!" />
-              <span className="text-base font-semibold">TCL Guide</span>
+              <span className="text-base font-semibold">{t.brand}</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
