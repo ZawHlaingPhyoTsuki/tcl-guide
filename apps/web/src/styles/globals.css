@@ -122,7 +122,6 @@
   }
   body {
     @apply font-sans bg-background text-foreground;
-    overflow-x: clip;
     /* Drawer overlay is absolutely positioned; a positioned body keeps it
        covering the viewport on iOS Safari after scroll. */
     position: relative;
