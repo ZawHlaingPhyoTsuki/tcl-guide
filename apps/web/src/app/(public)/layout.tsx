@@ -4,9 +4,9 @@ import { PublicHeader } from "@/components/public-header";
 
 export default function PublicLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="grid h-svh grid-rows-[auto_1fr]">
+    <div className="flex min-h-svh flex-col">
       <PublicHeader />
-      {children}
+      <main className="min-w-0 flex-1">{children}</main>
     </div>
   );
 }
