@@ -22,8 +22,8 @@ export function LandingSearch() {
   }
 
   return (
-    <form onSubmit={submit} role="search" className="flex gap-2">
-      <InputGroup className="h-12 rounded-full border-border/80 bg-card shadow-sm transition-shadow focus-within:ring-2 focus-within:ring-primary/25">
+    <form onSubmit={submit} role="search" className="flex w-full min-w-0 gap-2">
+      <InputGroup className="h-12 min-w-0 flex-1 rounded-full border-border/80 bg-card shadow-sm transition-shadow focus-within:ring-2 focus-within:ring-primary/25">
         <InputGroupInput
           placeholder={t.landing.searchPlaceholder}
           type="search"

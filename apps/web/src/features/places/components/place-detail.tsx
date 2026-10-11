@@ -137,12 +137,12 @@ export async function PlaceDetail({
 
   return (
     <>
-      <article className="grid gap-x-8 gap-y-6 lg:grid-cols-[minmax(0,1fr)_23rem] lg:items-start">
-        <div className="lg:col-start-1 lg:row-start-1">
+      <article className="grid grid-cols-1 gap-x-8 gap-y-6 lg:grid-cols-[minmax(0,1fr)_23rem] lg:items-start">
+        <div className="min-w-0 lg:col-start-1 lg:row-start-1">
           <PlaceGallery photos={place.photos} name={name} />
         </div>
 
-        <header className="lg:col-start-1 lg:row-start-2">
+        <header className="min-w-0 lg:col-start-1 lg:row-start-2">
           <div className="flex flex-wrap gap-2">
             <Chip tone="primary">
               {displayName(place.category.nameMy, place.category.nameEn, locale)}

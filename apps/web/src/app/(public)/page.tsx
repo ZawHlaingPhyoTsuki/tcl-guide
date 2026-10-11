@@ -37,15 +37,15 @@ export default async function LandingPage() {
     <>
       {/* HERO */}
       <section className="border-b border-border/60 bg-linear-to-b from-primary/10 to-transparent">
-        <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-12 sm:py-16 lg:grid-cols-2 lg:gap-14 lg:py-24">
+        <div className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-10 px-4 py-12 sm:py-16 lg:grid-cols-2 lg:gap-14 lg:py-24">
           {/* Left: copy + actions */}
-          <div className="flex flex-col items-start gap-5">
+          <div className="flex min-w-0 flex-col items-start gap-5">
             <p className="inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-sm font-semibold text-primary">
               <MapPin className="size-3.5" aria-hidden />
               {t.landing.eyebrow}
             </p>
 
-            <h1 className="font-heading text-4xl leading-[1.3] font-semibold tracking-tight text-balance sm:text-5xl lg:text-6xl">
+            <h1 className="font-heading text-4xl leading-[1.3] font-semibold tracking-tight wrap-break-word text-balance sm:text-5xl lg:text-6xl">
               {t.landing.title}
             </h1>
 
@@ -147,7 +147,7 @@ export default async function LandingPage() {
 
       {/* HIGHLIGHTS */}
       <section className="mx-auto max-w-6xl px-4 py-14 sm:py-20">
-        <ol className="grid gap-5 sm:grid-cols-3">
+        <ol className="grid grid-cols-1 gap-5 sm:grid-cols-3">
           {t.landing.highlights.map((highlight, i) => {
             const Icon = highlightIcons[i] ?? MapPin;
             return (
