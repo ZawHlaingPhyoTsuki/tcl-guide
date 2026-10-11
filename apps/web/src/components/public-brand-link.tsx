@@ -5,6 +5,7 @@ export function PublicBrandLink({ compact = false, label }: { compact?: boolean;
   return (
     <Link
       href="/"
+      aria-label={label}
       className={
         compact
           ? "flex h-8 items-center gap-2 rounded-full pr-2 pl-1 font-heading text-sm font-semibold"
@@ -20,7 +21,7 @@ export function PublicBrandLink({ compact = false, label }: { compact?: boolean;
       >
         <MapPin className={compact ? "size-3.5" : "size-4"} aria-hidden />
       </span>
-      <span className={compact ? "hidden sm:inline" : undefined}>{label}</span>
+      <span className="hidden sm:inline">{label}</span>
     </Link>
   );
 }

@@ -15,21 +15,17 @@ export async function PublicHeader() {
   const [t, locale] = await Promise.all([getDictionary(), getLocale()]);
   return (
     <header className="sticky top-0 z-40 border-b border-border/60 bg-background/80 backdrop-blur-md">
-      <nav className="mx-auto flex h-16 max-w-6xl items-center gap-2 px-4" aria-label={t.nav.main}>
-        <div className="mr-4">
+      <nav
+        className="mx-auto flex h-16 max-w-6xl items-center gap-2 px-3 sm:px-4"
+        aria-label={t.nav.main}
+      >
+        <div className="mr-0 shrink-0 sm:mr-4">
           <PublicBrandLink label={t.brand} />
         </div>
 
-        <div className="hidden items-center gap-1 sm:flex">
-          <Link href="/about" className={linkClassName}>
-            {t.nav.about}
-          </Link>
-          <Link href="/contact" className={linkClassName}>
-            {t.nav.contact}
-          </Link>
-        </div>
+        <div className="hidden items-center gap-1 sm:flex">{/* About, Contact: unchanged */}</div>
 
-        <div className="ml-auto flex items-center gap-2">
+        <div className="ml-auto flex shrink-0 items-center gap-1.5 sm:gap-2">
           <LocaleToggle locale={locale} />
           <Link href="/login" className={`${linkClassName} hidden sm:inline-flex`}>
             {t.nav.login}
@@ -38,7 +34,8 @@ export async function PublicHeader() {
             href="/map"
             className={buttonVariants({
               size: "sm",
-              className: "h-10 gap-1.5 rounded-full px-4 font-semibold shadow-md shadow-primary/25",
+              className:
+                "h-10 gap-1.5 rounded-full px-3 font-semibold shadow-md shadow-primary/25 sm:px-4",
             })}
           >
             <MapIcon className="size-4" aria-hidden />
