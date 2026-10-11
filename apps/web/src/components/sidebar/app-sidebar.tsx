@@ -20,6 +20,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar";
 
 import { NavMain } from "./nav-main";
@@ -34,6 +35,7 @@ interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
 
 export function AppSidebar({ user, ...props }: AppSidebarProps) {
   const t = useDictionary();
+  const { isMobile, setOpenMobile } = useSidebar();
   const data = {
     navMain: [
       { title: t.dashboard.overview, url: "/dashboard", icon: <LayoutDashboardIcon /> },
@@ -66,7 +68,14 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
           <SidebarMenuItem>
             <SidebarMenuButton
               className="data-[slot=sidebar-menu-button]:p-1.5!"
-              render={<Link href="/dashboard" />}
+              render={
+                <Link
+                  href="/dashboard"
+                  onClick={() => {
+                    if (isMobile) setOpenMobile(false);
+                  }}
+                />
+              }
             >
               <BookOpenIcon className="size-5!" />
               <span className="text-base font-semibold">{t.brand}</span>
