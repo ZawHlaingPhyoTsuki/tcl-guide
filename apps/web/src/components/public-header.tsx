@@ -1,7 +1,8 @@
 import Link from "next/link";
-import { MapPin, Map as MapIcon } from "lucide-react";
+import { Map as MapIcon } from "lucide-react";
 
 import { buttonVariants } from "@/components/ui/button";
+import { PublicBrandLink } from "@/components/public-brand-link";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { getLocale } from "@/i18n/get-locale";
 import { LocaleToggle } from "@/i18n/locale-toggle";
@@ -15,15 +16,9 @@ export async function PublicHeader() {
   return (
     <header className="sticky top-0 z-40 border-b border-border/60 bg-background/80 backdrop-blur-md">
       <nav className="mx-auto flex h-16 max-w-6xl items-center gap-2 px-4" aria-label={t.nav.main}>
-        <Link
-          href="/"
-          className="mr-4 flex shrink-0 items-center gap-2 font-heading text-lg font-semibold tracking-tight"
-        >
-          <span className="grid size-8 place-items-center rounded-lg bg-primary text-primary-foreground shadow-sm">
-            <MapPin className="size-4" aria-hidden />
-          </span>
-          {t.brand}
-        </Link>
+        <div className="mr-4">
+          <PublicBrandLink label={t.brand} />
+        </div>
 
         <div className="hidden items-center gap-1 sm:flex">
           <Link href="/about" className={linkClassName}>

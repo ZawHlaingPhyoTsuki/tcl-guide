@@ -19,11 +19,11 @@ import type { Place } from "../types/place";
 import { PlaceFilterChips } from "./place-filter-chips";
 import { PlaceList } from "./place-list";
 
-export type SheetState = "peek" | "expanded";
+export type DrawerState = "peek" | "expanded";
 
-export { SHEET_SNAP_POINTS };
+export { DRAWER_SNAP_POINTS };
 
-const SHEET_SNAP_POINTS = { peek: 0.3, expanded: 0.85 } as const;
+const DRAWER_SNAP_POINTS = { peek: 0.3, expanded: 0.85 } as const;
 
 const VARIANT_CLASSES = {
   bottom: {
@@ -77,7 +77,7 @@ export function PlacesDrawer({
       showSwipeHandle={variant === "bottom"}
       swipeDirection={variant === "bottom" ? "down" : "left"}
       snapPoints={
-        variant === "bottom" ? [SHEET_SNAP_POINTS.peek, SHEET_SNAP_POINTS.expanded] : undefined
+        variant === "bottom" ? [DRAWER_SNAP_POINTS.peek, DRAWER_SNAP_POINTS.expanded] : undefined
       }
       snapPoint={snapPoint}
       onSnapPointChange={onSnapPointChange}

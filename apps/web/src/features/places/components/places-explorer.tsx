@@ -6,10 +6,11 @@ import type { Category } from "@/features/categories/types/category";
 
 import type { Place } from "../types/place";
 import { PlacesMap } from "./places-map/places-map";
-import { PlacesDrawer, SHEET_SNAP_POINTS, type SheetState } from "./places-drawer";
+import { PlacesDrawer, DRAWER_SNAP_POINTS, type DrawerState } from "./places-drawer";
 import { PlaceSearch } from "./place-search";
 import { LocaleToggle } from "@/i18n/locale-toggle";
 import { useLocale } from "@/i18n/dictionary-provider";
+import { isLocatedPlace } from "../hooks/use-map-camera";
 
 export function PlacesExplorer({
   places,
@@ -22,17 +23,12 @@ export function PlacesExplorer({
 
   // Client state: selection + drawers. Filters live in URL (see PlaceSearch/Chips).
   const [selectedPlaceId, setSelectedPlaceId] = useState<string | null>(null);
-  const [sheetState, setSheetState] = useState<SheetState>("peek");
-  const [sheetOpen, setSheetOpen] = useState(true);
+  const [drawerState, setDrawerState] = useState<DrawerState>("peek");
+  const [drawerOpen, setDrawerOpen] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   const selectableIds = useMemo(
-    () =>
-      new Set(
-        places
-          .filter((p) => p.isActive && p.latitude != null && p.longitude != null)
-          .map((p) => p.id),
-      ),
+    () => new Set(places.filter((p) => p.isActive && isLocatedPlace(p)).map((p) => p.id)),
     [places],
   );
   const effectiveSelected =
@@ -42,8 +38,8 @@ export function PlacesExplorer({
   // peek so the marker + popup are visible.
   function handleMobileSelect(id: string) {
     setSelectedPlaceId(id);
-    setSheetOpen(true);
-    setSheetState("peek");
+    setDrawerOpen(true);
+    setDrawerState("peek");
   }
 
   return (
@@ -54,7 +50,7 @@ export function PlacesExplorer({
         onSelect={setSelectedPlaceId}
         viewport={{
           sidebarOpen,
-          sheetRatio: sheetOpen ? SHEET_SNAP_POINTS[sheetState] : 0,
+          drawerRatio: drawerOpen ? DRAWER_SNAP_POINTS[drawerState] : 0,
         }}
       />
 
@@ -92,11 +88,11 @@ export function PlacesExplorer({
             categories={categories}
             selectedPlaceId={effectiveSelected}
             onSelect={handleMobileSelect}
-            open={sheetOpen}
-            onOpenChange={setSheetOpen}
-            snapPoint={SHEET_SNAP_POINTS[sheetState]}
+            open={drawerOpen}
+            onOpenChange={setDrawerOpen}
+            snapPoint={DRAWER_SNAP_POINTS[drawerState]}
             onSnapPointChange={(snap) =>
-              setSheetState(snap === SHEET_SNAP_POINTS.expanded ? "expanded" : "peek")
+              setDrawerState(snap === DRAWER_SNAP_POINTS.expanded ? "expanded" : "peek")
             }
           />
         </Suspense>

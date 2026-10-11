@@ -149,7 +149,7 @@ export default async function LandingPage() {
       <section className="mx-auto max-w-6xl px-4 py-14 sm:py-20">
         <ol className="grid gap-5 sm:grid-cols-3">
           {t.landing.highlights.map((highlight, i) => {
-            const Icon = highlightIcons[i % highlightIcons.length];
+            const Icon = highlightIcons[i] ?? MapPin;
             return (
               <li
                 key={highlight.title}
@@ -175,28 +175,6 @@ export default async function LandingPage() {
           })}
         </ol>
       </section>
-
-      {/* CLOSING CTA */}
-      <section className="mx-auto max-w-6xl px-4 pb-16">
-        <div className="flex flex-col items-center gap-6 rounded-3xl bg-foreground px-6 py-12 text-center text-background shadow-lg sm:py-16">
-          <h2 className="max-w-2xl font-heading text-2xl leading-[1.4] font-semibold tracking-tight text-balance sm:text-3xl">
-            {t.landing.title}
-          </h2>
-          <Link
-            href={"/map" as Route}
-            className={buttonVariants({
-              size: "lg",
-              className:
-                "h-14 gap-2 rounded-full px-8 text-base font-semibold shadow-lg shadow-primary/30",
-            })}
-          >
-            <MapPin className="size-5" aria-hidden />
-            {t.landing.browseMap}
-            <ArrowRight className="size-5" aria-hidden />
-          </Link>
-        </div>
-      </section>
-
       <PublicFooter />
     </>
   );

@@ -17,7 +17,12 @@ import { displayName } from "@/i18n/display-name";
 import type { Place } from "../../types/place";
 import { PlaceMapMarker } from "./place-map-marker";
 import { PlaceMapPopup } from "./place-map-popup";
-import { useMapCamera, type PlacesMapViewport } from "../../hooks/use-map-camera";
+import {
+  isLocatedPlace,
+  useMapCamera,
+  type Located,
+  type PlacesMapViewport,
+} from "../../hooks/use-map-camera";
 
 export type { PlacesMapViewport };
 
@@ -67,11 +72,9 @@ export function PlacesMap({
 
   const mappedPlaces = useMemo(
     () =>
-      places.filter((place): place is Place & { latitude: number; longitude: number } => {
-        return (
-          (includeInactive || place.isActive) && place.latitude !== null && place.longitude !== null
-        );
-      }),
+      places.filter(
+        (place): place is Located => (includeInactive || place.isActive) && isLocatedPlace(place),
+      ),
     [includeInactive, places],
   );
   const selected =
