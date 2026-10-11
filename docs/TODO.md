@@ -1,9 +1,10 @@
 ### UI
 
 - [ON_HOLD] Polish the detail page UI.
-- language
 - category icons, make it dynamic
 - add recommendation in detail page
+- fo "nearbyPlaces" card, use the sidebar places cards
+- improve the nearByPlaces login
 
 ### Server
 

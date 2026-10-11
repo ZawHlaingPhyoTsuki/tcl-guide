@@ -16,7 +16,7 @@ export function PlaceGallery({ photos, name }: { photos: string[]; name: string 
   if (photos.length === 0) {
     return (
       <div
-        className="bg-muted text-muted-foreground flex aspect-4/3 w-full flex-col items-center justify-center gap-2 rounded-2xl sm:aspect-video"
+        className="bg-muted text-muted-foreground flex aspect-4/3 w-full flex-col items-center justify-center gap-2 rounded-3xl sm:aspect-video"
         role="img"
         aria-label={t.gallery.noPhotos}
       >
@@ -41,10 +41,10 @@ export function PlaceGallery({ photos, name }: { photos: string[]; name: string 
   }
 
   const arrow =
-    "bg-background/90 text-foreground hover:bg-background absolute top-1/2 hidden size-9 -translate-y-1/2 items-center justify-center rounded-full shadow-sm outline-offset-2 focus-visible:outline-2 disabled:pointer-events-none disabled:opacity-0 md:flex";
+    "bg-background/90 text-foreground hover:bg-background absolute top-1/2 hidden size-10 -translate-y-1/2 items-center justify-center rounded-full shadow-md outline-offset-2 focus-visible:outline-2 disabled:pointer-events-none disabled:opacity-0 md:flex";
 
   return (
-    <div className="bg-muted relative overflow-hidden rounded-2xl">
+    <div className="relative overflow-hidden rounded-3xl border border-border/70 bg-muted shadow-md">
       <ul
         ref={trackRef}
         tabIndex={0}

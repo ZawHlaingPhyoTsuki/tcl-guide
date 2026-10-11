@@ -23,7 +23,7 @@ export function LandingSearch() {
 
   return (
     <form onSubmit={submit} role="search" className="flex gap-2">
-      <InputGroup className="h-11 bg-background shadow-md">
+      <InputGroup className="h-12 rounded-full border-border/80 bg-card shadow-sm transition-shadow focus-within:ring-2 focus-within:ring-primary/25">
         <InputGroupInput
           placeholder={t.landing.searchPlaceholder}
           type="search"
@@ -36,7 +36,12 @@ export function LandingSearch() {
           <Search className="size-4 text-muted-foreground" />
         </InputGroupAddon>
       </InputGroup>
-      <Button type="submit" size="lg" className="shrink-0">
+      <Button
+        type="submit"
+        size="lg"
+        variant="secondary"
+        className="h-12 shrink-0 rounded-full px-6"
+      >
         {t.landing.searchButton}
       </Button>
     </form>

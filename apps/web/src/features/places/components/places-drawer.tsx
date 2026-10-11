@@ -23,7 +23,7 @@ export type SheetState = "peek" | "expanded";
 
 export { SHEET_SNAP_POINTS };
 
-const SHEET_SNAP_POINTS = { peek: 0.4, expanded: 0.85 } as const;
+const SHEET_SNAP_POINTS = { peek: 0.3, expanded: 0.85 } as const;
 
 const VARIANT_CLASSES = {
   bottom: {

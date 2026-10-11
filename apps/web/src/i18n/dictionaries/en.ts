@@ -8,6 +8,9 @@ export const en = {
     login: "Login",
     footer: "Footer",
   },
+  mobileMenu: {
+    open: "Open navigation menu",
+  },
   localeToggle: {
     label: "Language",
     myanmar: "မြန်မာ",
@@ -93,6 +96,14 @@ export const en = {
     price: "Price",
     about: "About",
     location: "Location",
+    phoneSecondary: "Second phone",
+    facebook: "Facebook",
+    telegram: "Telegram",
+    share: "Share",
+    copied: "Link copied",
+    updated: (relative: string) => `Updated ${relative}`,
+    correction: "See something wrong? Suggest a correction",
+    nearby: "Nearby places",
     loading: "Loading place",
   },
   gallery: {

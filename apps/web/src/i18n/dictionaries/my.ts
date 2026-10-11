@@ -10,6 +10,9 @@ export const my: Dictionary = {
     login: "ဝင်ရန်",
     footer: "အောက်ခြေ",
   },
+  mobileMenu: {
+    open: "လမ်းညွှန်မီနူး ဖွင့်ရန်",
+  },
   localeToggle: {
     label: "ဘာသာစကား",
     myanmar: "မြန်မာ",
@@ -95,6 +98,14 @@ export const my: Dictionary = {
     price: "ဈေးနှုန်း",
     about: "အကြောင်း",
     location: "တည်နေရာ",
+    phoneSecondary: "ဒုတိယဖုန်း",
+    facebook: "Facebook",
+    telegram: "Telegram",
+    share: "မျှဝေရန်",
+    copied: "လင့်ခ် ကူးပြီးပါပြီ",
+    updated: (relative: string) => `${relative} မှာ ပြင်ဆင်ထားသည်`,
+    correction: "အမှားတွေ့ပါသလား။ ပြင်ဆင်ရန် အကြံပြုပါ",
+    nearby: "အနီးအနားရှိ ဆိုင်များ",
     loading: "ဆိုင်တင်နေသည်",
   },
   gallery: {

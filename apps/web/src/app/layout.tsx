@@ -9,7 +9,7 @@ import { Inter } from "next/font/google";
 
 const outfitHeading = localFont({
   src: "../fonts/outfit-latin.woff2",
-  variable: "--font-heading",
+  variable: "--font-display",
   display: "swap",
 });
 
