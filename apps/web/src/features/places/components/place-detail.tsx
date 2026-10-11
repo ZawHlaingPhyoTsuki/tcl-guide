@@ -19,7 +19,7 @@ import { displayName } from "@/i18n/display-name";
 import { getDictionary, type Dictionary } from "@/i18n/get-dictionary";
 import { getLocale } from "@/i18n/get-locale";
 import { PlaceGallery } from "./place-gallery";
-import { LazyPlaceLocationMap } from "./lazy-place-location-map";
+import { PlaceLocationMap } from "./place-location-map";
 import { SharePlaceButton } from "./share-place-button";
 import { formatRelativeUpdated } from "./relative-updated";
 
@@ -250,7 +250,7 @@ export async function PlaceDetail({
           {hasMap ? (
             <div className="mt-6">
               <h2 className="sr-only">{t.detail.location}</h2>
-              <LazyPlaceLocationMap place={place} />
+              <PlaceLocationMap place={place} />
             </div>
           ) : null}
         </section>
