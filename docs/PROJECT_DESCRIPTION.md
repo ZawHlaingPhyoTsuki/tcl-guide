@@ -1,60 +1,88 @@
-# TCL Guide — Project Description
+# tcl-shop — Project Description
 
-Local discovery platform for Tachileik, Myanmar: one browsable directory of
-food-related businesses (restaurants, cafes, bakeries, street-food stalls, bars,
-hotels, shops), replacing scattered Telegram posts and social media threads.
-Content is bilingual (Burmese + English) throughout.
+Mobile-first product discovery and storefront platform for social-commerce
+merchants in Tachileik, Myanmar. Customers browse products across shops and
+place cash-on-delivery (COD) orders. Merchants manage their own shop,
+listings, inventory, and orders.
 
-## Public features
+tcl-shop has a Next.js web application and a NestJS API. The web application
+consumes the API; NestJS owns the application endpoints, authentication
+integration, database access, and privileged storage operations.
 
-- **Map-first Places Explorer** (the home screen): a full-screen MapLibre map
-  with a place list kept in sync. Tapping a marker highlights its list row;
-  tapping a row flies the map to the marker and opens a preview.
-- **Search & filtering**: text search across names, categories, and areas, plus
-  one-tap category chips. Filters live in the URL, so any filtered view is
-  shareable and bookmarkable.
-- **Drawers, not pages, for the list**: on mobile a bottom drawer with
-  peek/expanded snap points (opens expanded); on desktop a side drawer. Both
-  are non-modal, so the map stays interactive underneath, each with its own
-  trigger button next to the search bar.
-- **Place detail pages**: photo gallery with click-to-expand, category/area
-  chips, price level + note, tags (halal, vegetarian, delivery, wifi, …),
-  address, hours, phone, description, a mini location map, and directions/call
-  actions (sticky action bar on mobile).
-- **Data vocabulary**: categories and areas are first-class relations (they
-  evolve); price level is a coarse LOW/MID/HIGH tier plus a free-text note;
-  tags are a fixed vocabulary validated in code. See `GLOSSARY.md` for terms.
+## Product goals
 
-## Admin features (`/dashboard`)
+- Make products searchable across participating shops.
+- Give every merchant a shareable public storefront.
+- Show clear product details, pricing, variants, and availability.
+- Let customers place COD orders without a complicated checkout.
+- Give merchants a straightforward workflow for products and orders.
+- Build trust through accurate listings, moderation, and eventually
+  verified-purchase reviews.
 
-- **Overview**: directory stats (total places, published, areas covered).
-- **Place management**: create, edit, publish/hide, and delete (confirmed)
-  places; photo uploads go to Neon S3-compatible storage with preview-before-upload
-  so closing the form early never orphans files; a click-or-drag map picker
-  sets the location.
-- **Category & area management**: full CRUD; deleting an area (or category)
-  still referenced by places is blocked.
-- **Settings page**: Light/Dark/System theme toggle plus admin profile
-  (display name, password change).
-- **Forms** built on shadcn components (selects, inputs, sheets, dialogs)
-  with inline validation errors.
+## Initial scope
 
-## Access model
+### Customer
 
-Public browsing needs no account. All management is gated by Better Auth
-(admin plugin); the first admin is bootstrapped from the `ADMIN_EMAIL`
-environment variable, and the dashboard layout redirects non-admins away.
+- Browse and search published products.
+- Filter by category and sort results.
+- View product details and merchant storefronts.
+- Share product and shop links.
+- Place a COD order.
+- View order confirmation and status.
+
+### Merchant
+
+- Create and manage a shop.
+- Create, edit, publish, unpublish, and archive products.
+- Upload product images.
+- Manage basic stock and variants where needed.
+- Review orders and update permitted order statuses.
+- Configure basic delivery information.
+
+### Platform administration
+
+- Review and manage shops.
+- Hide or moderate listings.
+- Manage product categories.
+- Investigate reports and suspend abusive accounts when necessary.
+
+## Out of scope for the first release
+
+- Online payments and payment processing.
+- Delivery-provider integrations or live shipping quotes.
+- Cross-merchant checkout.
+- Automated TikTok scraping or importing.
+- AI recommendations and complex personalization.
+- Paid promotions, subscriptions, and transaction fees.
+- Advanced analytics.
+
+## Core product decisions
+
+- Public product and shop pages work without signing in.
+- Guest checkout is supported; account order history can be added alongside
+  it.
+- Each checkout initially belongs to one shop.
+- Orders use COD. tcl-shop records order and payment status but does not
+  process money.
+- Product name and price are snapshotted into order items so later listing
+  edits do not rewrite history.
+- Merchant permissions are enforced on the server, not only in the UI.
+- Reviews are restricted to eligible purchasers once reviews are implemented.
+- Money is stored as whole integer units with an explicit currency: MMK or
+  THB, both without decimals. There is no implicit FX conversion.
+- The current schema stores English and Myanmar fields explicitly; adding
+  Shan requires a reviewed schema migration.
 
 ## Tech snapshot
 
 - **Monorepo**: Turborepo + pnpm workspaces.
 - **Web** (`apps/web`): Next.js + React + Tailwind CSS, shadcn/ui components
   (Base UI primitives) owned directly by the app.
-- **API** (`apps/server`): NestJS modular monolith — business modules under
-  `src/modules/*` (areas, categories, places, uploads), Prisma + PostgreSQL,
+- **API** (`apps/server`): NestJS modular monolith, Prisma + PostgreSQL,
   Better Auth, REST with OpenAPI/Swagger.
 - **Deploy**: Docker Compose (web + server).
 - **Env**: each app owns a `.env.schema`; Varlock generates typed accessors.
 
 See `README.md` for setup and scripts, `GLOSSARY.md` for domain language,
-`TODO.md` for the current task list, and `docs/adr/` for decisions.
+`PHASES.md` for the build plan, `TODO.md` for the current task list, and
+`docs/adr/` for decisions.

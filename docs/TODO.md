@@ -1,55 +1,65 @@
-### UI
+# TODO
 
-- [ON_HOLD] Polish the detail page UI.
-- category icons, make it dynamic
-- add recommendation in detail page
-- fo "nearbyPlaces" card, use the sidebar places cards
-- improve the nearByPlaces logic
-- add og and /api/og
+## Open questions
 
-### Server
+- How far do variants go in v1: size/color only, or arbitrary option pairs?
+- Can a guest look up an order by reference + phone, or is the confirmation link
+  the only access?
+- Do merchant accounts start as self-serve signup or admin-created in v1?
+- Is a product limited to one category, or several?
+- Do we need a separate shop location model now, or free-text delivery info?
+- Shan language fields are deferred; the schema stores English and Myanmar
+  explicitly until a reviewed migration adds Shan.
 
-- [DROP] Investigate/fix redundant data fetching when navigating between dashboard tabs.
-- Add CRUD endpoints for **Tags**.
-- Implement server-side rate limiting (Redis).
-- Configure Nginx.
-- In Place model, createdByAdminId is NULL, addressText NULL in seed, tag table
+## Next up
 
-### Codebase
+- [ ] Define the v2 Prisma schema: Shop, Product, Variant, Category, Order,
+      OrderItem, merchant membership.
+- [ ] Decide order and payment status vocabularies and permitted transitions.
+- [ ] Decide the money helper API (integer amount + currency, no FX).
+- [ ] Set up Better Auth roles: customer (optional account), merchant, admin.
+- [ ] Seed a demo shop, categories, and products for local development.
 
-- refactor agent skills
+## Merchant
 
-### FUTURE Feature
+- [ ] Shop setup and edit form.
+- [ ] Product create/edit with publish, unpublish, archive.
+- [ ] Product image upload and ordering.
+- [ ] Basic stock and variant management.
+- [ ] Order list and permitted status updates.
+- [ ] Delivery information settings.
 
-- **Deli Integration:**
-  - Link places to specific delis.
-  - Filter public place list based on the selected deli.
+## Customer
 
-- Let users report incorrect phone numbers, closed businesses, wrong map pins, or outdated photos. Admins review the reports.
-  - This helps keep the directory trustworthy as it grows.
+- [ ] Browse published products.
+- [ ] Category filter and sort, in the URL.
+- [ ] Product search.
+- [ ] Product detail with variant selector and availability.
+- [ ] Shop storefront with share action.
+- [ ] COD checkout, guest-capable.
+- [ ] Order confirmation and status view.
 
-- Recently added and recently updated places, show them to visitors
-  - Give visitors a way to discover new businesses and see which listings have fresh information.
-  - This can make the directory feel alive without building a social network.
+## Admin
 
-- Favorites and saved places
-  - Allow visitors to bookmark places they want to visit. You could start with local browser storage and add accounts only if cross-device sync becomes important.
-- Populate accurate, useful listings
-- Analytics, promotions, monetization
+- [ ] Shop review and approval.
+- [ ] Listing moderation (hide).
+- [ ] Category management.
+- [ ] Report handling and account suspension.
 
-### Directions
+## Deferred (explicitly out of first release)
 
-#### A. The local directory
+- Online payments and payment processing.
+- Delivery-provider integrations and live shipping quotes.
+- Cross-merchant checkout.
+- Automated TikTok scraping or importing.
+- AI recommendations and complex personalization.
+- Paid promotions, subscriptions, transaction fees.
+- Advanced analytics.
+- Reviews (Phase 8) and verified-purchase checks.
 
-The best place to find businesses in Tachileik. Focus on coverage, accurate information, bilingual search, and excellent discovery.
-(Simplest starting point)
+## Codebase
 
-#### B. The local business platform
-
-A directory plus business owner accounts, listing claims, self-service updates, and insights.
-(A natural evolution of A)
-
-#### C. The local commerce ecosystem
-
-A directory connected to delivery providers, ordering, promotions, and possibly transactions.
-Most ambitious; (requires much more validation)
+- [ ] Retire v1 modules (places, areas, tags) from `apps/server` once v2
+      endpoints exist.
+- [ ] Retire v1 public pages and dashboard screens.
+- [ ] Update seeds and fixtures to the shop model.

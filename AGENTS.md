@@ -1,12 +1,17 @@
-# TCL Guide — Agent Instructions
+# tcl-shop — Agent Instructions
 
 ## Project Overview
 
-TCL Guide is a local discovery platform for Tachileik, Myanmar.
+tcl-shop is a mobile-first product discovery and storefront platform for
+social-commerce merchants in Tachileik, Myanmar.
 
-The initial product focuses on helping people discover restaurants and
-food-related businesses more easily than through Telegram posts or
-scattered social media information.
+Customers browse products across shops and place cash-on-delivery (COD)
+orders. Merchants manage their own shop, listings, inventory, and orders.
+
+Three actors define the scope: **customer** (browse, search, order),
+**merchant** (shop, products, stock, orders), and **platform admin**
+(shops, moderation, categories). Public product and shop pages work without
+signing in.
 
 The project is also intended to be a serious backend-learning project,
 so backend architecture, API design, validation, authentication,
@@ -51,9 +56,9 @@ Don't run the server and the web build at the same time; run them separately, on
 Use a modular monolith.
 
 ```text
-Next.js Web
+Next.js Web (customer storefront + merchant/admin dashboard)
     ↓ HTTP / REST
-NestJS API
+NestJS API (owns auth integration, validation, business rules)
     ↓
 Prisma
     ↓
@@ -83,4 +88,4 @@ Default five-role vocabulary (`needs-triage`, `needs-info`, `ready-for-agent`, `
 
 ### Domain docs
 
-Single-context: root `GLOSSARY.md` + `docs/adr/`. See `docs/agents/domain.md`.
+Single-context: `docs/GLOSSARY.md` + `docs/adr/`. See `docs/agents/domain.md`.

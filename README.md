@@ -1,8 +1,16 @@
-# tcl-guide
+# tcl-guide (tcl-shop)
 
-Local discovery platform for Tachileik, Myanmar. Monorepo with a Next.js frontend and a NestJS (modular monolith) API.
+tcl-shop is a mobile-first product discovery and storefront platform for social-commerce merchants in Tachileik, Myanmar. Customers browse products across shops and place cash-on-delivery (COD) orders; merchants manage their own shop, listings, inventory, and orders. Monorepo with a Next.js frontend and a NestJS (modular monolith) API.
 
-## Features
+## Product features
+
+- **Customer**: browse and search published products, filter by category, sort results, view product and shop pages, share links, and place a COD order as a guest.
+- **Merchant**: create a shop, manage products (publish, unpublish, archive), upload images, track stock and variants, review orders, and set delivery information.
+- **Platform admin**: review shops, moderate listings, manage categories, and suspend abusive accounts.
+
+Map and location features are secondary; the storefront is the product.
+
+## Stack and tooling
 
 - **TypeScript** - For type safety and improved developer experience
 - **Next.js** - Full-stack React framework
